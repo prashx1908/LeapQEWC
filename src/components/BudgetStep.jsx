@@ -31,10 +31,24 @@ function filterCountriesByBacklog(backlogCount) {
   });
 }
 
+function getCountryEligibility(backlogCount) {
+  if (backlogCount > 15) {
+    return countryComparison.map(c => ({ ...c, isEligible: false, reason: 'More than 15 backlogs' }));
+  }
+  return countryComparison.map(row => {
+    if (row.code === 'usa' && backlogCount > 10) return { ...row, isEligible: false, reason: '>10 Backlogs' };
+    if (row.code === 'canada' && backlogCount > 10) return { ...row, isEligible: false, reason: '>10 Backlogs' };
+    if (row.code === 'ireland' && backlogCount > 7) return { ...row, isEligible: false, reason: '>7 Backlogs' };
+    if (row.code === 'newzealand' && backlogCount > 8) return { ...row, isEligible: false, reason: '>8 Backlogs' };
+    return { ...row, isEligible: true, reason: '' };
+  });
+}
+
 const BudgetStep = ({ country, backlogCount = 0, onBudgetSelected }) => {
   const [selected, setSelected] = useState(null);
   const [showSorry, setShowSorry] = useState(false);
   const [showComparison, setShowComparison] = useState(country === 'any');
+  const [showUsaExploreModal, setShowUsaExploreModal] = useState(false);
 
   // Special flow for open to any country
   if (country === 'any') {
@@ -80,7 +94,7 @@ const BudgetStep = ({ country, backlogCount = 0, onBudgetSelected }) => {
                 title="Can invest a minimum of ₹15L"
                 subtitle="Access to good universities in UK, Ireland, Canada, etc."
                 selected={selected === '15L'}
-                onClick={() => { setSelected('15L'); onBudgetSelected && onBudgetSelected('15L'); }}
+                onClick={() => { setSelected('15L'); setShowUsaExploreModal(true); }}
               />
               <BudgetCard
                 icon="ℹ️"
@@ -92,6 +106,62 @@ const BudgetStep = ({ country, backlogCount = 0, onBudgetSelected }) => {
             </div>
           )}
         </div>
+        {/* USA Explore Other Countries Modal */}
+        {showUsaExploreModal && (
+          <Modal onClose={() => setShowUsaExploreModal(false)} large>
+            <div style={{ fontWeight: 800, fontSize: 22, color: '#1e293b', marginBottom: 12 }}>Explore Other Countries</div>
+            <div style={{ color: '#374151', fontSize: 17, marginBottom: 22, fontWeight: 500 }}>
+              An investment of at least ₹35L is recommended for USA. With a ₹15L budget, you can explore these other great countries.
+            </div>
+
+            {console.log('Country eligibility:', getCountryEligibility(backlogCount))}
+            <div style={{ maxHeight: '50vh', overflowY: 'auto', padding: '10px 0' }}>
+              <div style={{ fontWeight: 700, fontSize: 18, color: '#1e293b', marginBottom: 18, textAlign: 'left', borderBottom: '2px solid #e5e7eb', paddingBottom: 8 }}>Available Countries for You</div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 24, justifyContent: 'center' }}>
+                {getCountryEligibility(backlogCount).filter(c => c.isEligible && c.code !== 'usa').length === 0 ? (
+                  <div style={{ color: '#64748b', fontSize: 16, margin: '24px 0' }}>No eligible countries available for your profile.</div>
+                ) : (
+                  getCountryEligibility(backlogCount).filter(c => c.isEligible && c.code !== 'usa').map(row => (
+                    <CountryCard key={row.code} {...row} />
+                  ))
+                )}
+              </div>
+
+              <div style={{ fontWeight: 700, fontSize: 18, color: '#475569', margin: '32px 0 18px 0', textAlign: 'left', borderBottom: '2px solid #e5e7eb', paddingBottom: 8 }}>Unavailable due to Backlogs</div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 24, justifyContent: 'center' }}>
+                {getCountryEligibility(backlogCount).filter(c => !c.isEligible).length === 0 ? (
+                  <div style={{ color: '#64748b', fontSize: 16, margin: '24px 0' }}>No ineligible countries for your profile.</div>
+                ) : (
+                  getCountryEligibility(backlogCount).filter(c => !c.isEligible).map(row => (
+                    <DisabledCountryCard key={row.code} {...row} />
+                  ))
+                )}
+              </div>
+            </div>
+
+            <div style={{ marginTop: 28, display: 'flex', justifyContent: 'center', gap: 16 }}>
+              <button
+                className="secondary-btn"
+                onClick={() => {
+                  setShowUsaExploreModal(false);
+                  setSelected('35L');
+                  onBudgetSelected && onBudgetSelected('35L');
+                }}
+              >
+                Go back and select ₹35L for USA
+              </button>
+              <button
+                className="primary-btn"
+                onClick={() => {
+                  setShowUsaExploreModal(false);
+                  onBudgetSelected && onBudgetSelected('15L');
+                }}
+              >
+                Continue with ₹15L for other countries
+              </button>
+            </div>
+          </Modal>
+        )}
         {/* Sorry popup */}
         {showSorry && (
           <Modal onClose={() => setShowSorry(false)}>
@@ -142,7 +212,7 @@ const BudgetStep = ({ country, backlogCount = 0, onBudgetSelected }) => {
               title="Can invest minimum ₹15L"
               subtitle="Access to good universities in UK, IRELAND, CANADA"
               selected={selected === '15L'}
-              onClick={() => { setSelected('15L'); setShowSorry(true); }}
+              onClick={() => { setSelected('15L'); setShowUsaExploreModal(true); }}
             />
             <BudgetCard
               icon="ℹ️"
@@ -153,6 +223,62 @@ const BudgetStep = ({ country, backlogCount = 0, onBudgetSelected }) => {
             />
           </div>
         </div>
+        {/* USA Explore Other Countries Modal */}
+        {showUsaExploreModal && (
+          <Modal onClose={() => setShowUsaExploreModal(false)} large>
+            <div style={{ fontWeight: 800, fontSize: 22, color: '#1e293b', marginBottom: 12 }}>Explore Other Countries</div>
+            <div style={{ color: '#374151', fontSize: 17, marginBottom: 22, fontWeight: 500 }}>
+              An investment of at least ₹35L is recommended for USA. With a ₹15L budget, you can explore these other great countries.
+            </div>
+
+            {console.log('Country eligibility:', getCountryEligibility(backlogCount))}
+            <div style={{ maxHeight: '50vh', overflowY: 'auto', padding: '10px 0' }}>
+              <div style={{ fontWeight: 700, fontSize: 18, color: '#1e293b', marginBottom: 18, textAlign: 'left', borderBottom: '2px solid #e5e7eb', paddingBottom: 8 }}>Available Countries for You</div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 24, justifyContent: 'center' }}>
+                {getCountryEligibility(backlogCount).filter(c => c.isEligible && c.code !== 'usa').length === 0 ? (
+                  <div style={{ color: '#64748b', fontSize: 16, margin: '24px 0' }}>No eligible countries available for your profile.</div>
+                ) : (
+                  getCountryEligibility(backlogCount).filter(c => c.isEligible && c.code !== 'usa').map(row => (
+                    <CountryCard key={row.code} {...row} />
+                  ))
+                )}
+              </div>
+
+              <div style={{ fontWeight: 700, fontSize: 18, color: '#475569', margin: '32px 0 18px 0', textAlign: 'left', borderBottom: '2px solid #e5e7eb', paddingBottom: 8 }}>Unavailable due to Backlogs</div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 24, justifyContent: 'center' }}>
+                {getCountryEligibility(backlogCount).filter(c => !c.isEligible).length === 0 ? (
+                  <div style={{ color: '#64748b', fontSize: 16, margin: '24px 0' }}>No ineligible countries for your profile.</div>
+                ) : (
+                  getCountryEligibility(backlogCount).filter(c => !c.isEligible).map(row => (
+                    <DisabledCountryCard key={row.code} {...row} />
+                  ))
+                )}
+              </div>
+            </div>
+
+            <div style={{ marginTop: 28, display: 'flex', justifyContent: 'center', gap: 16 }}>
+              <button
+                className="secondary-btn"
+                onClick={() => {
+                  setShowUsaExploreModal(false);
+                  setSelected('35L');
+                  onBudgetSelected && onBudgetSelected('35L');
+                }}
+              >
+                Go back and select ₹35L for USA
+              </button>
+              <button
+                className="primary-btn"
+                onClick={() => {
+                  setShowUsaExploreModal(false);
+                  onBudgetSelected && onBudgetSelected('15L');
+                }}
+              >
+                Continue with ₹15L for other countries
+              </button>
+            </div>
+          </Modal>
+        )}
         {/* Sorry popup */}
         {showSorry && (
           <Modal onClose={() => setShowSorry(false)}>
@@ -243,6 +369,33 @@ function CountryCard({ flag, country, budget, roi, speciality }) {
       <div style={{ color: '#6366f1', fontSize: 16, marginBottom: 2, fontWeight: 700 }}>{budget}</div>
       <div style={{ color: '#0c4a6e', fontSize: 15, marginBottom: 2, fontWeight: 600 }}>ROI: {roi}</div>
       <div style={{ color: '#64748b', fontSize: 15, marginBottom: 8, textAlign: 'center' }}>{speciality}</div>
+    </div>
+  );
+}
+
+function DisabledCountryCard({ flag, country, reason }) {
+  return (
+    <div style={{
+      background: '#f1f5f9',
+      borderRadius: 16,
+      padding: 22,
+      minWidth: 220,
+      maxWidth: 220,
+      minHeight: 220,
+      maxHeight: 220,
+      boxSizing: 'border-box',
+      border: '2px dashed #94a3b8',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      opacity: 0.7,
+    }}>
+      <div style={{ fontSize: 38, marginBottom: 8 }}>{flag}</div>
+      <div style={{ fontWeight: 800, fontSize: 20, color: '#475569', marginBottom: 8 }}>{country}</div>
+      <div style={{ color: '#dc2626', fontSize: 15, fontWeight: 600, textAlign: 'center', background: '#fee2e2', padding: '4px 8px', borderRadius: 6 }}>
+        Ineligible: {reason}
+      </div>
     </div>
   );
 }
