@@ -29,15 +29,47 @@ const intakeOptions = [
   },
 ];
 
-function IntakeSelectionStep({ visible, onSelect, country }) {
+function IntakeSelectionStep({ visible, onSelect, country, graduationYear, graduationMonth }) {
   const [selected, setSelected] = useState(null);
   if (!visible) return null;
+
+  // Determine recommended intake based on graduationYear and graduationMonth
+  let recommendedValue = null;
+  if (graduationYear) {
+    const grad = Number(graduationYear);
+    const month = (graduationMonth || '').toLowerCase();
+    if (grad === 2025) {
+      if ([
+        'january', 'february', 'march', 'april', 'may', 'june', 'july'
+      ].includes(month)) {
+        recommendedValue = 'fall-2025';
+      } else if ([
+        'august', 'september', 'october', 'november', 'december'
+      ].includes(month)) {
+        recommendedValue = 'spring-2026';
+      }
+    } else if (grad === 2026) {
+      if ([
+        'may', 'june', 'july', 'august'
+      ].includes(month)) {
+        recommendedValue = 'fall-2026';
+      }
+    } else if (grad < 2025) {
+      recommendedValue = 'fall-2025';
+    }
+  }
+
+  const intakeOptionsWithBadge = intakeOptions.map(opt => ({
+    ...opt,
+    badge: (opt.value === recommendedValue) ? 'Recommended' : undefined
+  }));
+
   return (
     <div style={{ maxWidth: 500, width: '100%', margin: '0 auto', background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.06)', padding: '32px 0', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
       <h2 className="question-title" style={{ fontSize: 24, fontWeight: 700, marginBottom: 8, textAlign: 'center' }}>When do you plan to start?</h2>
       <div className="question-subtitle" style={{ fontSize: 16, color: '#374151', marginBottom: 18, textAlign: 'center' }}>Choose your preferred intake</div>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 18, width: '90%', maxWidth: 400 }}>
-        {intakeOptions.map(opt => (
+        {intakeOptionsWithBadge.map(opt => (
           <div
             key={opt.value}
             style={{

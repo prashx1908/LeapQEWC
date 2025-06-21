@@ -70,6 +70,10 @@ const expDurationOptions = [
   { value: '3-5', label: '3-5 years' },
   { value: '5+', label: 'More than 5 years' },
 ];
+const monthOptions = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December'
+];
 
 function getDefaultDegree(highestEducation) {
   switch (highestEducation) {
@@ -161,6 +165,8 @@ const inputStyle = {
   fontSize: 15,
   background: '#fff',
   color: '#1e293b',
+  width: '100%',
+  boxSizing: 'border-box',
 };
 
 const AcademicDetailsStep = ({ highestEducation, initialDetails = {}, onSubmit }) => {
@@ -170,6 +176,7 @@ const AcademicDetailsStep = ({ highestEducation, initialDetails = {}, onSubmit }
   const [gradeValue, setGradeValue] = useState(initialDetails.gradeValue || '');
   const [backlogs, setBacklogs] = useState(initialDetails.backlogs || '');
   const [graduationYear, setGraduationYear] = useState(initialDetails.graduationYear || '');
+  const [graduationMonth, setGraduationMonth] = useState(initialDetails.graduationMonth || '');
   const [gap, setGap] = useState(initialDetails.gap || '');
   const [gapDoc, setGapDoc] = useState(initialDetails.gapDoc || '');
   const [job, setJob] = useState(initialDetails.job || '');
@@ -200,6 +207,7 @@ const AcademicDetailsStep = ({ highestEducation, initialDetails = {}, onSubmit }
       gradeValue: gradeValue !== '' ? Number(gradeValue) : '',
       backlogs: backlogs !== '' ? Number(backlogs) : '',
       graduationYear: graduationYear !== '' ? Number(graduationYear) : '',
+      graduationMonth: graduationMonth || '',
       gap,
       gapDoc,
       job,
@@ -214,73 +222,84 @@ const AcademicDetailsStep = ({ highestEducation, initialDetails = {}, onSubmit }
       <div className="question-card" style={{ maxWidth: 520, width: '100%', background: '#fff', borderRadius: 24, boxShadow: '0 8px 32px rgba(99,102,241,0.10)', padding: '36px 32px', margin: '0 auto', position: 'relative', textAlign: 'left' }}>
         <h2 className="question-title" style={{ fontSize: 24, fontWeight: 700, marginBottom: 4, color: '#3730a3', textAlign: 'left' }}>Your Academic Journey</h2>
         <div className="question-subtitle" style={{ fontSize: 16, color: '#6366f1', marginBottom: 28, textAlign: 'left', lineHeight: 1.6 }}>Let's understand your educational background</div>
-        {/* Education Details */}
-        <div className="story-section" style={{ marginBottom: 28 }}>
-          <div className="story-header" style={{ display: 'flex', alignItems: 'center', marginBottom: 12 }}>
-            <span className="story-icon" style={{ fontSize: 22, marginRight: 10 }}>🎓</span>
-            <h3 style={{ fontSize: 18, fontWeight: 700, color: '#1e293b', margin: 0 }}>Education Details</h3>
-          </div>
-          <div className="education-details-grid" style={gridStyle}>
-            <div className="form-group" style={formGroupStyle}>
-              <label style={labelStyle}>Degree</label>
+        {/* Story-style Academic Details */}
+        <div className="story-section" style={{ marginBottom: 28, fontSize: 16, color: '#374151', lineHeight: 2 }}>
+          <div style={{ marginBottom: 10 }}>
+            My degree is
+            <span style={selectWrapperStyle}>
               <select value={degree} disabled style={inputStyle}>
                 {degreeOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
               </select>
-            </div>
-            <div className="form-group" style={formGroupStyle}>
-              <label style={labelStyle}>Specialization</label>
+              <span style={arrowStyle}>▼</span>
+            </span>
+          </div>
+          <div style={{ marginBottom: 10 }}>
+            I specialized in
+            <span style={selectWrapperStyle}>
               <select value={specialization} onChange={e => setSpecialization(e.target.value)} style={inputStyle}>
                 <option value="">Select Specialization</option>
                 {specializationOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
               </select>
-            </div>
-            <div className="form-group" style={formGroupStyle}>
-              <label style={labelStyle}>Grade Type</label>
+              <span style={arrowStyle}>▼</span>
+            </span>
+          </div>
+          <div style={{ marginBottom: 10 }}>
+            My grade type is
+            <span style={selectWrapperStyle}>
               <select value={gradeType} onChange={e => { setGradeType(e.target.value); setGradeValue(''); }} style={inputStyle}>
                 <option value="">Select Grade Type</option>
                 {gradeTypeOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
               </select>
-            </div>
-            <div className="form-group" style={formGroupStyle}>
-              <label style={labelStyle}>{gradeType === 'cgpa' ? 'CGPA' : gradeType === 'percentage' ? 'Percentage' : 'Grade Value'}</label>
-              <input
-                type="number"
-                value={gradeValue}
-                onChange={e => setGradeValue(e.target.value)}
-                min={gradeType === 'cgpa' ? 0 : 0}
-                max={gradeType === 'cgpa' ? 10 : 100}
-                step={gradeType === 'cgpa' ? 0.01 : 1}
-                placeholder={gradeType === 'cgpa' ? 'CGPA (e.g. 8.5)' : 'Percentage (e.g. 78)'}
-                style={inputStyle}
-                disabled={!gradeType}
-              />
-            </div>
-            <div className="form-group" style={formGroupStyle}>
-              <label style={labelStyle}>Backlogs</label>
-              <input
-                type="number"
-                value={backlogs}
-                onChange={e => setBacklogs(e.target.value)}
-                min={0}
-                max={99}
-                step={1}
-                placeholder="Backlogs"
-                style={inputStyle}
-              />
-            </div>
-            <div className="form-group" style={formGroupStyle}>
-              <label style={labelStyle}>Graduation Year</label>
-              <input
-                type="number"
-                value={graduationYear}
-                onChange={e => setGraduationYear(e.target.value)}
-                min={1950}
-                max={new Date().getFullYear() + 1}
-                step={1}
-                placeholder="Year"
-                style={inputStyle}
-              />
-            </div>
+              <span style={arrowStyle}>▼</span>
+            </span>
+            with a grade of
+            <input
+              type="number"
+              value={gradeValue}
+              onChange={e => setGradeValue(e.target.value)}
+              min={gradeType === 'cgpa' ? 0 : 0}
+              max={gradeType === 'cgpa' ? 10 : 100}
+              step={gradeType === 'cgpa' ? 0.01 : 1}
+              placeholder={gradeType === 'cgpa' ? 'CGPA' : 'Percentage'}
+              style={{ ...inputStyle, width: 90, display: 'inline-block', margin: '0 8px' }}
+              disabled={!gradeType}
+            />
+          </div>
+          <div style={{ marginBottom: 10 }}>
+            I have
+            <input
+              type="number"
+              value={backlogs}
+              onChange={e => setBacklogs(e.target.value)}
+              min={0}
+              max={99}
+              step={1}
+              placeholder="Backlogs"
+              style={{ ...inputStyle, width: 60, display: 'inline-block', margin: '0 8px' }}
+            />
+            backlogs
+          </div>
+          <div style={{ marginBottom: 10 }}>
+            I will be graduating by
+            <input
+              type="number"
+              value={graduationYear}
+              onChange={e => setGraduationYear(e.target.value)}
+              min={1950}
+              max={new Date().getFullYear() + 1}
+              step={1}
+              placeholder="Year"
+              style={{ ...inputStyle, width: 90, display: 'inline-block', margin: '0 8px' }}
+            />
+            {['2025', '2026'].includes(String(graduationYear)) && (
+              <span style={selectWrapperStyle}>
+                <select value={graduationMonth} onChange={e => setGraduationMonth(e.target.value)} style={inputStyle}>
+                  <option value="">Select Month</option>
+                  {monthOptions.map(m => <option key={m} value={m}>{m}</option>)}
+                </select>
+                <span style={arrowStyle}>▼</span>
+              </span>
+            )}
           </div>
         </div>
         {/* Year Gap Section */}

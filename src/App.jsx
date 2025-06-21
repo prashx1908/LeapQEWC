@@ -176,6 +176,8 @@ function App() {
   const [selectedUniversities, setSelectedUniversities] = useState([]);
   const [timeline, setTimeline] = useState(null);
   const [englishTestDetails, setEnglishTestDetails] = useState(null);
+  const [graduationYear, setGraduationYear] = useState(null);
+  const [graduationMonth, setGraduationMonth] = useState(null);
 
   // Scroll to program fold when education is selected
   useEffect(() => {
@@ -312,22 +314,8 @@ function App() {
           />
         </div>
       )}
-      {/* Step 2: Intake Selection */}
+      {/* Step 2: English Proficiency & Passport */}
       {step === 2 && (
-        <div style={{ marginTop: 0, background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.06)', maxWidth: 500, width: '100%', padding: '32px 24px', display: 'flex', flexDirection: 'column', gap: 0 }}>
-          <ProgressBar step={step} />
-          <IntakeSelectionStep
-            visible={true}
-            country={country}
-            onSelect={(value) => {
-              setIntake(value);
-              setStep(3);
-            }}
-          />
-        </div>
-      )}
-      {/* Step 3: English Proficiency & Passport */}
-      {step === 3 && (
         <div style={{ marginTop: 0, background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.06)', maxWidth: 500, width: '100%', padding: '32px 24px', display: 'flex', flexDirection: 'column', gap: 0 }}>
           <ProgressBar step={step} />
           <div style={{ textAlign: 'center', fontSize: 18, fontWeight: 500, color: '#6366f1', marginBottom: 4 }}>
@@ -340,13 +328,13 @@ function App() {
             onEnglishSelect={(value) => setEnglish(value)}
             onPassportSelect={(value) => {
               setPassport(value);
-              setStep(4);
+              setStep(3);
             }}
           />
         </div>
       )}
-      {/* Step 4: City Selection */}
-      {step === 4 && (
+      {/* Step 3: City Selection */}
+      {step === 3 && (
         <div style={{ marginTop: 0, background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.06)', maxWidth: 500, width: '100%', padding: '32px 24px', display: 'flex', flexDirection: 'column', gap: 0 }}>
           <ProgressBar step={step} />
           <div style={{ textAlign: 'center', fontSize: 18, fontWeight: 500, color: '#6366f1', marginBottom: 4 }}>
@@ -360,13 +348,13 @@ function App() {
             selectedCity={city}
             onSelect={(value) => {
               setCity(value);
-              setStep(5);
+              setStep(4);
             }}
           />
         </div>
       )}
-      {/* Step 5: Phone & OTP */}
-      {step === 5 && (
+      {/* Step 4: Phone & OTP */}
+      {step === 4 && (
         <div style={{ marginTop: 0, background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.06)', maxWidth: 500, width: '100%', padding: '32px 24px', display: 'flex', flexDirection: 'column', gap: 0 }}>
           <ProgressBar step={step} />
           <div style={{ textAlign: 'center', fontSize: 18, fontWeight: 500, color: '#6366f1', marginBottom: 4 }}>
@@ -387,14 +375,14 @@ function App() {
             onOtpSubmit={(value) => {
               setOtp(value);
               setShowOtpPopup(false);
-              setStep(6);
+              setStep(5);
             }}
             onCloseOtpPopup={() => setShowOtpPopup(false)}
           />
         </div>
       )}
-      {/* Step 6: Completion */}
-      {step === 6 && (
+      {/* Step 5: Completion */}
+      {step === 5 && (
         <div style={{ marginTop: 0, background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.06)', maxWidth: 500, width: '100%', padding: '32px 24px', display: 'flex', flexDirection: 'column', gap: 0 }}>
           <ProgressBar step={step} />
           <CompletionStep
@@ -420,12 +408,12 @@ function App() {
             }}
             buttonLoading={buttonLoading}
             saving={saving}
-            onContinue={() => setStep(7)}
+            onContinue={() => setStep(6)}
           />
         </div>
       )}
-      {/* Step 7: Academic Details */}
-      {step === 7 && (
+      {/* Step 6: Academic Details */}
+      {step === 6 && (
         <div style={{ marginTop: 0, background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.06)', maxWidth: 500, width: '100%', padding: '32px 24px', display: 'flex', flexDirection: 'column', gap: 0 }}>
           <ProgressBar step={step} />
           <AcademicDetailsStep
@@ -433,20 +421,22 @@ function App() {
             initialDetails={academicDetails}
             onSubmit={details => {
               setAcademicDetails(details);
-              setStep(8);
+              setGraduationYear(details.graduationYear);
+              setGraduationMonth(details.graduationMonth);
+              setStep(7);
             }}
           />
         </div>
       )}
-      {/* Step 8: Academic Journey Complete */}
-      {step === 8 && (
+      {/* Step 7: Academic Journey Complete */}
+      {step === 7 && (
         <div style={{ marginTop: 0, background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.06)', maxWidth: 500, width: '100%', padding: '32px 24px', display: 'flex', flexDirection: 'column', gap: 0 }}>
           <ProgressBar step={step} />
-          <AcademicJourneyComplete onContinue={() => setStep(9)} />
+          <AcademicJourneyComplete onContinue={() => setStep(8)} />
         </div>
       )}
-      {/* Step 9: Budget/Finance/University Pref */}
-      {step === 9 && !budget && (
+      {/* Step 8: Budget/Finance/University Pref */}
+      {step === 8 && !budget && (
         <div style={{ marginTop: 0, background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.06)', maxWidth: 500, width: '100%', padding: '32px 24px', display: 'flex', flexDirection: 'column', gap: 0 }}>
           <ProgressBar step={step} />
           <BudgetStep
@@ -467,7 +457,7 @@ function App() {
           />
         </div>
       )}
-      {step === 9 && budget && !financeMode && (
+      {step === 8 && budget && !financeMode && (
         <div style={{ marginTop: 0, background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.06)', maxWidth: 500, width: '100%', padding: '32px 24px', display: 'flex', flexDirection: 'column', gap: 0 }}>
           <ProgressBar step={step} />
           <FinanceStep
@@ -478,7 +468,7 @@ function App() {
           />
         </div>
       )}
-      {step === 9 && budget && financeMode && (
+      {step === 8 && budget && financeMode && (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.06)', maxWidth: 500, padding: '32px 24px', marginTop: 0 }}>
           <ProgressBar step={step} />
           <UniversityPreferenceStep
@@ -491,11 +481,27 @@ function App() {
             <ApplicationTimelineStep
               onSelect={(val) => {
                 setTimeline(val);
-                setStep(10);
+                setStep(9);
               }}
               initialValue={timeline}
             />
           </div>
+        </div>
+      )}
+      {/* Step 9: Intake Selection */}
+      {step === 9 && budget && financeMode && (
+        <div style={{ marginTop: 0, background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.06)', maxWidth: 500, width: '100%', padding: '32px 24px', display: 'flex', flexDirection: 'column', gap: 0 }}>
+          <ProgressBar step={step} />
+          <IntakeSelectionStep
+            visible={true}
+            country={country}
+            graduationYear={graduationYear}
+            graduationMonth={graduationMonth}
+            onSelect={(value) => {
+              setIntake(value);
+              setStep(10);
+            }}
+          />
         </div>
       )}
       {/* Step 10: English Test Details */}
@@ -509,6 +515,8 @@ function App() {
               setStep(11);
             }}
             selectedCity={city}
+            intake={intake}
+            onEditIntake={() => setStep(9)}
           />
         </div>
       )}
