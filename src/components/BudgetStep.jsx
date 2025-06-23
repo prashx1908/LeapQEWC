@@ -31,37 +31,73 @@ function filterCountriesByBacklog(backlogCount) {
   });
 }
 
-function getCountryEligibility(backlogCount) {
+export function getCountryEligibility(backlogCount) {
   if (backlogCount > 15) {
-    return countryComparison.map(c => ({ ...c, isEligible: false, reason: 'More than 15 backlogs' }));
+    return countryComparison.map(c => ({ ...c, isEligible: false, reason: 'More than 15 backlogs', value: c.code, flag: c.flag, name: c.country }));
   }
   return countryComparison.map(row => {
-    if (row.code === 'usa' && backlogCount > 10) return { ...row, isEligible: false, reason: '>10 Backlogs' };
-    if (row.code === 'canada' && backlogCount > 10) return { ...row, isEligible: false, reason: '>10 Backlogs' };
-    if (row.code === 'ireland' && backlogCount > 7) return { ...row, isEligible: false, reason: '>7 Backlogs' };
-    if (row.code === 'newzealand' && backlogCount > 8) return { ...row, isEligible: false, reason: '>8 Backlogs' };
-    return { ...row, isEligible: true, reason: '' };
+    if (row.code === 'usa' && backlogCount > 10) return { ...row, isEligible: false, reason: '>10 Backlogs', value: row.code, flag: row.flag, name: row.country };
+    if (row.code === 'canada' && backlogCount > 10) return { ...row, isEligible: false, reason: '>10 Backlogs', value: row.code, flag: row.flag, name: row.country };
+    if (row.code === 'ireland' && backlogCount > 7) return { ...row, isEligible: false, reason: '>7 Backlogs', value: row.code, flag: row.flag, name: row.country };
+    if (row.code === 'newzealand' && backlogCount > 8) return { ...row, isEligible: false, reason: '>8 Backlogs', value: row.code, flag: row.flag, name: row.country };
+    return { ...row, isEligible: true, reason: '', value: row.code, flag: row.flag, name: row.country };
   });
 }
 
-const BudgetStep = ({ country, backlogCount = 0, onBudgetSelected }) => {
+const BudgetStep = ({ country, backlogCount = 0, onBudgetSelected, onExploreOtherCountries }) => {
   const [selected, setSelected] = useState(null);
   const [showSorry, setShowSorry] = useState(false);
-  const [showComparison, setShowComparison] = useState(country === 'any');
+  const [showComparison, setShowComparison] = useState(false);
   const [showUsaExploreModal, setShowUsaExploreModal] = useState(false);
+  const [showBacklogPopup, setShowBacklogPopup] = useState((country === 'usa' || country === 'canada') && backlogCount > 10);
+  const [allowBudget, setAllowBudget] = useState(!(country === 'usa' || country === 'canada') || backlogCount <= 10);
 
-  // Special flow for open to any country
-  if (country === 'any') {
-    // Backlog logic
-    if (backlogCount > 15) {
-      return (
-        <Modal large onClose={() => {}}>
-          <div style={{ fontWeight: 800, fontSize: 24, color: '#dc2626', marginBottom: 18 }}>Disqualified for all countries</div>
-          <div style={{ color: '#374151', fontSize: 18, fontWeight: 500 }}>Sorry, with more than 15 backlogs, you are not eligible for any country in our list.</div>
-        </Modal>
-      );
-    }
-    const eligibleCountries = filterCountriesByBacklog(backlogCount);
+  // 1. Disqualify if backlogCount >= 15
+  if (backlogCount >= 15) {
+    return (
+      <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ background: '#fff', borderRadius: 28, boxShadow: '0 8px 32px rgba(220,38,38,0.13)', maxWidth: 480, width: '100%', padding: '48px 36px 36px 36px', margin: '0 auto', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <div style={{ fontWeight: 800, fontSize: 24, color: '#dc2626', marginBottom: 18 }}>We're Sorry, You're Not Eligible Right Now</div>
+          <div style={{ color: '#374151', fontSize: 18, fontWeight: 500, marginBottom: 18 }}>
+            We truly appreciate your interest in studying abroad with us. At this time, our partner universities require applicants to have fewer than 15 backlogs. We understand this may be disappointing, but please know that your dreams are still within reach.
+          </div>
+          <div style={{ color: '#6366f1', fontWeight: 600, fontSize: 16, marginBottom: 10 }}>How you can strengthen your profile:</div>
+          <div style={{ color: '#0c4a6e', fontSize: 15, textAlign: 'left', margin: '0 auto 18px auto', maxWidth: 340, lineHeight: 1.7 }}>
+            Consider clearing any existing backlogs and focusing on improving your grades. You might also explore additional certifications or online courses, gain relevant work or internship experience, and participate in extracurricular activities or projects. If you need guidance, our advisors are always here to help you plan your next steps.<br /><br />
+            We hope to see you back soon—your study abroad journey can still become a reality!
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // 3. USA/Canada > 10 backlogs: show a modal, only show budget after user clicks button
+  if ((country === 'usa' || country === 'canada') && backlogCount > 10 && showBacklogPopup) {
+    return (
+      <Modal onClose={() => {
+        setShowBacklogPopup(false);
+        setAllowBudget(true);
+      }}>
+        <div style={{ fontWeight: 800, fontSize: 24, color: '#dc2626', marginBottom: 18 }}>Not Eligible for {country === 'usa' ? 'USA' : 'Canada'}</div>
+        <div style={{ color: '#374151', fontSize: 18, fontWeight: 500, marginBottom: 18 }}>
+          Based on your academic details, you are not eligible for {country === 'usa' ? 'USA' : 'Canada'} universities (more than 10 backlogs).
+        </div>
+        <button className="primary-btn" style={{ marginTop: 10 }} onClick={() => {
+          if (onExploreOtherCountries) {
+            onExploreOtherCountries();
+          } else {
+            setShowBacklogPopup(false);
+            setAllowBudget(true);
+          }
+        }}>
+          Want to explore other countries?
+        </button>
+      </Modal>
+    );
+  }
+
+  // 2. Open to any country or not sure: remove country comparison popup
+  if (country === 'any' || country === 'not-sure') {
     return (
       <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div style={{ background: '#fff', borderRadius: 28, boxShadow: '0 8px 32px rgba(99,102,241,0.13)', maxWidth: 700, width: '100%', padding: '48px 36px 36px 36px', margin: '0 auto', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
@@ -69,113 +105,96 @@ const BudgetStep = ({ country, backlogCount = 0, onBudgetSelected }) => {
           <div style={{ background: '#e0f2fe', color: '#0c4a6e', borderRadius: 12, padding: '14px 18px', fontSize: 16, margin: '22px 0 32px 0', textAlign: 'left', fontWeight: 500, boxShadow: '0 2px 8px #38bdf833' }}>
             <b>💡 Why we ask this:</b> To help you understand realistic budgets and make the best choice for your study abroad journey.
           </div>
-          {showComparison && (
-            <Modal onClose={() => setShowComparison(false)} large>
-              <div style={{ fontWeight: 800, fontSize: 22, color: '#1e293b', marginBottom: 18 }}>Compare Countries & Budgets</div>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 24, justifyContent: 'center', maxHeight: '60vh', overflowY: 'auto' }}>
-                {eligibleCountries.map(row => (
-                  <CountryCard key={row.code} {...row} />
-                ))}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 22, width: '100%' }}>
+            <BudgetCard
+              icon="👑"
+              title="Can invest a minimum of ₹35L"
+              subtitle="Access to top universities in USA and other top destinations"
+              selected={selected === '35L'}
+              onClick={() => { setSelected('35L'); onBudgetSelected && onBudgetSelected('35L'); }}
+            />
+            <BudgetCard
+              icon="✅"
+              title="Can invest a minimum of ₹15L"
+              subtitle="Access to good universities in UK, Ireland, Canada, etc."
+              selected={selected === '15L'}
+              onClick={() => { setSelected('15L'); setShowUsaExploreModal(true); }}
+            />
+            <BudgetCard
+              icon="ℹ️"
+              title="Cannot invest a minimum of ₹15L"
+              subtitle="Currently, we require a minimum investment of ₹15L for any country"
+              selected={selected === 'cannot15'}
+              onClick={() => { setSelected('cannot15'); setShowSorry(true); }}
+            />
+          </div>
+          {/* USA Explore Other Countries Modal (only for 15L option) */}
+          {showUsaExploreModal && (
+            <Modal onClose={() => setShowUsaExploreModal(false)} large>
+              <div style={{ fontWeight: 800, fontSize: 22, color: '#1e293b', marginBottom: 12 }}>Explore Other Countries</div>
+              <div style={{ color: '#374151', fontSize: 17, marginBottom: 22, fontWeight: 500 }}>
+                An investment of at least ₹35L is recommended for USA. With a ₹15L budget, you can explore these other great countries.
               </div>
-              <button className="primary-btn" style={{ marginTop: 28 }} onClick={() => setShowComparison(false)}>Choose Budget Range</button>
+              <div style={{ maxHeight: '50vh', overflowY: 'auto', padding: '10px 0' }}>
+                <div style={{ fontWeight: 700, fontSize: 18, color: '#1e293b', marginBottom: 18, textAlign: 'left', borderBottom: '2px solid #e5e7eb', paddingBottom: 8 }}>Available Countries for You</div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 24, justifyContent: 'center' }}>
+                  {getCountryEligibility(backlogCount).filter(c => c.isEligible && c.code !== 'usa').length === 0 ? (
+                    <div style={{ color: '#64748b', fontSize: 16, margin: '24px 0' }}>No eligible countries available for your profile.</div>
+                  ) : (
+                    getCountryEligibility(backlogCount).filter(c => c.isEligible && c.code !== 'usa').map(row => (
+                      <CountryCard key={row.code} {...row} />
+                    ))
+                  )}
+                </div>
+                <div style={{ fontWeight: 700, fontSize: 18, color: '#475569', margin: '32px 0 18px 0', textAlign: 'left', borderBottom: '2px solid #e5e7eb', paddingBottom: 8 }}>Unavailable due to Backlogs</div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 24, justifyContent: 'center' }}>
+                  {getCountryEligibility(backlogCount).filter(c => !c.isEligible).length === 0 ? (
+                    <div style={{ color: '#64748b', fontSize: 16, margin: '24px 0' }}>No ineligible countries for your profile.</div>
+                  ) : (
+                    getCountryEligibility(backlogCount).filter(c => !c.isEligible).map(row => (
+                      <DisabledCountryCard key={row.code} {...row} />
+                    ))
+                  )}
+                </div>
+              </div>
+              <div style={{ marginTop: 28, display: 'flex', justifyContent: 'center', gap: 16 }}>
+                <button
+                  className="secondary-btn"
+                  onClick={() => {
+                    setShowUsaExploreModal(false);
+                    setSelected('35L');
+                    onBudgetSelected && onBudgetSelected('35L');
+                  }}
+                >
+                  Go back and select ₹35L
+                </button>
+                <button
+                  className="primary-btn"
+                  onClick={() => {
+                    setShowUsaExploreModal(false);
+                    onBudgetSelected && onBudgetSelected('15L');
+                  }}
+                >
+                  Continue with ₹15L for other countries
+                </button>
+              </div>
             </Modal>
           )}
-          {!showComparison && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 22, width: '100%' }}>
-              <BudgetCard
-                icon="👑"
-                title="Can invest a minimum of ₹35L"
-                subtitle="Access to top universities in USA and other top destinations"
-                selected={selected === '35L'}
-                onClick={() => { setSelected('35L'); onBudgetSelected && onBudgetSelected('35L'); }}
-              />
-              <BudgetCard
-                icon="✅"
-                title="Can invest a minimum of ₹15L"
-                subtitle="Access to good universities in UK, Ireland, Canada, etc."
-                selected={selected === '15L'}
-                onClick={() => { setSelected('15L'); setShowUsaExploreModal(true); }}
-              />
-              <BudgetCard
-                icon="ℹ️"
-                title="Cannot invest a minimum of ₹15L"
-                subtitle="Currently, we require a minimum investment of ₹15L for any country"
-                selected={selected === 'cannot15'}
-                onClick={() => { setSelected('cannot15'); setShowSorry(true); }}
-              />
-            </div>
+          {/* Sorry popup */}
+          {showSorry && (
+            <Modal onClose={() => setShowSorry(false)}>
+              <div style={{ fontSize: 54, marginBottom: 20 }}>😔</div>
+              <div style={{ fontWeight: 800, fontSize: 22, color: '#1e293b', marginBottom: 12 }}>We're Sorry</div>
+              <div style={{ color: '#374151', fontSize: 17, marginBottom: 18, fontWeight: 500 }}>
+                Sorry, we require a minimum investment of ₹15L for any country.
+              </div>
+              <div style={{ color: '#64748b', fontSize: 15, marginBottom: 30 }}>
+                If you can stretch your budget, you can access our flow for other countries.
+              </div>
+              <button onClick={() => setShowSorry(false)} className="primary-btn">Close</button>
+            </Modal>
           )}
         </div>
-        {/* USA Explore Other Countries Modal */}
-        {showUsaExploreModal && (
-          <Modal onClose={() => setShowUsaExploreModal(false)} large>
-            <div style={{ fontWeight: 800, fontSize: 22, color: '#1e293b', marginBottom: 12 }}>Explore Other Countries</div>
-            <div style={{ color: '#374151', fontSize: 17, marginBottom: 22, fontWeight: 500 }}>
-              An investment of at least ₹35L is recommended for USA. With a ₹15L budget, you can explore these other great countries.
-            </div>
-
-            {console.log('Country eligibility:', getCountryEligibility(backlogCount))}
-            <div style={{ maxHeight: '50vh', overflowY: 'auto', padding: '10px 0' }}>
-              <div style={{ fontWeight: 700, fontSize: 18, color: '#1e293b', marginBottom: 18, textAlign: 'left', borderBottom: '2px solid #e5e7eb', paddingBottom: 8 }}>Available Countries for You</div>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 24, justifyContent: 'center' }}>
-                {getCountryEligibility(backlogCount).filter(c => c.isEligible && c.code !== 'usa').length === 0 ? (
-                  <div style={{ color: '#64748b', fontSize: 16, margin: '24px 0' }}>No eligible countries available for your profile.</div>
-                ) : (
-                  getCountryEligibility(backlogCount).filter(c => c.isEligible && c.code !== 'usa').map(row => (
-                    <CountryCard key={row.code} {...row} />
-                  ))
-                )}
-              </div>
-
-              <div style={{ fontWeight: 700, fontSize: 18, color: '#475569', margin: '32px 0 18px 0', textAlign: 'left', borderBottom: '2px solid #e5e7eb', paddingBottom: 8 }}>Unavailable due to Backlogs</div>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 24, justifyContent: 'center' }}>
-                {getCountryEligibility(backlogCount).filter(c => !c.isEligible).length === 0 ? (
-                  <div style={{ color: '#64748b', fontSize: 16, margin: '24px 0' }}>No ineligible countries for your profile.</div>
-                ) : (
-                  getCountryEligibility(backlogCount).filter(c => !c.isEligible).map(row => (
-                    <DisabledCountryCard key={row.code} {...row} />
-                  ))
-                )}
-              </div>
-            </div>
-
-            <div style={{ marginTop: 28, display: 'flex', justifyContent: 'center', gap: 16 }}>
-              <button
-                className="secondary-btn"
-                onClick={() => {
-                  setShowUsaExploreModal(false);
-                  setSelected('35L');
-                  onBudgetSelected && onBudgetSelected('35L');
-                }}
-              >
-                Go back and select ₹35L for USA
-              </button>
-              <button
-                className="primary-btn"
-                onClick={() => {
-                  setShowUsaExploreModal(false);
-                  onBudgetSelected && onBudgetSelected('15L');
-                }}
-              >
-                Continue with ₹15L for other countries
-              </button>
-            </div>
-          </Modal>
-        )}
-        {/* Sorry popup */}
-        {showSorry && (
-          <Modal onClose={() => setShowSorry(false)}>
-            <div style={{ fontSize: 54, marginBottom: 20 }}>😔</div>
-            <div style={{ fontWeight: 800, fontSize: 22, color: '#1e293b', marginBottom: 12 }}>We're Sorry</div>
-            <div style={{ color: '#374151', fontSize: 17, marginBottom: 18, fontWeight: 500 }}>
-              Sorry, we require a minimum investment of ₹15L for any country.
-            </div>
-            <div style={{ color: '#64748b', fontSize: 15, marginBottom: 30 }}>
-              If you can stretch your budget, you can access our flow for other countries.
-            </div>
-            <button onClick={() => setShowSorry(false)} className="primary-btn">Close</button>
-          </Modal>
-        )}
       </div>
     );
   }
@@ -265,7 +284,7 @@ const BudgetStep = ({ country, backlogCount = 0, onBudgetSelected }) => {
                   onBudgetSelected && onBudgetSelected('35L');
                 }}
               >
-                Go back and select ₹35L for USA
+                Go back and select ₹35L
               </button>
               <button
                 className="primary-btn"
@@ -300,6 +319,11 @@ const BudgetStep = ({ country, backlogCount = 0, onBudgetSelected }) => {
   // Not sure or open to any country: render nothing or a placeholder
   if (country === 'not-sure') {
     return null; // Or a placeholder if needed
+  }
+
+  if (!(allowBudget)) {
+    // Don't show budget options until user clicks the button
+    return null;
   }
 
   // All other countries: show two options

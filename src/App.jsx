@@ -14,6 +14,7 @@ import FinanceStep from './components/FinanceStep';
 import UniversityPreferenceStep from './components/UniversityPreferenceStep';
 import ApplicationTimelineStep from './components/ApplicationTimelineStep';
 import EnglishTestDetailsStep from './components/EnglishTestDetailsStep';
+import { getCountryEligibility } from './components/BudgetStep';
 import './App.css';
 
 // Mapping of education to recommended programs (from your script.js)
@@ -152,6 +153,11 @@ function ProgressBar({ step }) {
       />
     </div>
   );
+}
+
+function isCountryEligible(country, backlogCount) {
+  const eligibility = getCountryEligibility(backlogCount).find(c => c.code === country || c.value === country);
+  return eligibility ? eligibility.isEligible : true;
 }
 
 function App() {
@@ -454,6 +460,12 @@ function App() {
             onBudgetSelected={(budgetValue) => {
               setBudget(budgetValue);
             }}
+            onExploreOtherCountries={() => {
+              setCountry('any');
+              setBudget(null);
+              setFinanceMode(null);
+              setStep(8);
+            }}
           />
         </div>
       )}
@@ -499,8 +511,60 @@ function App() {
             graduationMonth={graduationMonth}
             onSelect={(value) => {
               setIntake(value);
+              // Calculate backlog count
+              const val = academicDetails.backlogs;
+              let backlogCount = 0;
+              if (val === '0') backlogCount = 0;
+              else if (val === '1-2') backlogCount = 2;
+              else if (val === '3-5') backlogCount = 5;
+              else if (val === '6-10') backlogCount = 10;
+              else if (val === '10+') backlogCount = 11;
+              else backlogCount = parseInt(val) || 0;
+
+              // If country is not eligible or is 'any', go to country selection step
+              if (!isCountryEligible(country, backlogCount) || country === 'any') {
+                setStep(9.5);
+              } else {
+                setStep(10);
+              }
+            }}
+          />
+        </div>
+      )}
+      {/* Step 9.5: Country Selection after Intake for ineligible or 'any' country */}
+      {step === 9.5 && (
+        <div style={{ marginTop: 0, background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.06)', maxWidth: 500, width: '100%', padding: '32px 24px', display: 'flex', flexDirection: 'column', gap: 0 }}>
+          <ProgressBar step={step} />
+          <CountrySelectionStep
+            visible={true}
+            restrictToEligible={true}
+            eligibleCountries={(() => {
+              const val = academicDetails.backlogs;
+              let backlogCount = 0;
+              if (val === '0') backlogCount = 0;
+              else if (val === '1-2') backlogCount = 2;
+              else if (val === '3-5') backlogCount = 5;
+              else if (val === '6-10') backlogCount = 10;
+              else if (val === '10+') backlogCount = 11;
+              else backlogCount = parseInt(val) || 0;
+              return getCountryEligibility(backlogCount).filter(c => c.isEligible);
+            })()}
+            ineligibleCountries={(() => {
+              const val = academicDetails.backlogs;
+              let backlogCount = 0;
+              if (val === '0') backlogCount = 0;
+              else if (val === '1-2') backlogCount = 2;
+              else if (val === '3-5') backlogCount = 5;
+              else if (val === '6-10') backlogCount = 10;
+              else if (val === '10+') backlogCount = 11;
+              else backlogCount = parseInt(val) || 0;
+              return getCountryEligibility(backlogCount).filter(c => !c.isEligible);
+            })()}
+            onSelect={(value) => {
+              setCountry(value);
               setStep(10);
             }}
+            initialValue={country}
           />
         </div>
       )}
@@ -511,8 +575,17 @@ function App() {
           <EnglishTestDetailsStep
             englishTestStatus={english}
             onSubmit={details => {
+              // Check if offline counselling is needed
+              const offlineCities = ['chennai', 'bangalore', 'ludhiana', 'pune'];
+              const normalizedCity = (city || '').toLowerCase();
+              const needsCounselling =
+                offlineCities.includes(normalizedCity) &&
+                (!details.counsellingType || (normalizedCity === 'bangalore' && details.counsellingType === 'offline' && !details.bangaloreBranch));
               setEnglishTestDetails(details);
-              setStep(11);
+              if (!needsCounselling) {
+                setStep(11);
+              }
+              // If needsCounselling, stay on this step so the user can finish the counselling selection
             }}
             selectedCity={city}
             intake={intake}
