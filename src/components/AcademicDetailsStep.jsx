@@ -280,7 +280,7 @@ const AcademicDetailsStep = ({ highestEducation, initialDetails = {}, onSubmit }
             backlogs
           </div>
           <div style={{ marginBottom: 10 }}>
-            I will be graduating by
+            Graduated or graduating in
             <input
               type="number"
               value={graduationYear}

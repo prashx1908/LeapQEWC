@@ -11,7 +11,6 @@ const passportOptions = [
   { value: 'bearer', icon: '🛂', label: 'Bearer' },
   { value: 'applied', icon: '✅', label: 'Applied' },
   { value: 'yet-to-apply', icon: '📄', label: 'Yet to apply' },
-  { value: 'non-bearer', icon: '❌', label: 'Non-Bearer' },
 ];
 
 function EnglishPassportStep({ visible, english, passport, onEnglishSelect, onPassportSelect }) {

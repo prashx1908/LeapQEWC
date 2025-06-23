@@ -9,7 +9,7 @@ const initialCountries = [
   { value: 'ireland', flag: '🇮🇪', name: 'Ireland', hint: 'Gateway to Europe' },
   { value: 'new-zealand', flag: '🇳🇿', name: 'New Zealand', hint: 'Quality of Life' },
   { value: 'any', flag: '🌎', name: 'Open to Any Country', hint: 'Flexible Destination' },
-  { value: 'not-sure', flag: '🤔', name: 'Not Sure', hint: 'Need Guidance' },
+  { value: 'not-sure', flag: '🌎', name: 'Not Sure', hint: 'Flexible Destination' },
 ];
 
 const extraCountries = [
@@ -24,17 +24,36 @@ const extraCountries = [
 
 const allCountries = [...initialCountries, ...extraCountries];
 
-function CountrySelectionStep({ visible, onSelect, initialValue }) {
+function CountrySelectionStep({ visible, onSelect, initialValue, eligibleCountries, ineligibleCountries, restrictToEligible }) {
   const [selected, setSelected] = useState(initialValue || null);
   const [showAll, setShowAll] = useState(false);
   const [search, setSearch] = useState('');
 
   if (!visible) return null;
 
-  // Filter countries by search
-  const countriesToShow = (showAll ? allCountries : initialCountries).filter((c) =>
-    c.name.toLowerCase().includes(search.toLowerCase())
-  );
+  // If restrictToEligible, filter out 'any' and 'not-sure' and use eligible/ineligible lists
+  let eligibleList = eligibleCountries || [];
+  let ineligibleList = ineligibleCountries || [];
+
+  if (restrictToEligible) {
+    eligibleList = eligibleList.filter(c => c.value !== 'any' && c.value !== 'not-sure');
+    ineligibleList = ineligibleList.filter(c => c.value !== 'any' && c.value !== 'not-sure');
+  }
+
+  // Filter by search
+  let countryList = showAll ? allCountries : initialCountries;
+  if (showAll) {
+    // Move 'not-sure' and 'any' to the end
+    const main = countryList.filter(c => c.value !== 'not-sure' && c.value !== 'any');
+    const special = countryList.filter(c => c.value === 'not-sure' || c.value === 'any');
+    countryList = [...main, ...special];
+  }
+  const filteredEligible = restrictToEligible
+    ? eligibleList.filter(c => c.name.toLowerCase().includes(search.toLowerCase()))
+    : countryList.filter((c) => c.name.toLowerCase().includes(search.toLowerCase()));
+  const filteredIneligible = restrictToEligible
+    ? ineligibleList.filter(c => c.name.toLowerCase().includes(search.toLowerCase()))
+    : [];
 
   const handleSelect = (value) => {
     setSelected(value);
@@ -42,17 +61,17 @@ function CountrySelectionStep({ visible, onSelect, initialValue }) {
   };
 
   // Card style for both country and button
-  const cardStyle = (isSelected = false) => ({
+  const cardStyle = (isSelected = false, disabled = false) => ({
     width: 180,
     height: 120,
-    background: '#fff',
+    background: disabled ? '#f3f4f6' : '#fff',
     border: isSelected ? '2.5px solid #6366f1' : '2px solid #e5e7eb',
     borderRadius: 16,
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    cursor: 'pointer',
+    cursor: disabled ? 'not-allowed' : 'pointer',
     position: 'relative',
     boxShadow: isSelected ? '0 2px 8px rgba(99,102,241,0.10)' : '0 2px 8px rgba(0,0,0,0.04)',
     transition: 'border-color 0.2s, box-shadow 0.2s, background 0.2s',
@@ -61,6 +80,7 @@ function CountrySelectionStep({ visible, onSelect, initialValue }) {
     margin: 0,
     outline: 'none',
     userSelect: 'none',
+    opacity: disabled ? 0.6 : 1,
   });
 
   return (
@@ -100,7 +120,8 @@ function CountrySelectionStep({ visible, onSelect, initialValue }) {
           margin: '0 auto',
         }}
       >
-        {countriesToShow.map((c) => (
+        {/* Eligible countries */}
+        {filteredEligible.map((c) => (
           <div
             key={c.value}
             className={`country-card${selected === c.value ? ' selected' : ''}`}
@@ -111,7 +132,6 @@ function CountrySelectionStep({ visible, onSelect, initialValue }) {
             onMouseOver={e => e.currentTarget.style.borderColor = '#6366f1'}
             onMouseOut={e => e.currentTarget.style.borderColor = selected === c.value ? '#6366f1' : '#e5e7eb'}
           >
-            {/* Recommended badge at top-right */}
             {c.badge && (
               <div style={{
                 position: 'absolute',
@@ -150,8 +170,21 @@ function CountrySelectionStep({ visible, onSelect, initialValue }) {
             )}
           </div>
         ))}
-        {/* View All Countries button as a card */}
-        {!showAll && countriesToShow.length < allCountries.length && (
+        {/* Ineligible countries with reason */}
+        {restrictToEligible && filteredIneligible.map((c) => (
+          <div
+            key={c.value}
+            className="country-card disabled"
+            style={cardStyle(false, true)}
+            tabIndex={-1}
+          >
+            <span style={{ fontSize: 32, marginBottom: 4 }}>{c.flag}</span>
+            <div style={{ fontWeight: 600, fontSize: 17, color: '#64748b', marginBottom: 2, whiteSpace: 'nowrap', overflow: 'visible', textOverflow: 'clip' }}>{c.name}</div>
+            <div style={{ fontSize: 13, color: '#dc2626', marginBottom: 2, textAlign: 'center', whiteSpace: 'normal', lineHeight: 1.2, fontWeight: 700 }}>Ineligible: {c.reason}</div>
+          </div>
+        ))}
+        {/* View All Countries button as a card (only if not restricting) */}
+        {!restrictToEligible && !showAll && filteredEligible.length < allCountries.length && (
           <div
             style={{ ...cardStyle(false), display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 600, fontSize: 16, color: '#6366f1', border: '2px dashed #6366f1', background: '#f3f4f6', cursor: 'pointer' }}
             tabIndex={0}
