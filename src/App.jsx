@@ -6,7 +6,7 @@ import IntakeSelectionStep from './components/IntakeSelectionStep';
 import EnglishPassportStep from './components/EnglishPassportStep';
 import CitySelectionStep from './components/CitySelectionStep';
 import PhoneOtpStep from './components/PhoneOtpStep';
-import CompletionStep from './components/CompletionStep';
+import CompletionStep, { WarmDisqualificationStep } from './components/CompletionStep';
 import AcademicDetailsStep from './components/AcademicDetailsStep';
 import AcademicJourneyComplete from './components/AcademicJourneyComplete';
 import BudgetStep from './components/BudgetStep';
@@ -15,6 +15,7 @@ import UniversityPreferenceStep from './components/UniversityPreferenceStep';
 import ApplicationTimelineStep from './components/ApplicationTimelineStep';
 import EnglishTestDetailsStep from './components/EnglishTestDetailsStep';
 import { getCountryEligibility } from './components/BudgetStep';
+import WarmDisqualificationPage from './components/WarmDisqualificationPage';
 import './App.css';
 
 // Mapping of education to recommended programs (from your script.js)
@@ -184,6 +185,7 @@ function App() {
   const [englishTestDetails, setEnglishTestDetails] = useState(null);
   const [graduationYear, setGraduationYear] = useState(null);
   const [graduationMonth, setGraduationMonth] = useState(null);
+  const [disqualifiedReason, setDisqualifiedReason] = useState(null);
 
   // Scroll to program fold when education is selected
   useEffect(() => {
@@ -246,6 +248,26 @@ function App() {
       body: JSON.stringify({ phone, type }),
     });
   };
+
+  // Disqualification navigation logic
+  useEffect(() => {
+    if (
+      step >= 5 &&
+      (education === '10th' || education === '12th' || education === 'mbbs')
+    ) {
+      setDisqualifiedReason(
+        education === '10th'
+          ? 'Currently, our partner universities require a minimum of 12th grade or equivalent for study abroad programs. Complete your 12th and come back—we will be here to help you take the next step!'
+          : education === '12th'
+          ? 'You are just one step away! Please complete your 12th grade and return to explore global opportunities with us.'
+          : 'Currently, we are unable to support MBBS profiles for study abroad. If you are planning to pursue further studies, please reach out after your graduation.'
+      );
+      setStep('disqualified');
+    } else if (step >= 5 && passport === 'yet-to-apply') {
+      setDisqualifiedReason('A valid passport or an application in process is required to proceed. Please apply for a passport and return—we will be ready to help you with your study abroad journey!');
+      setStep('disqualified');
+    }
+  }, [step, education, passport]);
 
   // Main render
   return (
@@ -593,12 +615,22 @@ function App() {
           />
         </div>
       )}
-      {/* Step 11: Final Congratulations */}
+      {/* Step 11: Final Congratulations or Warm Disqualification */}
       {step === 11 && (
         <div style={{ marginTop: 0, background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.06)', maxWidth: 500, width: '100%', padding: '32px 24px', display: 'flex', flexDirection: 'column', gap: 0 }}>
           <ProgressBar step={step} />
           <FinalCongratulationsPage universityCount={42} />
         </div>
+      )}
+      {/* Render the disqualification page if needed */}
+      {step === 'disqualified' && (
+        <WarmDisqualificationPage reasonType={
+          (passport === 'yet-to-apply' && (education === '10th' || education === '12th' || education === 'mbbs'))
+            ? 'both'
+            : passport === 'yet-to-apply'
+            ? 'passport'
+            : undefined
+        } />
       )}
     </div>
   );
