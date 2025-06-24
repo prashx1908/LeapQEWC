@@ -71,8 +71,18 @@ const expDurationOptions = [
   { value: '5+', label: 'More than 5 years' },
 ];
 const monthOptions = [
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December'
+  { value: '01', label: 'January' },
+  { value: '02', label: 'February' },
+  { value: '03', label: 'March' },
+  { value: '04', label: 'April' },
+  { value: '05', label: 'May' },
+  { value: '06', label: 'June' },
+  { value: '07', label: 'July' },
+  { value: '08', label: 'August' },
+  { value: '09', label: 'September' },
+  { value: '10', label: 'October' },
+  { value: '11', label: 'November' },
+  { value: '12', label: 'December' },
 ];
 
 function getDefaultDegree(highestEducation) {
@@ -186,6 +196,9 @@ const AcademicDetailsStep = ({ highestEducation, initialDetails = {}, onSubmit }
   const [showWork, setShowWork] = useState(false);
   const [showExpDuration, setShowExpDuration] = useState(false);
 
+  const currentYear = new Date().getFullYear();
+  const showMonth = graduationYear && Number(graduationYear) >= currentYear;
+
   useEffect(() => {
     if (graduationYear) setShowGap(true);
   }, [graduationYear]);
@@ -217,180 +230,213 @@ const AcademicDetailsStep = ({ highestEducation, initialDetails = {}, onSubmit }
 
   const storyItemStyle = { marginRight: 16, marginBottom: 10, display: 'inline-block', verticalAlign: 'middle' };
 
+  // Intake recommendation logic
+  function getRecommendedIntake(year, month) {
+    if (!year || !month) return null;
+    const m = parseInt(month, 10);
+    if (m >= 1 && m <= 5) return `Fall ${year}`;
+    if (m >= 6 && m <= 8) return `Spring ${year}`;
+    return `Next available intake after ${month}/${year}`;
+  }
+  const recommendedIntake = getRecommendedIntake(graduationYear, graduationMonth);
+
   return (
-    <div style={{ minHeight: '80vh', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-      <div className="question-card" style={{ maxWidth: 520, width: '100%', background: '#fff', borderRadius: 24, boxShadow: '0 8px 32px rgba(99,102,241,0.10)', padding: '36px 32px', margin: '0 auto', position: 'relative', textAlign: 'left' }}>
-        <h2 className="question-title" style={{ fontSize: 24, fontWeight: 700, marginBottom: 4, color: '#3730a3', textAlign: 'left' }}>Your Academic Journey</h2>
-        <div className="question-subtitle" style={{ fontSize: 16, color: '#6366f1', marginBottom: 28, textAlign: 'left', lineHeight: 1.6 }}>Let's understand your educational background</div>
-        {/* Story-style Academic Details */}
-        <div className="story-section" style={{ marginBottom: 28, fontSize: 16, color: '#374151', lineHeight: 2 }}>
-          <div style={{ marginBottom: 10 }}>
-            My degree is
-            <span style={selectWrapperStyle}>
-              <select value={degree} disabled style={inputStyle}>
+    <div style={{ minHeight: '70vh', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'none' }}>
+      <div className="question-card" style={{
+        maxWidth: 540,
+        width: '100%',
+        background: 'rgba(255,255,255,0.98)',
+        borderRadius: 32,
+        boxShadow: '0 8px 32px rgba(74,144,226,0.10)',
+        padding: '40px 32px 32px 32px',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        margin: '0 auto',
+        position: 'relative',
+        textAlign: 'left',
+        gap: 0,
+      }}>
+        <h2 className="question-title" style={{ fontSize: 24, fontWeight: 800, color: '#443eff', marginBottom: 8, letterSpacing: '-0.01em', textAlign: 'center' }}>Your Academic Journey</h2>
+        <div className="question-subtitle" style={{ fontSize: 16, color: '#888', marginBottom: 24, fontWeight: 500, textAlign: 'center' }}>Let's understand your educational background</div>
+        <form
+          onSubmit={e => {
+            e.preventDefault();
+            handleContinue();
+          }}
+          style={{ width: '100%', maxWidth: 480, margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 0 }}
+        >
+          <div style={{
+            background: '#f8f6f3',
+            borderRadius: 18,
+            boxShadow: '0 2px 8px rgba(74,144,226,0.06)',
+            padding: '28px 18px',
+            marginBottom: 24,
+            width: '100%',
+            fontSize: 17,
+            color: '#555',
+            lineHeight: 2.2,
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 10,
+          }}>
+            <span>
+              <span role="img" aria-label="degree">🎓</span> I am pursuing
+              <select style={{ ...selectStyle, minWidth: 120, fontSize: 16, borderRadius: 10, margin: '0 8px' }} value={degree} disabled>
                 {degreeOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
               </select>
-              <span style={arrowStyle}>▼</span>
-            </span>
-          </div>
-          <div style={{ marginBottom: 10 }}>
-            I specialized in
-            <span style={selectWrapperStyle}>
-              <select value={specialization} onChange={e => setSpecialization(e.target.value)} style={inputStyle}>
-                <option value="">Select Specialization</option>
+              with specialization in
+              <select style={{ ...selectStyle, minWidth: 120, fontSize: 16, borderRadius: 10, margin: '0 8px' }} value={specialization} onChange={e => setSpecialization(e.target.value)} required>
+                <option value="">Specialization</option>
                 {specializationOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
               </select>
-              <span style={arrowStyle}>▼</span>
             </span>
-          </div>
-          <div style={{ marginBottom: 10 }}>
-            My grade type is
-            <span style={selectWrapperStyle}>
-              <select value={gradeType} onChange={e => { setGradeType(e.target.value); setGradeValue(''); }} style={inputStyle}>
-                <option value="">Select Grade Type</option>
+            <span>
+              <span role="img" aria-label="grade">📊</span> My grade type is
+              <select style={{ ...selectStyle, minWidth: 120, fontSize: 16, borderRadius: 10, margin: '0 8px' }} value={gradeType} onChange={e => setGradeType(e.target.value)} required>
+                <option value="">Grade Type</option>
                 {gradeTypeOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
               </select>
-              <span style={arrowStyle}>▼</span>
+              with a grade of
+              <input
+                type="number"
+                style={{ ...selectStyle, minWidth: 80, fontSize: 16, borderRadius: 10, margin: '0 8px', width: 120 }}
+                value={gradeValue}
+                onChange={e => setGradeValue(e.target.value)}
+                required
+                min={0}
+                max={gradeType === 'cgpa' ? 10 : 100}
+                step={gradeType === 'cgpa' ? 0.01 : 1}
+                placeholder={gradeType === 'cgpa' ? 'e.g. 8.5' : 'e.g. 85'}
+              />
             </span>
-            with a grade of
-            <input
-              type="number"
-              value={gradeValue}
-              onChange={e => setGradeValue(e.target.value)}
-              min={gradeType === 'cgpa' ? 0 : 0}
-              max={gradeType === 'cgpa' ? 10 : 100}
-              step={gradeType === 'cgpa' ? 0.01 : 1}
-              placeholder={gradeType === 'cgpa' ? 'CGPA' : 'Percentage'}
-              style={{ ...inputStyle, width: 90, display: 'inline-block', margin: '0 8px' }}
-              disabled={!gradeType}
-            />
-          </div>
-          <div style={{ marginBottom: 10 }}>
-            I have
-            <input
-              type="number"
-              value={backlogs}
-              onChange={e => setBacklogs(e.target.value)}
-              min={0}
-              max={99}
-              step={1}
-              placeholder="Backlogs"
-              style={{ ...inputStyle, width: 60, display: 'inline-block', margin: '0 8px' }}
-            />
-            backlogs
-          </div>
-          <div style={{ marginBottom: 10 }}>
-            Graduated or graduating in
-            <input
-              type="number"
-              value={graduationYear}
-              onChange={e => setGraduationYear(e.target.value)}
-              min={1950}
-              max={new Date().getFullYear() + 1}
-              step={1}
-              placeholder="Year"
-              style={{ ...inputStyle, width: 90, display: 'inline-block', margin: '0 8px' }}
-            />
-            {['2025', '2026'].includes(String(graduationYear)) && (
-              <span style={selectWrapperStyle}>
-                <select value={graduationMonth} onChange={e => setGraduationMonth(e.target.value)} style={inputStyle}>
-                  <option value="">Select Month</option>
-                  {monthOptions.map(m => <option key={m} value={m}>{m}</option>)}
-                </select>
-                <span style={arrowStyle}>▼</span>
-              </span>
-            )}
-          </div>
-        </div>
-        {/* Year Gap Section */}
-        {showGap && (
-          <div className="story-section" style={{ marginBottom: 28 }}>
-            <div className="story-header" style={{ display: 'flex', alignItems: 'center', marginBottom: 12 }}>
-              <span className="story-icon" style={{ fontSize: 22, marginRight: 10 }}>⏳</span>
-              <h3 style={{ fontSize: 18, fontWeight: 700, color: '#1e293b', margin: 0 }}>Year Gap</h3>
-            </div>
-            <div className="story-container" style={{ fontSize: 16, color: '#374151', lineHeight: 2, paddingLeft: 2 }}>
-              I had a career gap of
-              <span style={selectWrapperStyle}>
-                <select value={gap} onChange={e => setGap(e.target.value)} style={selectStyle}>
-                  <option value="">Select Gap</option>
+            <span>
+              <span role="img" aria-label="backlogs">📚</span> I have
+              <input
+                type="number"
+                style={{ ...selectStyle, minWidth: 60, fontSize: 16, borderRadius: 10, margin: '0 8px', width: 80 }}
+                value={backlogs}
+                onChange={e => setBacklogs(e.target.value)}
+                required
+                min={0}
+                max={50}
+                step={1}
+                placeholder="0"
+              />
+              backlogs
+            </span>
+            <span>
+              <span role="img" aria-label="graduation">🎓</span> Graduated or graduating in
+              <select style={{ ...selectStyle, minWidth: 120, fontSize: 16, borderRadius: 10, margin: '0 8px' }} value={graduationYear} onChange={e => { setGraduationYear(e.target.value); setGraduationMonth(''); }} required>
+                <option value="">Year</option>
+                {yearOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+              </select>
+              {showMonth && (
+                <>
+                  in
+                  <select style={{ ...selectStyle, minWidth: 120, fontSize: 16, borderRadius: 10, margin: '0 8px' }} value={graduationMonth} onChange={e => setGraduationMonth(e.target.value)} required>
+                    <option value="">Month</option>
+                    {monthOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+                  </select>
+                </>
+              )}
+            </span>
+            {showGap && (
+              <span>
+                <span role="img" aria-label="gap">⏳</span> I have a gap of
+                <select style={{ ...selectStyle, minWidth: 120, fontSize: 16, borderRadius: 10, margin: '0 8px' }} value={gap} onChange={e => setGap(e.target.value)} required>
+                  <option value="">Select gap</option>
                   {gapOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
                 </select>
-                <span style={arrowStyle}>▼</span>
               </span>
-              {showGapDoc && (
-                <div style={{ marginTop: 18, marginBottom: 0, display: 'flex', alignItems: 'center', gap: 18 }}>
-                  <span style={{ fontWeight: 500, color: '#3730a3', fontSize: 15 }}>Do you have documentation for your gap?</span>
+            )}
+            {showGapDoc && (
+              <span style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
+                <span role="img" aria-label="document">📄</span> Valid documents:
+                <span style={{ display: 'inline-flex', gap: 10, marginLeft: 4, verticalAlign: 'middle' }}>
                   <button
                     type="button"
-                    style={btnStyle(gapDoc === 'yes')}
                     onClick={() => setGapDoc('yes')}
+                    style={{
+                      padding: '7px 8px',
+                      borderRadius: 20,
+                      border: gapDoc === 'yes' ? '2px solid #443eff' : '1.5px solid #c7d2fe',
+                      background: gapDoc === 'yes' ? '#443eff' : '#fff',
+                      color: gapDoc === 'yes' ? '#fff' : '#1e293b',
+                      fontWeight: 600,
+                      fontSize: 15,
+                      cursor: 'pointer',
+                      boxShadow: gapDoc === 'yes' ? '0 2px 8px rgba(74,144,226,0.10)' : 'none',
+                      outline: 'none',
+                      transition: 'all 0.15s',
+                    }}
                   >
                     Yes
                   </button>
                   <button
                     type="button"
-                    style={btnStyle(gapDoc === 'no')}
                     onClick={() => setGapDoc('no')}
+                    style={{
+                      padding: '7px 16px',
+                      borderRadius: 20,
+                      border: gapDoc === 'no' ? '2px solid #dc2626' : '1.5px solid #c7d2fe',
+                      background: gapDoc === 'no' ? '#dc2626' : '#fff',
+                      color: gapDoc === 'no' ? '#fff' : '#1e293b',
+                      fontWeight: 600,
+                      fontSize: 15,
+                      cursor: 'pointer',
+                      boxShadow: gapDoc === 'no' ? '0 2px 8px rgba(220,38,38,0.10)' : 'none',
+                      outline: 'none',
+                      transition: 'all 0.15s',
+                    }}
                   >
                     No
                   </button>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-        {/* Work Experience Section */}
-        {showWork && (
-          <div className="story-section" style={{ marginBottom: 28 }}>
-            <div className="story-header" style={{ display: 'flex', alignItems: 'center', marginBottom: 12 }}>
-              <span className="story-icon" style={{ fontSize: 22, marginRight: 10 }}>💼</span>
-              <h3 style={{ fontSize: 18, fontWeight: 700, color: '#1e293b', margin: 0 }}>Work Experience</h3>
-            </div>
-            <div className="story-container" style={{ fontSize: 16, color: '#374151', lineHeight: 2, paddingLeft: 2 }}>
-              I worked as
-              <span style={selectWrapperStyle}>
-                <select value={job} onChange={e => setJob(e.target.value)} style={selectStyle}>
-                  <option value="">Select Job Title</option>
+                </span>
+              </span>
+            )}
+            {showWork && (
+              <span>
+                <span role="img" aria-label="work">💼</span> I have worked as a
+                <select style={{ ...selectStyle, minWidth: 140, fontSize: 16, borderRadius: 10, margin: '0 8px' }} value={job} onChange={e => setJob(e.target.value)} required>
+                  <option value="">Select job</option>
                   {jobOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
                 </select>
-                <span style={arrowStyle}>▼</span>
               </span>
-              {showExpDuration && (
-                <>
-                  for
-                  <span style={selectWrapperStyle}>
-                    <select value={expDuration} onChange={e => setExpDuration(e.target.value)} style={selectStyle}>
-                      <option value="">Select Duration</option>
-                      {expDurationOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
-                    </select>
-                    <span style={arrowStyle}>▼</span>
-                  </span>
-                </>
-              )}
-            </div>
+            )}
+            {showExpDuration && (
+              <span>
+                <span role="img" aria-label="duration">⌛</span> For a duration of
+                <select style={{ ...selectStyle, minWidth: 120, fontSize: 16, borderRadius: 10, margin: '0 8px' }} value={expDuration} onChange={e => setExpDuration(e.target.value)} required>
+                  <option value="">Select duration</option>
+                  {expDurationOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+                </select>
+              </span>
+            )}
           </div>
-        )}
-        <button
-          onClick={handleContinue}
-          style={{
-            background: 'linear-gradient(90deg, #6366f1 0%, #a78bfa 100%)',
-            color: '#fff',
-            border: 'none',
-            borderRadius: 12,
-            padding: '15px 0',
-            fontSize: 17,
-            fontWeight: 700,
-            cursor: 'pointer',
-            marginTop: 12,
-            width: '100%',
-            boxShadow: '0 2px 8px rgba(99,102,241,0.08)',
-            transition: 'background 0.2s',
-            letterSpacing: 1,
-          }}
-        >
-          CONTINUE TO FINANCIAL ASSESSMENT
-        </button>
+          <button
+            type="submit"
+            style={{
+              background: '#443eff',
+              color: '#fff',
+              border: 'none',
+              borderRadius: 14,
+              padding: '15px 0',
+              fontSize: 17,
+              fontWeight: 800,
+              cursor: 'pointer',
+              boxShadow: '0 2px 8px rgba(74,144,226,0.08)',
+              transition: 'background 0.2s',
+              letterSpacing: 1,
+              width: '100%',
+              marginTop: 18,
+              minWidth: 0,
+              maxWidth: 340,
+            }}
+          >
+            Continue to Financial Assessment
+          </button>
+        </form>
       </div>
     </div>
   );

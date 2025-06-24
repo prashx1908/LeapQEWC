@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 function maskPhone(phone) {
   if (!phone || phone.length < 4) return '';
@@ -63,193 +63,184 @@ const CompletionStep = ({
     'master\'s in medicine': '🎯',
     'healthcare mba': '💼',
   };
+  const [milestone2Open, setMilestone2Open] = useState(false);
+
   return (
-    <div style={{ minHeight: '80vh', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-      <div className="question-card" style={{
-        maxWidth: 420,
+    <div style={{ minHeight: '80vh', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'none' }}>
+      <div className="completion-emoji" style={{ fontSize: 48, marginBottom: 10, animation: 'bounce 1.2s' }}>🎉</div>
+      <h2 className="completion-title" style={{ fontSize: 24, fontWeight: 900, color: '#443eff', marginBottom: 18, letterSpacing: '-0.01em' }}>Quick Evaluation Complete!</h2>
+      {/* Timeline Milestones */}
+      <div style={{
         width: '100%',
-        background: 'linear-gradient(135deg, #fff 80%, #e0e7ff 100%)',
+        background: 'rgba(245,247,250,0.98)',
         borderRadius: 28,
-        boxShadow: '0 8px 32px rgba(99,102,241,0.13)',
-        padding: '40px 28px',
+        padding: '32px 32px 24px 32px',
+        margin: '0 0 24px 0',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        margin: '0 auto',
-        position: 'relative',
-        textAlign: 'center',
+        boxShadow: '0 1px 8px rgba(74,144,226,0.10)',
+        gap: 0,
       }}>
-        <div className="completion-emoji" style={{ fontSize: 54, marginBottom: 12, animation: 'bounce 1.2s' }}>🎉</div>
-        <h2 className="completion-title" style={{ fontSize: 26, fontWeight: 800, color: '#3730a3', marginBottom: 8 }}>Quick Evaluation Complete!</h2>
-        {/* Highlighted containers for shortlisting and scholarship */}
+        {/* Milestone 1: Onboarding - Completed */}
         <div style={{
           width: '100%',
-          background: 'rgba(16,185,129,0.08)',
-          borderRadius: 16,
-          padding: '16px 12px',
-          margin: '12px 0 8px 0',
           display: 'flex',
           alignItems: 'center',
-          gap: 12,
-          boxShadow: '0 1px 4px rgba(16,185,129,0.07)',
-        }}>
-          <span style={{ fontSize: 28, color: '#10b981' }}>🎓</span>
-          <span style={{ fontWeight: 700, color: '#10b981', fontSize: 16, textAlign: 'left' }}>
-            Congratulations! You are shortlisted for <span style={{ fontWeight: 800 }}>60+ universities</span>.
-          </span>
-        </div>
-        <div style={{
-          width: '100%',
-          background: 'rgba(161,98,232,0.08)',
-          borderRadius: 16,
-          padding: '16px 12px',
-          margin: '0 0 18px 0',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 12,
-          boxShadow: '0 1px 4px rgba(161,98,232,0.07)',
-        }}>
-          <span style={{ fontSize: 26, color: '#a162e8' }}>💸</span>
-          <span style={{ fontWeight: 700, color: '#a162e8', fontSize: 16, textAlign: 'left' }}>
-            25-70% scholarship possible based on your profile.
-          </span>
-        </div>
-        {/* Compact country and program cards */}
-        <div style={{
-          width: '100%',
-          display: 'flex',
           gap: 16,
-          justifyContent: 'center',
-          margin: '10px 0 18px 0',
-          flexWrap: 'wrap',
-        }}>
-          {/* Country card */}
-          <div style={{
-            flex: 1,
-            minWidth: 120,
-            maxWidth: 180,
-            background: 'rgba(99,102,241,0.08)',
-            borderRadius: 14,
-            boxShadow: '0 1px 4px rgba(99,102,241,0.06)',
-            padding: '18px 10px',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}>
-            <span style={{ fontSize: 32, marginBottom: 6 }}>{countryMap[country]?.flag || '🌍'}</span>
-            <span style={{ fontWeight: 700, color: '#3730a3', fontSize: 16 }}>{countryMap[country]?.name || country}</span>
-            <span style={{ color: '#6366f1', fontSize: 13, marginTop: 2 }}>Country</span>
+          marginBottom: 18,
+          background: '#e6f9ed',
+          borderRadius: 16,
+          padding: '16px 10px',
+          boxShadow: '0 1px 4px rgba(39,174,96,0.07)',
+          cursor: 'pointer',
+          border: '2.5px solid #4ade80',
+          position: 'relative',
+          transition: 'box-shadow 0.2s',
+        }} onClick={onContinue}>
+          <span style={{ fontSize: 28, color: '#22c55e', marginLeft: 2 }}>🔓</span>
+          <div style={{ flex: 1, textAlign: 'left' }}>
+            <div style={{ fontWeight: 800, fontSize: 17, color: '#22c55e' }}>Milestone 1: Onboarding <span style={{ fontWeight: 700, fontSize: 14, color: '#16a34a' }}>- Completed</span></div>
+            <div style={{ fontSize: 15, color: '#15803d', marginTop: 2, fontWeight: 600 }}>Rewards unlocked: <span style={{ color: '#059669' }}>Complete Country guide sent on your WhatsApp</span></div>
           </div>
-          {/* Program card */}
-          <div style={{
-            flex: 1,
-            minWidth: 120,
-            maxWidth: 180,
-            background: 'rgba(16,185,129,0.08)',
-            borderRadius: 14,
-            boxShadow: '0 1px 4px rgba(16,185,129,0.06)',
-            padding: '18px 10px',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}>
-            <span style={{ fontSize: 32, marginBottom: 6 }}>{programIconMap[program] || '🎓'}</span>
-            <span style={{ fontWeight: 700, color: '#10b981', fontSize: 16 }}>{program?.charAt(0).toUpperCase() + program?.slice(1)}</span>
-            <span style={{ color: '#10b981', fontSize: 13, marginTop: 2 }}>Program</span>
-          </div>
+          <span style={{ fontSize: 22, color: '#22c55e', marginLeft: 8 }}>→</span>
         </div>
-        {/* Trust-building Leap Scholar info */}
+        {/* Milestone 2: Profile Evaluation (Show reward directly, no dropdown) */}
         <div style={{
           width: '100%',
-          background: 'rgba(99,102,241,0.07)',
-          borderRadius: 16,
-          padding: '18px 14px',
-          margin: '0 0 18px 0',
           display: 'flex',
-          alignItems: 'center',
-          gap: 14,
-          boxShadow: '0 1px 4px rgba(99,102,241,0.06)',
+          flexDirection: 'column',
+          marginBottom: 18,
+          background: '#e0f2fe',
+          borderRadius: 16,
+          boxShadow: '0 1px 4px rgba(59,130,246,0.10)',
+          border: '2.5px solid #38bdf8',
+          position: 'relative',
+          transition: 'box-shadow 0.2s',
         }}>
-          <img src="https://ik.imagekit.io/onsnhxjshmp/LeapScholar/new-header-logo_7i5sVUf9VF.svg" alt="Leap Scholar" style={{ height: 38, marginRight: 8, borderRadius: 8, background: '#fff', padding: 4 }} />
-          <div style={{ textAlign: 'left', fontSize: 15, color: '#3730a3' }}>
-            <b>Leap Scholar</b> has helped <b>100,000+ students</b> achieve their study abroad dreams.<br />
-            <span style={{ color: '#6366f1', fontWeight: 600 }}>Trusted by students and parents worldwide.</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '16px 10px' }}>
+            <span style={{ fontSize: 28, color: '#0ea5e9', marginLeft: 2 }}>🟦</span>
+            <div style={{ flex: 1, textAlign: 'left' }}>
+              <div style={{ fontWeight: 800, fontSize: 17, color: '#0ea5e9' }}>Milestone 2: Profile Evaluation <span style={{ fontWeight: 700, fontSize: 14, color: '#0369a1' }}>(&lt;5 mins)</span></div>
+            </div>
+          </div>
+          {/* Always show reward directly */}
+          <div style={{ padding: '0 18px 12px 54px', textAlign: 'left' }}>
+            <ul style={{ margin: 0, padding: 0, listStyle: 'none' }}>
+              <li style={{ display: 'flex', alignItems: 'center', marginBottom: 6 }}>
+                <span style={{ fontSize: 18, color: '#443eff', marginRight: 8 }}>🎯</span>
+                <span style={{ fontSize: 15, color: '#0369a1', fontWeight: 600 }}>Get your detailed profile evaluation completed.</span>
+              </li>
+            </ul>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '0 18px 16px 0' }}>
+            <button
+              onClick={onContinue}
+              style={{
+                background: '#443eff',
+                color: '#fff',
+                border: 'none',
+                borderRadius: 8,
+                padding: '10px 22px',
+                fontWeight: 800,
+                fontSize: 15,
+                cursor: 'pointer',
+                boxShadow: '0 2px 8px rgba(74,144,226,0.10)',
+                transition: 'background 0.2s',
+                marginLeft: 8
+              }}
+            >
+              Complete profile evaluation now
+            </button>
           </div>
         </div>
-        {/* Action buttons */}
-        <div style={{ display: 'flex', gap: 16, width: '100%', justifyContent: 'center', marginTop: 8, flexWrap: 'wrap' }}>
-          <button
-            onClick={onDownloadReport}
-            disabled={saving || buttonLoading.download}
-            style={{
-              background: 'linear-gradient(90deg, #6366f1 0%, #10b981 100%)',
-              color: '#fff',
-              border: 'none',
-              borderRadius: 12,
-              padding: '13px 0',
-              fontSize: 16,
-              fontWeight: 700,
-              cursor: saving || buttonLoading.download ? 'not-allowed' : 'pointer',
-              boxShadow: '0 2px 8px rgba(99,102,241,0.08)',
-              transition: 'background 0.2s',
-              letterSpacing: 1,
-              flex: 1,
-              minWidth: 0,
-              maxWidth: 200,
-              opacity: saving || buttonLoading.download ? 0.7 : 1,
-            }}
-          >
-            {buttonLoading.download ? 'Processing...' : 'Download Report'}
-          </button>
-          <button
-            onClick={onViewReport}
-            disabled={saving || buttonLoading.view}
-            style={{
-              background: 'linear-gradient(90deg, #a78bfa 0%, #6366f1 100%)',
-              color: '#fff',
-              border: 'none',
-              borderRadius: 12,
-              padding: '13px 0',
-              fontSize: 16,
-              fontWeight: 700,
-              cursor: saving || buttonLoading.view ? 'not-allowed' : 'pointer',
-              boxShadow: '0 2px 8px rgba(99,102,241,0.08)',
-              transition: 'background 0.2s',
-              letterSpacing: 1,
-              flex: 1,
-              minWidth: 0,
-              maxWidth: 200,
-              opacity: saving || buttonLoading.view ? 0.7 : 1,
-            }}
-          >
-            {buttonLoading.view ? 'Processing...' : 'View Report'}
-          </button>
+        {/* Milestone 3: Get university shortlist */}
+        <div style={{
+          width: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 16,
+          marginBottom: 10,
+          background: '#f3f4f6',
+          borderRadius: 16,
+          padding: '16px 10px',
+          boxShadow: '0 1px 4px rgba(74,144,226,0.04)',
+          border: '2px solid #e5e7eb',
+          opacity: 0.7,
+          position: 'relative',
+        }}>
+          <span style={{ fontSize: 28, color: '#a3a3a3', marginLeft: 2 }}>🔒</span>
+          <div style={{ flex: 1, textAlign: 'left' }}>
+            <div style={{ fontWeight: 800, fontSize: 17, color: '#64748b' }}>Milestone 3: Get university shortlist</div>
+          </div>
+          <button style={{ background: '#443eff', color: '#fff', border: 'none', borderRadius: 8, padding: '7px 16px', fontWeight: 700, fontSize: 14, cursor: 'not-allowed', opacity: 0.7 }}>Locked</button>
         </div>
-        {/* Continue button */}
-        <button
-          onClick={onContinue}
-          disabled={saving || buttonLoading.download || buttonLoading.view}
-          style={{
-            background: 'linear-gradient(90deg, #6366f1 0%, #a78bfa 100%)',
-            color: '#fff',
-            border: 'none',
-            borderRadius: 12,
-            padding: '15px 0',
-            fontSize: 17,
-            fontWeight: 700,
-            cursor: saving || buttonLoading.download || buttonLoading.view ? 'not-allowed' : 'pointer',
-            marginTop: 24,
+        {/* Placeholder for more milestones */}
+        {[4,5,6,7].map(i => (
+          <div key={i} style={{
             width: '100%',
-            boxShadow: '0 2px 8px rgba(99,102,241,0.08)',
-            transition: 'background 0.2s',
-            letterSpacing: 1,
-            opacity: saving || buttonLoading.download || buttonLoading.view ? 0.7 : 1,
-          }}
-        >
-          Continue
-        </button>
+            display: 'flex',
+            alignItems: 'center',
+            gap: 16,
+            marginBottom: 8,
+            background: '#f3f4f6',
+            borderRadius: 16,
+            padding: '16px 10px',
+            boxShadow: '0 1px 4px rgba(74,144,226,0.04)',
+            border: '2px solid #e5e7eb',
+            opacity: 0.7,
+            position: 'relative',
+          }}>
+            <span style={{ fontSize: 28, color: '#a3a3a3', marginLeft: 2 }}>🔒</span>
+            <div style={{ flex: 1, textAlign: 'left' }}>
+              <div style={{ fontWeight: 800, fontSize: 17, color: '#64748b' }}>Milestone {i}: Coming soon</div>
+            </div>
+            <button style={{ background: '#443eff', color: '#fff', border: 'none', borderRadius: 8, padding: '7px 16px', fontWeight: 700, fontSize: 14, cursor: 'not-allowed', opacity: 0.7 }}>Locked</button>
+          </div>
+        ))}
+      </div>
+      {/* Leap Scholar branding and stats as a regular container at the bottom */}
+      <div style={{
+        width: '100%',
+        maxWidth: 650,
+        margin: '40px auto 0 auto',
+        background: 'rgba(74,144,226,0.07)',
+        borderRadius: 18,
+        padding: '24px 18px',
+        boxShadow: '0 1px 4px rgba(74,144,226,0.06)',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 8 }}>
+          <img 
+            src="https://leapassets.s3.ap-south-1.amazonaws.com/ielts-recording/1619511191304-logo@2x_(1)_(1).png" 
+            alt="Leap Scholar" 
+            style={{ height: 38, borderRadius: 8, background: '#fff', padding: 6 }} 
+          />
+          <div style={{ textAlign: 'left' }}>
+            <div style={{ fontSize: 18, color: '#1F2937', fontWeight: 800, marginBottom: 2 }}>
+              Leap Scholar
+            </div>
+            <div style={{ fontSize: 15, color: '#443eff', fontWeight: 600 }}>
+              Trusted by 100,000+ students AND PARENTS worldwide
+            </div>
+          </div>
+        </div>
+        <div style={{ display: 'flex', gap: 32, alignItems: 'center', flexWrap: 'wrap' }}>
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ fontSize: 20, fontWeight: 900, color: '#059669' }}>100K+</div>
+            <div style={{ fontSize: 12, color: '#6B7280', fontWeight: 600 }}>Students Helped</div>
+          </div>
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ fontSize: 20, fontWeight: 900, color: '#DC2626' }}>50+</div>
+            <div style={{ fontSize: 12, color: '#6B7280', fontWeight: 600 }}>Countries</div>
+          </div>
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ fontSize: 20, fontWeight: 900, color: '#7C3AED' }}>95%</div>
+            <div style={{ fontSize: 12, color: '#6B7280', fontWeight: 600 }}>Success Rate</div>
+          </div>
+        </div>
       </div>
     </div>
   );

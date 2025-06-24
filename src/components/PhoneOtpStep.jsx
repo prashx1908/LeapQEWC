@@ -3,26 +3,121 @@ import React, { useState } from 'react';
 function PhoneOtpStep({ visible, phone, otp, showOtpPopup, onPhoneSubmit, onOtpSubmit, onCloseOtpPopup }) {
   const [inputPhone, setInputPhone] = useState(phone || '');
   const [inputOtp, setInputOtp] = useState('');
+  const [nonWhatsapp, setNonWhatsapp] = useState(false);
 
   if (!visible) return null;
 
   return (
-    <div style={{ minHeight: '80vh', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+    <div style={{ minHeight: '80vh', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'none' }}>
       <div className="question-card" style={{
-        maxWidth: 400,
+        maxWidth: 420,
         width: '100%',
-        background: 'rgba(255,255,255,0.98)',
-        borderRadius: 24,
-        boxShadow: '0 8px 32px rgba(99,102,241,0.10)',
-        padding: '36px 24px',
+        background: '#fff',
+        borderRadius: 32,
+        boxShadow: '0 8px 32px rgba(74,144,226,0.10)',
+        padding: '48px 32px 40px 32px',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         margin: '0 auto',
         position: 'relative',
+        gap: 0,
       }}>
-        <h2 className="question-title" style={{ fontSize: 24, fontWeight: 700, marginBottom: 8, textAlign: 'center', color: '#3730a3' }}>Verify Your Phone Number</h2>
-        <div className="question-subtitle" style={{ fontSize: 16, color: '#6366f1', marginBottom: 18, textAlign: 'center' }}>We'll send you a verification code</div>
+        {!nonWhatsapp ? (
+          <>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
+              <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp" style={{ width: 32, height: 32 }} />
+              <h2 className="question-title" style={{ fontSize: 22, fontWeight: 800, textAlign: 'center', color: '#25D366', letterSpacing: '-0.01em', margin: 0 }}>
+                Share your WhatsApp Number to receive your personalised Study Abroad Report
+              </h2>
+            </div>
+            <div className="question-subtitle" style={{ fontSize: 16, color: '#888', marginBottom: 28, textAlign: 'center', fontWeight: 500 }}>Verify your WhatsApp Number</div>
+            <form
+              onSubmit={e => {
+                e.preventDefault();
+                if (inputPhone.length === 10 && /^\d+$/.test(inputPhone)) {
+                  onPhoneSubmit(inputPhone);
+                } else {
+                  alert('Please enter a valid 10-digit phone number');
+                }
+              }}
+              style={{ width: '100%', maxWidth: 340, margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0 }}
+            >
+              <div style={{ display: 'flex', alignItems: 'stretch', width: '100%', marginBottom: 24, background: '#f8f6f3', borderRadius: 18, boxShadow: '0 1px 4px rgba(74,144,226,0.04)', height: 52 }}>
+                <span style={{ fontSize: 16, fontWeight: 600, background: '#eaf3fb', borderRadius: '18px 0 0 18px', padding: '0 14px', color: '#443eff', borderRight: '1px solid #e0e7ef', letterSpacing: 1, display: 'flex', alignItems: 'center', height: '100%' }}>+91</span>
+                <input
+                  type="tel"
+                  value={inputPhone}
+                  onChange={e => setInputPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
+                  placeholder="Enter your WhatsApp phone number"
+                  style={{
+                    width: '100%',
+                    padding: '0 18px',
+                    border: 'none',
+                    borderRadius: '0 18px 18px 0',
+                    fontSize: 18,
+                    background: 'transparent',
+                    color: '#222',
+                    outline: 'none',
+                    fontWeight: 500,
+                    letterSpacing: 1,
+                    transition: 'box-shadow 0.2s',
+                    height: '100%',
+                    display: 'flex',
+                    alignItems: 'center',
+                  }}
+                  maxLength={10}
+                  required
+                />
+              </div>
+              <button
+                type="submit"
+                style={{
+                  background: '#25D366',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: 999,
+                  padding: '16px 0',
+                  fontSize: 18,
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  marginTop: 8,
+                  width: '100%',
+                  boxShadow: '0 4px 16px rgba(74,144,226,0.13)',
+                  transition: 'background 0.2s',
+                  letterSpacing: 1,
+                }}
+              >
+                Send OTP
+              </button>
+            </form>
+            <div style={{ marginTop: 18, textAlign: 'center', width: '100%' }}>
+              <button
+                type="button"
+                onClick={() => setNonWhatsapp(true)}
+                style={{
+                  background: 'none',
+                  color: '#443eff',
+                  border: 'none',
+                  fontSize: 15,
+                  fontWeight: 600,
+                  textDecoration: 'underline',
+                  cursor: 'pointer',
+                  marginTop: 0,
+                  width: '100%',
+                  padding: 0,
+                }}
+              >
+                Register with a non-WhatsApp phone number
+              </button>
+            </div>
+          </>
+        ) : (
+          <>
+            <h2 className="question-title" style={{ fontSize: 22, fontWeight: 800, textAlign: 'center', color: '#443eff', letterSpacing: '-0.01em', marginBottom: 8 }}>
+              Register with your phone number
+            </h2>
+            <div className="question-subtitle" style={{ fontSize: 16, color: '#888', marginBottom: 28, textAlign: 'center', fontWeight: 500 }}>Verify your phone number</div>
         <form
           onSubmit={e => {
             e.preventDefault();
@@ -32,10 +127,10 @@ function PhoneOtpStep({ visible, phone, otp, showOtpPopup, onPhoneSubmit, onOtpS
               alert('Please enter a valid 10-digit phone number');
             }
           }}
-          style={{ width: '100%', maxWidth: 340, margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center' }}
+              style={{ width: '100%', maxWidth: 340, margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0 }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', width: '100%', marginBottom: 18, background: 'rgba(99,102,241,0.07)', borderRadius: 14, boxShadow: '0 1px 4px rgba(99,102,241,0.04)' }}>
-            <span style={{ fontSize: 16, fontWeight: 600, background: 'rgba(99,102,241,0.10)', borderRadius: '14px 0 0 14px', padding: '14px 12px', color: '#6366f1', borderRight: '1px solid #e5e7eb', letterSpacing: 1 }}>+91</span>
+              <div style={{ display: 'flex', alignItems: 'stretch', width: '100%', marginBottom: 24, background: '#f8f6f3', borderRadius: 18, boxShadow: '0 1px 4px rgba(74,144,226,0.04)', height: 52 }}>
+                <span style={{ fontSize: 16, fontWeight: 600, background: '#eaf3fb', borderRadius: '18px 0 0 18px', padding: '0 14px', color: '#443eff', borderRight: '1px solid #e0e7ef', letterSpacing: 1, display: 'flex', alignItems: 'center', height: '100%' }}>+91</span>
             <input
               type="tel"
               value={inputPhone}
@@ -43,16 +138,19 @@ function PhoneOtpStep({ visible, phone, otp, showOtpPopup, onPhoneSubmit, onOtpS
               placeholder="Enter your phone number"
               style={{
                 width: '100%',
-                padding: '14px 16px',
+                    padding: '0 18px',
                 border: 'none',
-                borderRadius: '0 14px 14px 0',
-                fontSize: 17,
+                    borderRadius: '0 18px 18px 0',
+                    fontSize: 18,
                 background: 'transparent',
                 color: '#222',
                 outline: 'none',
                 fontWeight: 500,
                 letterSpacing: 1,
                 transition: 'box-shadow 0.2s',
+                    height: '100%',
+                    display: 'flex',
+                    alignItems: 'center',
               }}
               maxLength={10}
               required
@@ -61,17 +159,17 @@ function PhoneOtpStep({ visible, phone, otp, showOtpPopup, onPhoneSubmit, onOtpS
           <button
             type="submit"
             style={{
-              background: 'linear-gradient(90deg, #6366f1 0%, #a78bfa 100%)',
+                  background: '#443eff',
               color: '#fff',
               border: 'none',
-              borderRadius: 12,
-              padding: '13px 0',
-              fontSize: 17,
+                  borderRadius: 999,
+                  padding: '16px 0',
+                  fontSize: 18,
               fontWeight: 700,
               cursor: 'pointer',
               marginTop: 8,
               width: '100%',
-              boxShadow: '0 2px 8px rgba(99,102,241,0.08)',
+                  boxShadow: '0 4px 16px rgba(74,144,226,0.13)',
               transition: 'background 0.2s',
               letterSpacing: 1,
             }}
@@ -79,6 +177,28 @@ function PhoneOtpStep({ visible, phone, otp, showOtpPopup, onPhoneSubmit, onOtpS
             Send OTP
           </button>
         </form>
+            <div style={{ marginTop: 18, textAlign: 'center', width: '100%' }}>
+              <button
+                type="button"
+                onClick={() => setNonWhatsapp(false)}
+                style={{
+                  background: 'none',
+                  color: '#25D366',
+                  border: 'none',
+                  fontSize: 15,
+                  fontWeight: 600,
+                  textDecoration: 'underline',
+                  cursor: 'pointer',
+                  marginTop: 0,
+                  width: '100%',
+                  padding: 0,
+                }}
+              >
+                Register with WhatsApp number
+              </button>
+            </div>
+          </>
+        )}
       </div>
       {/* OTP Popup/Modal */}
       {showOtpPopup && (
@@ -88,7 +208,7 @@ function PhoneOtpStep({ visible, phone, otp, showOtpPopup, onPhoneSubmit, onOtpS
           left: 0,
           width: '100vw',
           height: '100vh',
-          background: 'rgba(99,102,241,0.10)',
+          background: 'rgba(74,144,226,0.10)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -96,35 +216,36 @@ function PhoneOtpStep({ visible, phone, otp, showOtpPopup, onPhoneSubmit, onOtpS
           animation: 'fadeIn 0.3s',
         }}>
           <div style={{
-            background: 'linear-gradient(135deg, #fff 80%, #e0e7ff 100%)',
-            borderRadius: 22,
-            boxShadow: '0 8px 32px rgba(99,102,241,0.13)',
-            padding: '38px 30px',
-            minWidth: 320,
+            background: '#fff',
+            borderRadius: 32,
+            boxShadow: '0 8px 32px rgba(74,144,226,0.13)',
+            padding: '48px 36px 40px 36px',
+            minWidth: 340,
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
             position: 'relative',
             animation: 'bounceIn 0.5s',
+            gap: 0,
           }}>
             <button
               onClick={onCloseOtpPopup}
               style={{
                 position: 'absolute',
-                top: 12,
-                right: 16,
+                top: 16,
+                right: 20,
                 background: 'none',
                 border: 'none',
-                fontSize: 22,
-                color: '#888',
+                fontSize: 26,
+                color: '#aaa',
                 cursor: 'pointer',
               }}
               aria-label="Close"
             >
               ×
             </button>
-            <h3 style={{ fontSize: 22, fontWeight: 700, marginBottom: 10, textAlign: 'center', color: '#3730a3' }}>Enter OTP</h3>
-            <div style={{ fontSize: 15, color: '#6366f1', marginBottom: 18, textAlign: 'center' }}>
+            <h3 style={{ fontSize: 24, fontWeight: 800, marginBottom: 10, textAlign: 'center', color: '#443eff', letterSpacing: '-0.01em' }}>Enter OTP</h3>
+            <div style={{ fontSize: 16, color: '#888', marginBottom: 24, textAlign: 'center', fontWeight: 500 }}>
               Enter the 6-digit code sent to your phone
             </div>
             <form
@@ -137,9 +258,9 @@ function PhoneOtpStep({ visible, phone, otp, showOtpPopup, onPhoneSubmit, onOtpS
                   alert('Please enter a 6-digit OTP');
                 }
               }}
-              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}
+              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', gap: 0 }}
             >
-              <div style={{ display: 'flex', gap: 10, marginBottom: 18 }}>
+              <div style={{ display: 'flex', gap: 18, marginBottom: 28, justifyContent: 'center' }}>
                 {[0,1,2,3,4,5].map(i => (
                   <input
                     key={i}
@@ -160,17 +281,17 @@ function PhoneOtpStep({ visible, phone, otp, showOtpPopup, onPhoneSubmit, onOtpS
                     }}
                     id={`otp-input-${i}`}
                     style={{
-                      width: 44,
-                      height: 54,
-                      fontSize: 26,
+                      width: 54,
+                      height: 60,
+                      fontSize: 28,
                       textAlign: 'center',
-                      border: '2px solid #e0e7ff',
-                      borderRadius: 10,
-                      background: '#f3f4f6',
+                      border: '2px solid #443eff',
+                      borderRadius: 16,
+                      background: '#f8f6f3',
                       outline: 'none',
                       fontWeight: 700,
-                      color: '#3730a3',
-                      boxShadow: '0 1px 4px rgba(99,102,241,0.06)',
+                      color: '#443eff',
+                      boxShadow: '0 2px 8px rgba(74,144,226,0.06)',
                       transition: 'border 0.2s',
                     }}
                   />
@@ -179,17 +300,17 @@ function PhoneOtpStep({ visible, phone, otp, showOtpPopup, onPhoneSubmit, onOtpS
               <button
                 type="submit"
                 style={{
-                  background: 'linear-gradient(90deg, #6366f1 0%, #a78bfa 100%)',
+                  background: '#443eff',
                   color: '#fff',
                   border: 'none',
-                  borderRadius: 12,
-                  padding: '13px 0',
-                  fontSize: 17,
+                  borderRadius: 999,
+                  padding: '16px 0',
+                  fontSize: 18,
                   fontWeight: 700,
                   cursor: 'pointer',
                   marginTop: 8,
                   width: '100%',
-                  boxShadow: '0 2px 8px rgba(99,102,241,0.08)',
+                  boxShadow: '0 4px 16px rgba(74,144,226,0.13)',
                   transition: 'background 0.2s',
                   letterSpacing: 1,
                 }}

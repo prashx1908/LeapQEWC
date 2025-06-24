@@ -35,7 +35,7 @@ const AcademicJourneyComplete = ({ onContinue }) => (
       alignItems: 'center',
     }}>
       {/* Logo */}
-      <img src="https://ik.imagekit.io/onsnhxjshmp/LeapScholar/new-header-logo_7i5sVUf9VF.svg" alt="Leap Scholar" style={{ width: 120, marginBottom: 18 }} />
+      <img src="https://leapassets.s3.ap-south-1.amazonaws.com/ielts-recording/1619511191304-logo@2x_(1)_(1).png" alt="Leap Scholar" style={{ width: 120, marginBottom: 18 }} />
       <h2 style={{ fontSize: 24, fontWeight: 700, color: '#1e293b', marginBottom: 8 }}>Your Path to Affordable Education</h2>
       <div style={{ color: '#374151', fontSize: 16, marginBottom: 28 }}>
         We've helped thousands of students achieve their study abroad dreams
@@ -71,7 +71,7 @@ const AcademicJourneyComplete = ({ onContinue }) => (
       <button
         onClick={onContinue}
         style={{
-          background: 'linear-gradient(90deg, #6366f1 0%, #a78bfa 100%)',
+          background: '#443eff',
           color: '#fff',
           border: 'none',
           borderRadius: 12,

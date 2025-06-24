@@ -48,7 +48,7 @@ function CitySelectionStep({ visible, selectedCity, onSelect }) {
   if (!visible) return null;
   return (
     <div style={{ minHeight: '80vh', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-      <h2 className="question-title" style={{ fontSize: 24, fontWeight: 700, marginBottom: 8, textAlign: 'center' }}>Which city are you from?</h2>
+      <h2 className="question-title" style={{ fontSize: 24, fontWeight: 700, marginBottom: 8, textAlign: 'center' }}>Which city are you currently living/residing?</h2>
       <div className="question-subtitle" style={{ fontSize: 16, color: '#374151', marginBottom: 18, textAlign: 'center' }}>Select your city or search below</div>
       <div style={{ width: '100%', maxWidth: 400, marginBottom: 18 }}>
         <input

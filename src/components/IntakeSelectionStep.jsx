@@ -36,26 +36,25 @@ function IntakeSelectionStep({ visible, onSelect, country, graduationYear, gradu
   // Determine recommended intake based on graduationYear and graduationMonth
   let recommendedValue = null;
   if (graduationYear) {
-    const grad = Number(graduationYear);
-    const month = (graduationMonth || '').toLowerCase();
-    if (grad === 2025) {
-      if ([
-        'january', 'february', 'march', 'april', 'may', 'june', 'july'
-      ].includes(month)) {
-        recommendedValue = 'fall-2025';
-      } else if ([
-        'august', 'september', 'october', 'november', 'december'
-      ].includes(month)) {
-        recommendedValue = 'spring-2026';
-      }
-    } else if (grad === 2026) {
-      if ([
-        'may', 'june', 'july', 'august'
-      ].includes(month)) {
-        recommendedValue = 'fall-2026';
-      }
-    } else if (grad < 2025) {
+    const gradYear = Number(graduationYear);
+    let gradMonth = graduationMonth;
+    if (typeof gradMonth === 'string' && gradMonth.length === 2) {
+      gradMonth = Number(gradMonth);
+    } else if (typeof gradMonth === 'string') {
+      // fallback: try to parse month name
+      const monthMap = {
+        january: 1, february: 2, march: 3, april: 4, may: 5, june: 6, july: 7, august: 8, september: 9, october: 10, november: 11, december: 12
+      };
+      gradMonth = monthMap[gradMonth.toLowerCase()] || 1;
+    }
+    if (gradYear < 2025 || (gradYear === 2025 && gradMonth < 8)) {
       recommendedValue = 'fall-2025';
+    } else if (gradYear === 2025 && gradMonth >= 8 && gradMonth <= 12) {
+      recommendedValue = 'spring-2026';
+    } else if (gradYear === 2026 && gradMonth >= 5 && gradMonth <= 8) {
+      recommendedValue = 'fall-2026';
+    } else {
+      recommendedValue = null;
     }
   }
 
