@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 
 const months = [
   'January', 'February', 'March', 'April', 'May', 'June',
@@ -149,6 +149,13 @@ export default function EnglishTestDetailsStep({ englishTestStatus, onSubmit, in
     }
   };
 
+  const nextFoldRef = useRef(null);
+  useEffect(() => {
+    if (hasSelectedStatus && nextFoldRef.current) {
+      nextFoldRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [hasSelectedStatus]);
+
   return (
     <div style={{ minHeight: '80vh', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
       <h2 className="question-title" style={{ fontSize: 24, fontWeight: 700, marginBottom: 8, textAlign: 'center' }}>English Proficiency Test</h2>
@@ -166,6 +173,7 @@ export default function EnglishTestDetailsStep({ englishTestStatus, onSubmit, in
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
+        ref: nextFoldRef,
       }}>
         <h3 className="fold-title" style={{ fontSize: 18, fontWeight: 600, margin: '0 0 18px 0', color: '#1e293b', textAlign: 'center' }}>Have you taken any English proficiency test?</h3>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 180px)', gap: 18, justifyContent: 'center', margin: '0 auto' }}>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 
 const passportOptions = [
   { value: 'bearer', icon: '🛂', label: 'Yes, I have' },
@@ -46,6 +46,14 @@ const allCities = [
 function EnglishPassportStep({ passport, city, onPassportSelect, onCitySelect, onContinue }) {
   const [showAll, setShowAll] = useState(false);
   const [search, setSearch] = useState('');
+  const citySectionRef = useRef(null);
+
+  // Scroll to city section when passport is selected
+  useEffect(() => {
+    if (passport && citySectionRef.current) {
+      citySectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [passport]);
 
   const citiesToShow = (showAll ? allCities : mainCities).filter(cityObj =>
     cityObj.name.toLowerCase().includes(search.toLowerCase())
@@ -113,7 +121,7 @@ function EnglishPassportStep({ passport, city, onPassportSelect, onCitySelect, o
       </div>
       {/* City Selection - only show after passport is selected */}
       {passport && (
-        <div style={{
+        <div ref={citySectionRef} style={{
           width: '100%',
           maxWidth: 440,
           margin: '0 auto',
