@@ -176,6 +176,110 @@ const ProgramSelectionStep = forwardRef(({ visible, onSelect, initialValue, opti
     return 0;
   });
 
+  // --- Program-specific reason phrases ---
+  const recommendedReasons = {
+    bachelors: [
+      'Best fit for your background',
+      'Smooth transition from school',
+      'Popular choice after 12th',
+      'High admit rate for your profile',
+      'Strong match for your academics',
+      'Opens global career paths',
+      'In-demand for your field',
+      'Great ROI for undergrads',
+      'Industry-relevant curriculum',
+      'Leads to leadership roles',
+    ],
+    masters: [
+      'Best fit for your background',
+      "Popular choice after Bachelor's",
+      'High admit rate: 80%+',
+      'Strong match for your experience',
+      'Smooth transition from your degree',
+      'Preferred by top employers',
+      'Opens global career paths',
+      'In-demand for your field',
+      'Aligned with your academic goals',
+      'Great ROI for postgraduates',
+      'Industry-relevant curriculum',
+      'Leads to leadership roles',
+    ],
+    mba: [
+      'Preferred by top employers',
+      'Great for career switchers',
+      'High admit rate for professionals',
+      'Opens management opportunities',
+      'Popular after work experience',
+      'Strong alumni network',
+      'Leads to leadership roles',
+    ],
+    phd: [
+      'Pathway to research careers',
+      'Ideal for academic growth',
+      'Best fit for researchers',
+      'Strong match for scholars',
+      'Leads to expert roles',
+    ],
+    default: [
+      'Best fit for your profile',
+      'Popular choice for your degree',
+      'High admit rate',
+      'Strong match for your background',
+    ]
+  };
+  const lowAdmitReasons = {
+    bachelors: [
+      'Highly competitive program',
+      'Limited seats, high cutoff',
+      'Admit rate: below 20%',
+      'Very competitive for undergrads',
+      'Few admits from your background',
+      'High bar for international students',
+      'Low intake, high demand',
+    ],
+    masters: [
+      'Highly competitive program',
+      'Limited seats, high cutoff',
+      'Admit rate: below 20%',
+      'Research experience preferred',
+      'Requires strong academic record',
+      'Few admits from your background',
+      'Advanced research profile needed',
+      'Low intake, high demand',
+      'Selective admissions process',
+    ],
+    mba: [
+      'Very competitive for MBA',
+      'Preference for top universities',
+      'Admit rate: below 20%',
+      'Requires strong work experience',
+      'Selective admissions process',
+    ],
+    phd: [
+      'Research experience required',
+      'Priority to published researchers',
+      'Admit rate: below 10%',
+      'Selective for research profiles',
+      'Preference for top universities',
+    ],
+    default: [
+      'Highly competitive program',
+      'Limited seats, high cutoff',
+      'Admit rate: below 20%',
+      'Very competitive program',
+      'Few admits from your background',
+    ]
+  };
+  const lowRoiReasons = [
+    'Rarely pursued after graduation',
+    'Consider higher studies for better prospects',
+    'Not recommended after a bachelor\'s',
+    'Better options: Master\'s or MBA',
+  ];
+  function getRandom(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+  }
+
   // Panel mode
   if (asPanel) {
     return (
@@ -211,6 +315,22 @@ const ProgramSelectionStep = forwardRef(({ visible, onSelect, initialValue, opti
         }}>
           {sortedOptions.map(opt => {
             const tagInfo = getProgramTags(highestEducation, opt) || {};
+            // Determine program type for reason selection
+            let programType = 'default';
+            if (opt.value === 'bachelors') programType = 'bachelors';
+            if (opt.value === 'masters' || opt.value === 'double-masters') programType = 'masters';
+            if (opt.value === 'mba') programType = 'mba';
+            if (opt.value === 'phd') programType = 'phd';
+            let reason = '';
+            if (tagInfo.tag === 'Recommended') reason = getRandom(recommendedReasons[programType] || recommendedReasons.default);
+            if (tagInfo.tag === 'Low Admit Chances') {
+              if (opt.value === 'phd' && highestEducation !== 'masters' && highestEducation !== 'double-masters') {
+                reason = "Preferred after Master's degree";
+              } else {
+                reason = getRandom(lowAdmitReasons[programType] || lowAdmitReasons.default);
+              }
+            }
+            if (tagInfo.tag === 'Low ROI') reason = getRandom(lowRoiReasons);
             return (
               <div
                 key={opt.value}
@@ -241,6 +361,16 @@ const ProgramSelectionStep = forwardRef(({ visible, onSelect, initialValue, opti
                   <span style={getTagStyles(tagInfo, opt.disabled)}>
                     {opt.disabled ? '✕ Not Eligible' : tagInfo.tag === 'Recommended' ? '★ Recommended' : tagInfo.tag}
                   </span>
+                )}
+                {/* Reason below badge */}
+                {(tagInfo.tag === 'Recommended' || tagInfo.tag === 'Low Admit Chances' || tagInfo.tag === 'Low ROI') && reason && (
+                  <div style={{
+                    marginTop: 8,
+                    fontSize: 12,
+                    color: tagInfo.tag === 'Recommended' ? '#0891b2' : tagInfo.tag === 'Low ROI' ? '#f59e0b' : '#dc2626',
+                    fontWeight: 500,
+                    textAlign: 'center',
+                  }}>{reason}</div>
                 )}
               </div>
             );
@@ -302,6 +432,22 @@ const ProgramSelectionStep = forwardRef(({ visible, onSelect, initialValue, opti
         }}>
           {sortedOptions.map(opt => {
             const tagInfo = getProgramTags(highestEducation, opt) || {};
+            // Determine program type for reason selection
+            let programType = 'default';
+            if (opt.value === 'bachelors') programType = 'bachelors';
+            if (opt.value === 'masters' || opt.value === 'double-masters') programType = 'masters';
+            if (opt.value === 'mba') programType = 'mba';
+            if (opt.value === 'phd') programType = 'phd';
+            let reason = '';
+            if (tagInfo.tag === 'Recommended') reason = getRandom(recommendedReasons[programType] || recommendedReasons.default);
+            if (tagInfo.tag === 'Low Admit Chances') {
+              if (opt.value === 'phd' && highestEducation !== 'masters' && highestEducation !== 'double-masters') {
+                reason = "Preferred after Master's degree";
+              } else {
+                reason = getRandom(lowAdmitReasons[programType] || lowAdmitReasons.default);
+              }
+            }
+            if (tagInfo.tag === 'Low ROI') reason = getRandom(lowRoiReasons);
             return (
               <div
                 key={opt.value}
@@ -326,12 +472,21 @@ const ProgramSelectionStep = forwardRef(({ visible, onSelect, initialValue, opti
                 }}>
                   {opt.label}
                 </div>
-                
                 {/* Enhanced tag rendering */}
                 {(tagInfo.tag || opt.disabled) && (
                   <span style={getTagStyles(tagInfo, opt.disabled)}>
                     {opt.disabled ? '✕ Not Eligible' : tagInfo.tag === 'Recommended' ? '★ Recommended' : tagInfo.tag}
                   </span>
+                )}
+                {/* Reason below badge */}
+                {(tagInfo.tag === 'Recommended' || tagInfo.tag === 'Low Admit Chances' || tagInfo.tag === 'Low ROI') && reason && (
+                  <div style={{
+                    marginTop: 8,
+                    fontSize: 12,
+                    color: tagInfo.tag === 'Recommended' ? '#0891b2' : tagInfo.tag === 'Low ROI' ? '#f59e0b' : '#dc2626',
+                    fontWeight: 500,
+                    textAlign: 'center',
+                  }}>{reason}</div>
                 )}
               </div>
             );
