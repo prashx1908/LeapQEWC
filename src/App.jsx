@@ -15,7 +15,7 @@ import UniversityPreferenceStep from './components/UniversityPreferenceStep';
 import ApplicationTimelineStep from './components/ApplicationTimelineStep';
 import EnglishTestDetailsStep from './components/EnglishTestDetailsStep';
 import ContactDetailsStep from './components/ContactDetailsStep';
-import WarmDisqualificationPage from './components/WarmDisqualificationPage';
+import { AdvisoryMBBSPage, AdvisoryPhDPathPage, AdvisoryBachelorsPathPage } from './components/WarmDisqualificationPage';
 import './App.css';
 
 // Mapping of education to recommended programs (from your script.js)
@@ -487,24 +487,61 @@ function CountryEligibilityStep({ country, budget, backlogs, onSelectCountry, on
   // --- 15+ lakhs container: show main countries as always clickable buttons ---
   const mainCountries = ['australia', 'uk', 'canada', 'new-zealand', 'ireland', 'germany'];
   const recommended = ['australia', 'uk', 'canada', 'new-zealand'];
+  const lowAdmitPhrases = [
+    '2 universities match this budget',
+    'Admit rate: below 20%',
+    'Only 1 option at budget',
+    'Low chance, high competition',
+    'Budget gap: ₹2L below avg',
+    'Admit rate: very limited',
+    'Few matches, tough admits',
+    'Only 3 fits, low chance',
+    'Limited: 2 universities found',
+    'Admit rate: less than 10%',
+    'Budget shortfall: ₹1L',
+    'Just 1 university fits',
+    'Low admit, high cutoff',
+    'Budget 30% below average',
+    'Admit rate: 1 in 10',
+  ];
+  const recommendedPhrases = [
+    'Top match for your budget',
+    'Admit rate: above 70%',
+    'Best fit: 3 universities',
+    'High admit, strong match',
+    'Budget meets requirements',
+    'Admit rate: 4 in 5',
+    'Optimal: 2 universities found',
+    'Great fit, high admit rate',
+    'Budget matches 5 universities',
+    'Admit rate: 80%+',
+    'Strong match, 3 options',
+    'Meets average budget',
+  ];
+  function getRandom(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+  }
   const mainCountryButtons = mainCountries.map(val => {
     const c = countryReqs.find(x => x.value === val);
-    // In 'not sure' + 15L, check strict backlog eligibility for tag/confirmation
     let isEligible = eligibleCountries.some(x => x.value === val);
     let showLowAdmit = false;
     let showRecommended = false;
+    let reasonPhrase = '';
     if (notSureAnd15L) {
-      // Use strict backlog rules for low admit chances
       if (userBacklogs > c.minBacklogs) {
         isEligible = false;
         showLowAdmit = true;
+        reasonPhrase = getRandom(lowAdmitPhrases);
       } else {
         isEligible = true;
         showRecommended = recommended.includes(c.value);
+        if (showRecommended) reasonPhrase = getRandom(recommendedPhrases);
       }
     } else {
       showLowAdmit = !isEligible && ineligibleCountries.find(x => x.value === val);
       showRecommended = recommended.includes(c.value) && isEligible;
+      if (showLowAdmit) reasonPhrase = getRandom(lowAdmitPhrases);
+      if (showRecommended) reasonPhrase = getRandom(recommendedPhrases);
     }
     return (
       <button
@@ -545,10 +582,31 @@ function CountryEligibilityStep({ country, budget, backlogs, onSelectCountry, on
             fontSize: 9,
             borderRadius: 7,
             padding: '1px 6px',
-          }}>Low admit chances</span>
+          }}>Low admit rate</span>
+        )}
+        {(showLowAdmit || showRecommended) && reasonPhrase && (
+          <span style={{
+            color: showLowAdmit ? '#dc2626' : '#0891b2',
+            fontSize: 11,
+            marginTop: 8,
+            fontWeight: 600,
+            display: 'block',
+            width: '100%',
+            textAlign: 'center',
+            minHeight: 16,
+          }}>{reasonPhrase}</span>
         )}
         {showLowAdmit && reasonMap[c.value] && (
-          <span style={{ color: '#dc2626', fontSize: 10, marginTop: 2 }}>{reasonMap[c.value]}</span>
+          <span style={{
+            color: '#b91c1c',
+            fontSize: 10,
+            marginTop: 2,
+            display: 'block',
+            width: '100%',
+            textAlign: 'center',
+            fontWeight: 400,
+            opacity: 0.7,
+          }}>{reasonMap[c.value]}</span>
         )}
       </button>
     );
@@ -561,6 +619,9 @@ function CountryEligibilityStep({ country, budget, backlogs, onSelectCountry, on
     .map(c => {
       const isEligible = eligibleCountries.some(x => x.value === c.value);
       const ineligible = ineligibleCountries.find(x => x.value === c.value);
+      let showLowAdmit = !isEligible && ineligible;
+      let reasonPhrase = '';
+      if (showLowAdmit) reasonPhrase = getRandom(lowAdmitPhrases);
       return (
         <button
           key={c.value}
@@ -576,7 +637,7 @@ function CountryEligibilityStep({ country, budget, backlogs, onSelectCountry, on
           <span style={{ fontSize: 22, marginBottom: 2 }}>{c.flag}</span>
           <span>{c.name}</span>
           <span style={{ color: '#64748b', fontSize: 11, fontWeight: 500 }}>ROI: ₹{c.roi}L</span>
-          {!isEligible && ineligible && (
+          {showLowAdmit && (
             <span style={{
               position: 'absolute',
               top: 6,
@@ -587,10 +648,31 @@ function CountryEligibilityStep({ country, budget, backlogs, onSelectCountry, on
               fontSize: 9,
               borderRadius: 7,
               padding: '1px 6px',
-            }}>Low admit chances</span>
+            }}>Low admit rate</span>
           )}
-          {!isEligible && ineligible && (
-            <span style={{ color: '#dc2626', fontSize: 10, marginTop: 2 }}>{reasonMap[c.value]}</span>
+          {showLowAdmit && reasonPhrase && (
+            <span style={{
+              color: '#dc2626',
+              fontSize: 11,
+              marginTop: 8,
+              fontWeight: 600,
+              display: 'block',
+              width: '100%',
+              textAlign: 'center',
+              minHeight: 16,
+            }}>{reasonPhrase}</span>
+          )}
+          {showLowAdmit && reasonMap[c.value] && (
+            <span style={{
+              color: '#b91c1c',
+              fontSize: 10,
+              marginTop: 2,
+              display: 'block',
+              width: '100%',
+              textAlign: 'center',
+              fontWeight: 400,
+              opacity: 0.7,
+            }}>{reasonMap[c.value]}</span>
           )}
         </button>
       );
@@ -771,6 +853,10 @@ function App() {
   const [disqualifiedReason, setDisqualifiedReason] = useState(null);
   const [contactDetails, setContactDetails] = useState(null);
   const timelineRef = useRef(null);
+  const [advisoryType, setAdvisoryType] = useState(null); // 'mbbs', 'bachelors', 'phd-bachelors', 'phd-masters'
+  const [showPhDAdvisory, setShowPhDAdvisory] = useState(false);
+  const [showMBBSAdvisory, setShowMBBSAdvisory] = useState(false);
+  const [showBachelorsAdvisory, setShowBachelorsAdvisory] = useState(false);
 
   // Scroll to program fold when education is selected
   useEffect(() => {
@@ -860,6 +946,14 @@ function App() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ phone, type }),
     });
+  };
+
+  // Helper: is medical program
+  const isMedicalProgram = (program) => {
+    return [
+      'masters-in-medicine', 'medical-specialization', 'phd-in-medicine', 'healthcare-mba', 'mbbs',
+      // Also allow for value matches in your programOptionsMap if needed
+    ].includes(program);
   };
 
   // Main render
@@ -975,18 +1069,61 @@ function App() {
             onOtpSubmit={(value) => {
               setOtp(value);
               setShowOtpPopup(false);
-              // Disqualification logic after phone verification
-              if (education === '10th' || education === '12th' || education === 'mbbs') {
+              // --- Custom advisory/disqualification logic ---
+              // 1. MBBS or medical program
+              if (
+                education === 'mbbs' ||
+                isMedicalProgram(program)
+              ) {
+                setAdvisoryType('mbbs');
+                setShowMBBSAdvisory(true);
+                setStep('advisory-mbbs');
+                return;
+              }
+              // 2. Bachelors + PhD
+              if (education && program === 'phd' && (
+                education === 'bachelors' || education === 'completed-bachelors' || education === 'final-bachelors' || education === 'non-final-bachelors'
+              )) {
+                setAdvisoryType('phd-bachelors');
+                setShowPhDAdvisory(true);
+                setStep('advisory-phd');
+                return;
+              }
+              // 3. Masters + PhD
+              if (education === 'masters' && program === 'phd') {
+                setAdvisoryType('phd-masters');
+                setShowPhDAdvisory(true);
+                setStep('advisory-phd');
+                return;
+              }
+              // 4. Bachelors + Bachelors (new logic)
+              if (
+                (education === 'bachelors' || education === 'completed-bachelors' || education === 'final-bachelors' || education === 'non-final-bachelors') &&
+                program === 'bachelors'
+              ) {
+                setShowBachelorsAdvisory(true);
+                setStep('advisory-bachelors');
+                return;
+              }
+              // 5. 10th/12th + Bachelors (new logic)
+              if ((education === '10th' || education === '12th') && program === 'bachelors') {
+                setAdvisoryType('bachelors');
+                setShowMBBSAdvisory(true);
+                setStep('advisory-mbbs');
+                return;
+              }
+              // 6. Passport 'yet-to-apply' (allow to proceed)
+              if (passport === 'yet-to-apply') {
+                setStep(5);
+                return;
+              }
+              // 7. Disqualification for 10th/12th (as before)
+              if (education === '10th' || education === '12th') {
                 setDisqualifiedReason(
                   education === '10th'
                     ? 'Currently, our partner universities require a minimum of 12th grade or equivalent for study abroad programs. Complete your 12th and come back—we will be here to help you take the next step!'
-                    : education === '12th'
-                    ? 'You are just one step away! Please complete your 12th grade and return to explore global opportunities with us.'
-                    : 'Currently, we are unable to support MBBS profiles for study abroad. If you are planning to pursue further studies, please reach out after your graduation.'
+                    : 'You are just one step away! Please complete your 12th grade and return to explore global opportunities with us.'
                 );
-                setStep('disqualified');
-              } else if (passport === 'yet-to-apply') {
-                setDisqualifiedReason('A valid passport or an application in process is required to proceed. Please apply for a passport and return—we will be ready to help you with your study abroad journey!');
                 setStep('disqualified');
               } else {
                 setStep(5);
@@ -995,6 +1132,51 @@ function App() {
             onCloseOtpPopup={() => setShowOtpPopup(false)}
           />
         </div>
+      )}
+      {/* Advisory MBBS/Medical page */}
+      {step === 'advisory-mbbs' && (
+        <AdvisoryMBBSPage
+          type={advisoryType === 'mbbs' ? 'mbbs' : 'bachelors'}
+          onContinue={() => {
+            setStep(0); // Back to home
+            setShowMBBSAdvisory(false);
+          }}
+        />
+      )}
+      {/* Advisory PhD path page */}
+      {step === 'advisory-phd' && (
+        <AdvisoryPhDPathPage
+          after={advisoryType === 'phd-bachelors' ? 'bachelors' : 'masters'}
+          onSelect={(choice) => {
+            if (choice === 'masters' || choice === 'mba') {
+              setProgram(choice);
+              setShowPhDAdvisory(false);
+              setStep(5); // Unlock milestone, go to next page
+            } else if (choice === 'phd') {
+              setShowPhDAdvisory(false);
+              setAdvisoryType('mbbs');
+              setShowMBBSAdvisory(true);
+              setStep('advisory-mbbs');
+            }
+          }}
+        />
+      )}
+      {/* Advisory Bachelors after Bachelors page */}
+      {step === 'advisory-bachelors' && (
+        <AdvisoryBachelorsPathPage
+          onSelect={(choice) => {
+            if (choice === 'masters' || choice === 'mba') {
+              setProgram(choice);
+              setShowBachelorsAdvisory(false);
+              setStep(5); // Unlock milestone, go to next page
+            } else if (choice === 'bachelors') {
+              setShowBachelorsAdvisory(false);
+              setAdvisoryType('bachelors');
+              setShowMBBSAdvisory(true);
+              setStep('advisory-mbbs');
+            }
+          }}
+        />
       )}
       {/* Step 5: Completion */}
       {step === 5 && (

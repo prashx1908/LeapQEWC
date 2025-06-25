@@ -109,12 +109,18 @@ function IntakeSelectionStep({ visible, onSelect, country, graduationYear, gradu
                 zIndex: 2,
                 boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
                 letterSpacing: 0.2,
-              }}>{opt.badge}</div>
+              }}>Recommended</div>
             )}
             <span style={{ fontSize: 28, marginRight: 10 }}>{opt.icon}</span>
             <div style={{ flex: 1 }}>
               <div style={{ fontWeight: 600, fontSize: 16, color: '#1e293b', marginBottom: 2 }}>{opt.title}</div>
               <div style={{ fontSize: 13, color: '#6b7280', lineHeight: 1.3 }}>{opt.subtitle}</div>
+              {/* Reason for recommended intake */}
+              {opt.badge && (
+                <div style={{ marginTop: 6, fontSize: 12, color: '#0891b2', fontWeight: 500 }}>
+                  Matches your graduation timeline
+                </div>
+              )}
             </div>
           </div>
         ))}

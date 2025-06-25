@@ -1,25 +1,25 @@
 import React, { useState } from 'react';
 
 const initialCountries = [
-  { value: 'any', flag: '🤔', name: 'Not sure', hint: 'Open to any country'},
+  { value: 'any', flag: '🤔', name: 'Not sure', hint: 'All Destinations' },
   { value: 'select-country', flag: '🌍', name: 'Select country', hint: '', badge: '' },
-  { value: 'usa', flag: '🇺🇸', name: 'USA', hint: 'Land of Innovation', badge: 'Top destination' },
-  { value: 'uk', flag: '🇬🇧', name: 'UK', hint: 'Legacy of Excellence', badge: 'Top destination' },
-  { value: 'canada', flag: '🇨🇦', name: 'Canada', hint: 'Maple Leaf Nation', badge: 'Student favourite' },
-  { value: 'australia', flag: '🇦🇺', name: 'Australia', hint: 'Down Under Advantage', badge: 'PR Path' },
-  { value: 'new-zealand', flag: '🇳🇿', name: 'New Zealand', hint: 'Kiwi Experience', badge: 'Good Work Permit' },
-  { value: 'ireland', flag: '🇮🇪', name: 'Ireland', hint: 'Emerald Isle', badge: 'Tech Hub' },
-  { value: 'germany', flag: '🇩🇪', name: 'Germany', hint: 'Engineered for Success', badge: 'Low Tuition' },
+  { value: 'usa', flag: '🇺🇸', name: 'USA', hint: 'Top STEM Choice', badge: 'Top destination' },
+  { value: 'uk', flag: '🇬🇧', name: 'UK', hint: '1-Year Masters', badge: 'Top destination' },
+  { value: 'canada', flag: '🇨🇦', name: 'Canada', hint: 'Work & PR', badge: 'Student favourite' },
+  { value: 'australia', flag: '🇦🇺', name: 'Australia', hint: 'PR Friendly', badge: 'PR Path' },
+  { value: 'new-zealand', flag: '🇳🇿', name: 'New Zealand', hint: 'Safe & Welcoming', badge: 'Good Work Permit' },
+  { value: 'ireland', flag: '🇮🇪', name: 'Ireland', hint: 'Tech Careers', badge: 'Tech Hub' },
+  { value: 'germany', flag: '🇩🇪', name: 'Germany', hint: 'Low Tuition', badge: 'Low Tuition' },
 ];
 
 const extraCountries = [
-  { value: 'france', flag: '🇫🇷', name: 'France', hint: 'Rich Culture' },
-  { value: 'netherlands', flag: '🇳🇱', name: 'Netherlands', hint: 'Innovation Hub' },
-  { value: 'singapore', flag: '🇸🇬', name: 'Singapore', hint: 'Asian Business Hub' },
-  { value: 'sweden', flag: '🇸🇪', name: 'Sweden', hint: 'Innovation & Research' },
-  { value: 'denmark', flag: '🇩🇰', name: 'Denmark', hint: 'Quality Education' },
-  { value: 'italy', flag: '🇮🇹', name: 'Italy', hint: 'Art & Design' },
-  { value: 'spain', flag: '🇪🇸', name: 'Spain', hint: 'Cultural Experience' },
+  { value: 'france', flag: '🇫🇷', name: 'France', hint: 'Business Schools' },
+  { value: 'netherlands', flag: '🇳🇱', name: 'Netherlands', hint: 'English Programs' },
+  { value: 'singapore', flag: '🇸🇬', name: 'Singapore', hint: 'Asia Innovation' },
+  { value: 'sweden', flag: '🇸🇪', name: 'Sweden', hint: 'Tech & Design' },
+  { value: 'denmark', flag: '🇩🇰', name: 'Denmark', hint: 'Project Learning' },
+  { value: 'italy', flag: '🇮🇹', name: 'Italy', hint: 'Design & Arts' },
+  { value: 'spain', flag: '🇪🇸', name: 'Spain', hint: 'Business, Hospitality' },
 ];
 
 const reorderedInitial = [
