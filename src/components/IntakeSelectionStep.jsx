@@ -21,42 +21,26 @@ const intakeOptions = [
     title: 'Fall 2026 (Aug/Sep)',
     subtitle: "Ideal if you\'re graduating between May and August 2026",
   },
-  {
-    value: 'not-sure',
-    icon: '🤔',
-    title: 'Still Deciding',
-    subtitle: 'Let us help you find the perfect intake based on your timeline',
-  },
+ 
 ];
+
+function getRecommendedIntake(graduationYear, graduationMonth) {
+  // Convert to numbers for comparison
+  const year = Number(graduationYear);
+  const month = Number(graduationMonth);
+  if (!year) return null;
+  if (year < 2025 || (year === 2025 && (!month || month < 9))) return 'fall-2025';
+  if (year === 2025 && month < 12) return 'spring-2026';
+  if (year > 2025 || (year === 2025 && month >= 12) || (year > 2026)) return 'fall-2026';
+  return null;
+}
 
 function IntakeSelectionStep({ visible, onSelect, country, graduationYear, graduationMonth }) {
   const [selected, setSelected] = useState(null);
   if (!visible) return null;
 
   // Determine recommended intake based on graduationYear and graduationMonth
-  let recommendedValue = null;
-  if (graduationYear) {
-    const gradYear = Number(graduationYear);
-    let gradMonth = graduationMonth;
-    if (typeof gradMonth === 'string' && gradMonth.length === 2) {
-      gradMonth = Number(gradMonth);
-    } else if (typeof gradMonth === 'string') {
-      // fallback: try to parse month name
-      const monthMap = {
-        january: 1, february: 2, march: 3, april: 4, may: 5, june: 6, july: 7, august: 8, september: 9, october: 10, november: 11, december: 12
-      };
-      gradMonth = monthMap[gradMonth.toLowerCase()] || 1;
-    }
-    if (gradYear < 2025 || (gradYear === 2025 && gradMonth < 8)) {
-      recommendedValue = 'fall-2025';
-    } else if (gradYear === 2025 && gradMonth >= 8 && gradMonth <= 12) {
-      recommendedValue = 'spring-2026';
-    } else if (gradYear === 2026 && gradMonth >= 5 && gradMonth <= 8) {
-      recommendedValue = 'fall-2026';
-    } else {
-      recommendedValue = null;
-    }
-  }
+  let recommendedValue = getRecommendedIntake(graduationYear, graduationMonth);
 
   const intakeOptionsWithBadge = intakeOptions.map(opt => ({
     ...opt,

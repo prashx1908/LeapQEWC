@@ -2,28 +2,28 @@ import React, { useState } from 'react';
 
 const financeOptions = [
   {
-    value: 'self-funded',
+    value: 'savings',
     icon: '💰',
-    title: 'Self-Funded',
-    subtitle: 'Using personal/family savings',
+    title: 'Savings',
+    subtitle: 'Personal or family savings',
   },
   {
     value: 'loan',
     icon: '🏦',
-    title: 'Education Loan',
-    subtitle: 'Planning to take a student loan',
+    title: 'Loan',
+    subtitle: 'Education loan from bank or NBFC',
+  },
+  {
+    value: 'savings-loan',
+    icon: '🔄',
+    title: 'Savings + Loan',
+    subtitle: 'Combination of savings and loan',
   },
   {
     value: 'scholarship',
     icon: '🎓',
-    title: '100% Scholarship',
-    subtitle: 'Applying for scholarships',
-  },
-  {
-    value: 'combination',
-    icon: '🔄',
-    title: 'Combination of loan + savings',
-    subtitle: '',
+    title: 'No, I want 100% scholarship',
+    subtitle: 'Will only go if I get a full scholarship',
   },
 ];
 
@@ -49,6 +49,9 @@ export default function FinanceStep({ onSelect, initialValue }) {
         <h2 style={{ fontSize: 26, fontWeight: 800, color: '#1e293b', marginBottom: 10, letterSpacing: 0.2 }}>
           How do you plan to finance your education?
         </h2>
+        <div style={{ color: '#374151', fontSize: 17, marginBottom: 12, fontWeight: 500 }}>
+          With a minimum assurance of 20% scholarship, keeping it aside, how would you fund your education?
+        </div>
         <div style={{ color: '#374151', fontSize: 17, marginBottom: 28, fontWeight: 500 }}>
           Select your preferred mode of financing
         </div>

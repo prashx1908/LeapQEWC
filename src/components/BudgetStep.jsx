@@ -4,26 +4,26 @@ const budgetOptions = [
   {
     value: '35L',
     icon: '👑',
-    title: 'Can invest a min of 35 lakhs',
+    label: 'Can invest a min of 35 lakhs',
     description: 'Access top tier universities in USA and other amazing universities in other countries',
   },
   {
     value: '15L',
     icon: '✅',
-    title: 'Can invest a min of 15 lakhs',
+    label: 'Can invest a min of 15 lakhs',
     description: 'Access top universities in countries like UK, Canada, Australia',
-  },
-  {
-    value: 'not-sure',
-    icon: '💬',
-    title: 'Not sure about the finance',
-    description: 'Need a counsellor to talk to to make a decision',
   },
   {
     value: 'cannot15',
     icon: 'ℹ️',
-    title: ",Can't invest a min of 15 lakhs",
+    label: "Can't invest a min of 15 lakhs",
     description: '',
+  },
+  {
+    value: 'not-sure',
+    icon: '💬',
+    label: 'Not sure about the finance',
+    description: 'Need a counsellor to talk to to make a decision',
   },
 ];
 
@@ -68,7 +68,7 @@ const BudgetStep = ({ onBudgetSelected }) => {
             >
               <span style={{ fontSize: 32, marginRight: 12 }}>{opt.icon}</span>
               <div style={{ textAlign: 'left' }}>
-                <div style={{ fontWeight: 800, fontSize: 18 }}>{opt.title}</div>
+                <div style={{ fontWeight: 800, fontSize: 18 }}>{opt.label}</div>
                 {opt.description && <div style={{ fontWeight: 500, fontSize: 15, color: selected === opt.value ? '#e0e7ff' : '#475569', marginTop: 4 }}>{opt.description}</div>}
               </div>
             </div>

@@ -85,17 +85,50 @@ function EnglishPassportStep({ passport, city, onPassportSelect, onCitySelect, o
         alignItems: 'center',
       }}>
         <h3 className="fold-title" style={{ fontSize: 18, fontWeight: 600, margin: '0 0 18px 0', color: '#1e293b', textAlign: 'center' }}>Do you hold a valid passport?</h3>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 180px)', gap: 18, justifyContent: 'center', margin: '0 auto' }}>
-          {passportOptions.map(opt => (
+        <div style={{ width: '100%', maxWidth: 400, margin: '0 auto' }}>
+          <div style={{ display: 'flex', gap: 18, justifyContent: 'center', marginBottom: 14 }}>
+            {passportOptions.slice(0, 2).map(opt => (
+              <div
+                key={opt.value}
+                style={{
+                  width: 180,
+                  height: 120,
+                  background: '#fff',
+                  border: passport === opt.value ? '2.5px solid #6366f1' : '2px solid #e5e7eb',
+                  borderRadius: 16,
+                  boxShadow: passport === opt.value ? '0 2px 8px rgba(99,102,241,0.10)' : '0 2px 8px rgba(0,0,0,0.04)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  position: 'relative',
+                  transition: 'border-color 0.2s, box-shadow 0.2s',
+                  fontWeight: 600,
+                  fontSize: 16,
+                  userSelect: 'none',
+                }}
+                onClick={() => onPassportSelect(opt.value)}
+                tabIndex={0}
+                onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && onPassportSelect(opt.value)}
+                onMouseOver={e => e.currentTarget.style.borderColor = '#6366f1'}
+                onMouseOut={e => e.currentTarget.style.borderColor = passport === opt.value ? '#6366f1' : '#e5e7eb'}
+              >
+                <span style={{ fontSize: 32, marginBottom: 6 }}>{opt.icon}</span>
+                <div style={{ color: '#1e293b', fontWeight: 600 }}>{opt.label}</div>
+              </div>
+            ))}
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
             <div
-              key={opt.value}
+              key={passportOptions[2].value}
               style={{
                 width: 180,
                 height: 120,
                 background: '#fff',
-                border: passport === opt.value ? '2.5px solid #6366f1' : '2px solid #e5e7eb',
+                border: passport === passportOptions[2].value ? '2.5px solid #6366f1' : '2px solid #e5e7eb',
                 borderRadius: 16,
-                boxShadow: passport === opt.value ? '0 2px 8px rgba(99,102,241,0.10)' : '0 2px 8px rgba(0,0,0,0.04)',
+                boxShadow: passport === passportOptions[2].value ? '0 2px 8px rgba(99,102,241,0.10)' : '0 2px 8px rgba(0,0,0,0.04)',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
@@ -107,16 +140,16 @@ function EnglishPassportStep({ passport, city, onPassportSelect, onCitySelect, o
                 fontSize: 16,
                 userSelect: 'none',
               }}
-              onClick={() => onPassportSelect(opt.value)}
+              onClick={() => onPassportSelect(passportOptions[2].value)}
               tabIndex={0}
-              onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && onPassportSelect(opt.value)}
+              onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && onPassportSelect(passportOptions[2].value)}
               onMouseOver={e => e.currentTarget.style.borderColor = '#6366f1'}
-              onMouseOut={e => e.currentTarget.style.borderColor = passport === opt.value ? '#6366f1' : '#e5e7eb'}
+              onMouseOut={e => e.currentTarget.style.borderColor = passport === passportOptions[2].value ? '#6366f1' : '#e5e7eb'}
             >
-              <span style={{ fontSize: 32, marginBottom: 6 }}>{opt.icon}</span>
-              <div style={{ color: '#1e293b', fontWeight: 600 }}>{opt.label}</div>
+              <span style={{ fontSize: 32, marginBottom: 6 }}>{passportOptions[2].icon}</span>
+              <div style={{ color: '#1e293b', fontWeight: 600 }}>{passportOptions[2].label}</div>
             </div>
-          ))}
+          </div>
         </div>
       </div>
       {/* City Selection - only show after passport is selected */}

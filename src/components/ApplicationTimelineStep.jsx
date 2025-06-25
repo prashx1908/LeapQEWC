@@ -8,6 +8,7 @@ const timelineOptions = [
 
 export default function ApplicationTimelineStep({ onSelect, initialValue }) {
   const [selected, setSelected] = useState(initialValue || null);
+  const [timeline, setTimeline] = useState(null);
 
   return (
     <div style={{ maxWidth: 520, width: '100%', background: '#fff', borderRadius: 24, boxShadow: '0 8px 32px rgba(99,102,241,0.10)', padding: '40px 32px 32px 32px', margin: '0 auto', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
@@ -29,10 +30,10 @@ export default function ApplicationTimelineStep({ onSelect, initialValue }) {
         {timelineOptions.map(opt => (
           <div
             key={opt.value}
-            onClick={() => { setSelected(opt.value); onSelect && onSelect(opt.value); }}
+            onClick={() => setTimeline(opt.value)}
             style={{
-              background: selected === opt.value ? '#eef2ff' : '#fff',
-              border: selected === opt.value ? '2px solid #6366f1' : '1.5px solid #e5e7eb',
+              background: timeline === opt.value ? '#eef2ff' : '#fff',
+              border: timeline === opt.value ? '2px solid #6366f1' : '1.5px solid #e5e7eb',
               borderRadius: 12,
               padding: '22px 18px',
               cursor: 'pointer',
@@ -43,7 +44,7 @@ export default function ApplicationTimelineStep({ onSelect, initialValue }) {
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
-              boxShadow: selected === opt.value ? '0 2px 8px #6366f122' : 'none',
+              boxShadow: timeline === opt.value ? '0 2px 8px #6366f122' : 'none',
               fontWeight: 500,
               fontSize: 15,
               marginBottom: 0,
@@ -56,6 +57,11 @@ export default function ApplicationTimelineStep({ onSelect, initialValue }) {
           </div>
         ))}
       </div>
+      {timeline && (
+        <div style={{ marginTop: 24, width: '100%' }}>
+          {/* Preferred University question and dropdown as before */}
+        </div>
+      )}
       <style>{`
         @media (max-width: 700px) {
           .timeline-row {

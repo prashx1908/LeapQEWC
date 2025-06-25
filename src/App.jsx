@@ -106,12 +106,13 @@ const universityData = {
   // ... add more countries as needed ...
 };
 
-function FinalCongratulationsPage({ universityCount = 42 }) {
+function FinalCongratulationsPage({ universityCount = 42, passportStatus }) {
+  const needsPassport = passportStatus === 'yet-to-apply' || passportStatus === 'applied';
   return (
     <div style={{ minHeight: '80vh', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'none' }}>
       <div className="completion-emoji" style={{ fontSize: 48, marginBottom: 10, animation: 'bounce 1.2s' }}>🎉</div>
       <h2 className="completion-title" style={{ fontSize: 24, fontWeight: 900, color: '#443eff', marginBottom: 18, letterSpacing: '-0.01em' }}>Profile Evaluation Completed!</h2>
-      {/* Timeline Milestones (copied style from CompletionStep) */}
+      {/* Timeline Milestones */}
       <div style={{
         width: '100%',
         background: 'rgba(245,247,250,0.98)',
@@ -146,7 +147,7 @@ function FinalCongratulationsPage({ universityCount = 42 }) {
           </div>
           <span style={{ fontSize: 22, color: '#22c55e', marginLeft: 8 }}>→</span>
         </div>
-        {/* Milestone 2: Profile Evaluation - Completed (now green, unlocked, with rewards) */}
+        {/* Milestone 2: Profile Evaluation - Completed */}
         <div style={{
           width: '100%',
           display: 'flex',
@@ -174,55 +175,93 @@ function FinalCongratulationsPage({ universityCount = 42 }) {
           </div>
           <span style={{ fontSize: 22, color: '#22c55e', marginLeft: 8 }}>→</span>
         </div>
-        {/* Milestone 3: Get university shortlist (active, blue border, uniform style) */}
-        <div style={{
-          width: '100%',
-          display: 'flex',
-          flexDirection: 'column',
-          marginBottom: 10,
-          background: '#f3f4f6',
-          borderRadius: 16,
-          padding: '16px 10px',
-          boxShadow: '0 1px 4px rgba(74,144,226,0.04)',
-          border: '2.5px solid #6366f1',
-          opacity: 1,
-          position: 'relative',
-          minHeight: 80,
-        }}>
-          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 16, width: '100%' }}>
-            <span style={{ fontSize: 28, color: '#6366f1', marginLeft: 2, marginTop: 2 }}>🔵</span>
-            <div style={{ flex: 1, textAlign: 'left', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-              <div style={{ fontWeight: 800, fontSize: 17, color: '#6366f1', marginBottom: 2 }}>
-                Milestone 3: University Shortlisting <span style={{ fontWeight: 700, fontSize: 14, color: '#6366f1' }}>- Pending</span>
-              </div>
-              <div style={{ color: '#64748b', fontSize: 15, fontWeight: 500 }}>
-                Get your personalized university shortlist and next steps.
+        {/* Milestone 3: Passport or University Shortlisting */}
+        {needsPassport ? (
+          <div style={{
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            marginBottom: 10,
+            background: '#f3f4f6',
+            borderRadius: 16,
+            padding: '16px 10px',
+            boxShadow: '0 1px 4px rgba(74,144,226,0.04)',
+            border: '2.5px solid #6366f1',
+            opacity: 1,
+            position: 'relative',
+            minHeight: 80,
+          }}>
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 16, width: '100%' }}>
+              <span style={{ fontSize: 28, color: '#6366f1', marginLeft: 2, marginTop: 2 }}>🛂</span>
+              <div style={{ flex: 1, textAlign: 'left', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                <div style={{ fontWeight: 800, fontSize: 17, color: '#6366f1', marginBottom: 2 }}>
+                  Milestone 3: Apply and receive passport <span style={{ fontWeight: 700, fontSize: 14, color: '#6366f1' }}>- Pending</span>
+                </div>
+                <div style={{ color: '#64748b', fontSize: 15, fontWeight: 500 }}>
+                  To proceed with your study abroad journey, you need a valid passport. Start your application now!
+                </div>
+                {/* Resources */}
+                <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  <a href="https://portal2.passportindia.gov.in/" target="_blank" rel="noopener noreferrer" style={{ color: '#443eff', fontWeight: 700, textDecoration: 'underline', fontSize: 15, display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <span style={{ fontSize: 18 }}>🛂</span> Indian Passport Application Portal
+                  </a>
+                  <a href="https://leapscholar.com/blog/how-to-apply-for-passport-india" target="_blank" rel="noopener noreferrer" style={{ color: '#443eff', fontWeight: 700, textDecoration: 'underline', fontSize: 15, display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <span style={{ fontSize: 18 }}>📘</span> How to Apply for a Passport (Guide)
+                  </a>
+                </div>
               </div>
             </div>
           </div>
-          <button
-            style={{
-              background: 'linear-gradient(90deg, #6366f1 0%, #a78bfa 100%)',
-              color: '#fff',
-              border: 'none',
-              borderRadius: 8,
-              padding: '12px 22px',
-              fontWeight: 700,
-              fontSize: 15,
-              cursor: 'pointer',
-              marginTop: 18,
-              boxShadow: '0 2px 8px rgba(99,102,241,0.08)',
-              letterSpacing: 0.2,
-              transition: 'background 0.2s',
-              whiteSpace: 'nowrap',
-              width: '100%',
-              alignSelf: 'center',
-            }}
-            onClick={() => window.open('https://calendly.com/leapcounselor', '_blank')}
-          >
-            Book a call with counsellor
-          </button>
-        </div>
+        ) : (
+          <div style={{
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            marginBottom: 10,
+            background: '#f3f4f6',
+            borderRadius: 16,
+            padding: '16px 10px',
+            boxShadow: '0 1px 4px rgba(74,144,226,0.04)',
+            border: '2.5px solid #6366f1',
+            opacity: 1,
+            position: 'relative',
+            minHeight: 80,
+          }}>
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 16, width: '100%' }}>
+              <span style={{ fontSize: 28, color: '#6366f1', marginLeft: 2, marginTop: 2 }}>🔵</span>
+              <div style={{ flex: 1, textAlign: 'left', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                <div style={{ fontWeight: 800, fontSize: 17, color: '#6366f1', marginBottom: 2 }}>
+                  Milestone 3: University Shortlisting <span style={{ fontWeight: 700, fontSize: 14, color: '#6366f1' }}>- Pending</span>
+                </div>
+                <div style={{ color: '#64748b', fontSize: 15, fontWeight: 500 }}>
+                  Get your personalized university shortlist and next steps.
+                </div>
+              </div>
+              <button
+                style={{
+                  background: 'linear-gradient(90deg, #6366f1 0%, #a78bfa 100%)',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: 8,
+                  padding: '12px 22px',
+                  fontWeight: 700,
+                  fontSize: 15,
+                  cursor: 'pointer',
+                  marginTop: 18,
+                  boxShadow: '0 2px 8px rgba(99,102,241,0.08)',
+                  letterSpacing: 0.2,
+                  transition: 'background 0.2s',
+                  whiteSpace: 'nowrap',
+                  width: '100%',
+                  alignSelf: 'center',
+                }}
+                onClick={() => window.open('https://calendly.com/leapcounselor', '_blank')}
+              >
+                Book a call with counsellor
+              </button>
+            </div>
+          </div>
+        )}
       </div>
       {/* What's Next Section and report buttons as before */}
       
@@ -318,6 +357,9 @@ function CountryEligibilityStep({ country, budget, backlogs, onSelectCountry, on
   const [showDisqualDialog, setShowDisqualDialog] = React.useState(false);
   const [disqualCountry, setDisqualCountry] = React.useState(null);
   const [disqualReason, setDisqualReason] = React.useState('');
+  // Add state for custom dialog for cannot15 budget
+  const [showCannot15Dialog, setShowCannot15Dialog] = React.useState(false);
+  const [cannot15Country, setCannot15Country] = React.useState(null);
 
   // --- Compact country button style ---
   const compactButtonStyle = {
@@ -370,8 +412,14 @@ function CountryEligibilityStep({ country, budget, backlogs, onSelectCountry, on
   const notSureAnd15L = isNotSure && userBudget >= 15;
   const notSureAnd35L = isNotSure && userBudget >= 35;
 
-  // Helper to check if a country is eligible (budget + backlogs)
+  // If budget is 'not-sure', only use backlogs for eligibility/disqualification
+  const isBudgetNotSure = budget === 'not-sure';
+
+  // Helper to check if a country is eligible (backlogs only if budget is not-sure)
   const isCountryEligible = (c) => {
+    if (isBudgetNotSure) {
+      return backlogs <= c.minBacklogs;
+    }
     if (notSureAnd15L) return true; // All countries eligible if not sure and budget >= 15L
     return userBacklogs <= c.minBacklogs && c.minBudget <= budgetMax;
   };
@@ -380,47 +428,83 @@ function CountryEligibilityStep({ country, budget, backlogs, onSelectCountry, on
   const eligibleCountries = countryReqs.filter(isCountryEligible);
   const ineligibleCountries = countryReqs.filter(c => !isCountryEligible(c));
   let reasonMap = {};
-  // Always populate reasonMap for all main countries if ineligible, even in 'not sure' + 15L
   countryReqs.forEach(c => {
-    if (userBacklogs > 15) reasonMap[c.value] = 'Backlogs > 15';
-    else if (userBacklogs > c.minBacklogs) reasonMap[c.value] = `Backlogs > ${c.minBacklogs}`;
-    else if (c.minBudget > budgetMax) reasonMap[c.value] = `Min ${c.minBudget}L`;
+    if (backlogs > 15) reasonMap[c.value] = 'Backlogs > 15';
+    else if (backlogs > c.minBacklogs) reasonMap[c.value] = `Backlogs > ${c.minBacklogs}`;
+    else if (!isBudgetNotSure && c.minBudget > budgetMax) reasonMap[c.value] = `Min ${c.minBudget}L`;
     // else do not set
   });
 
   // --- Show advisory message if selected country is ineligible (softer wording) ---
   const selectedCountryObj = countryReqs.find(c => c.value === country);
   const selectedCountryIneligible = selectedCountryObj && !isCountryEligible(selectedCountryObj);
-  const advisoryMessage = (!notSureAnd15L && selectedCountryIneligible) ? (
-    <div style={{
-      background: '#f8fafc',
-      color: '#b91c1c',
-      borderRadius: 10,
-      padding: '12px 18px',
-      fontWeight: 500,
-      fontSize: 15,
-      marginBottom: 18,
-      textAlign: 'center',
-      maxWidth: 700,
-      width: '100%',
-      border: '1.5px solid #e0e7ff',
-    }}>
-      {selectedCountryObj?.name} with {reasonMap[country]} has low admit chances. Explore other options or continue if you wish.
-    </div>
-  ) : null;
+  const advisoryMessage = (selectedCountryIneligible && (
+    isBudgetNotSure
+      ? (reasonMap[country]?.includes('Backlogs') && (
+        <div style={{
+          background: '#f8fafc',
+          color: '#b91c1c',
+          borderRadius: 10,
+          padding: '12px 18px',
+          fontWeight: 500,
+          fontSize: 15,
+          marginBottom: 18,
+          textAlign: 'center',
+          maxWidth: 700,
+          width: '100%',
+          border: '1.5px solid #e0e7ff',
+        }}>
+          {selectedCountryObj?.name} with {reasonMap[country]} has low admit chances due to backlogs. Explore other options or continue if you wish.
+        </div>
+      ))
+      : (!notSureAnd15L && (
+        <div style={{
+          background: '#f8fafc',
+          color: '#b91c1c',
+          borderRadius: 10,
+          padding: '12px 18px',
+          fontWeight: 500,
+          fontSize: 15,
+          marginBottom: 18,
+          textAlign: 'center',
+          maxWidth: 700,
+          width: '100%',
+          border: '1.5px solid #e0e7ff',
+        }}>
+          {selectedCountryObj?.name} with {reasonMap[country]} has low admit chances. Explore other options or continue if you wish.
+        </div>
+      ))
+  ));
 
   // --- Main country button click handler ---
   function handleCountryClick(c, isEligible) {
-    // If USA is selected and both backlogs > 10 and budget is 15L, always show the 3-option dialog
-    if (c.value === 'usa' && userBudget === 15 && userBacklogs > 10) {
+    if (budget === 'cannot15' && isEligible) {
+      setCannot15Country(c);
+      setShowCannot15Dialog(true);
+      return;
+    }
+    if (budget === 'cannot15' && c.value === 'usa') {
+      setCannot15Country(c);
+      setShowCannot15Dialog(true);
+      return;
+    }
+    if (budget === 'not-sure') {
+      // Only show disqual dialog for backlogs
+      if (backlogs > c.minBacklogs) {
+        setDisqualCountry(c);
+        setDisqualReason(reasonMap[c.value]);
+        setShowDisqualDialog(true);
+        return;
+      }
+      onSelectCountry(c.value);
+      onContinue();
+      return;
+    }
+    // Only show USA 35L dialog if budget is exactly 15L
+    if (c.value === 'usa' && budget === '15L' && userBacklogs > 10) {
       setShowUSAConfirm(true);
       return;
     }
-    if (isNotSure && userBudget === 15 && c.value === 'usa') {
-      setShowUSAConfirm(true);
-      return;
-    }
-    // In 'not sure' + 15L, if country is ineligible due to backlogs, show dialog
     if (notSureAnd15L && userBacklogs > c.minBacklogs) {
       setDisqualCountry(c);
       setDisqualReason(reasonMap[c.value]);
@@ -438,7 +522,7 @@ function CountryEligibilityStep({ country, budget, backlogs, onSelectCountry, on
       setShowDisqualDialog(true);
       return;
     }
-    if (c.value === 'usa' && userBudget === 15 && !notSureAnd35L) {
+    if (c.value === 'usa' && budget === '15L' && !notSureAnd35L) {
       setShowUSAConfirm(true);
       return;
     }
@@ -792,9 +876,127 @@ function CountryEligibilityStep({ country, budget, backlogs, onSelectCountry, on
     </div>
   );
 
+  // --- Advisory for cannot15 budget ---
+  const cannot15Advisory = budget === 'cannot15' && (
+    <div style={{
+      background: 'linear-gradient(90deg, #fef9c3 0%, #e0e7ff 100%)',
+      color: '#b45309',
+      borderRadius: 14,
+      padding: '18px 22px',
+      fontWeight: 600,
+      fontSize: 16,
+      marginBottom: 22,
+      textAlign: 'center',
+      border: '2px solid #fde68a',
+      maxWidth: 700,
+      width: '100%',
+      boxShadow: '0 2px 8px #fde68a33',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      gap: 8,
+    }}>
+      <span style={{ fontSize: 22 }}>💡</span>
+      <span>
+        Expand your budget a little to get access to more universities, or select a country and talk to a counsellor for financial decisions.
+      </span>
+    </div>
+  );
+
+  // --- Custom dialog for cannot15 budget ---
+  const cannot15Dialog = showCannot15Dialog && cannot15Country && (
+    <div style={{
+      position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.25)', zIndex: 1000,
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+    }}>
+      <div style={{ background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px #0002', padding: 36, minWidth: 340, textAlign: 'center', maxWidth: 380 }}>
+        <div style={{ fontWeight: 800, fontSize: 19, color: '#b45309', marginBottom: 10 }}>Next Steps for {cannot15Country.name}</div>
+        <div style={{ color: '#a16207', fontSize: 15, marginBottom: 18 }}>
+          {cannot15Country.value === 'usa'
+            ? 'You can either select USA with a 35 lakhs budget or talk to a counsellor for financial planning.'
+            : `You can either select this country with a 15 lakhs budget or talk to a counsellor for financial planning.`}
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginTop: 8 }}>
+          {cannot15Country.value === 'usa' ? (
+            <button style={{
+              background: 'linear-gradient(90deg, #6366f1 0%, #a78bfa 100%)',
+              color: '#fff',
+              border: 'none',
+              borderRadius: 8,
+              padding: '12px 22px',
+              fontWeight: 700,
+              fontSize: 15,
+              cursor: 'pointer',
+              boxShadow: '0 2px 8px rgba(99,102,241,0.08)',
+              letterSpacing: 0.2,
+              width: '100%',
+              marginBottom: 4,
+            }}
+              onClick={() => {
+                setShowCannot15Dialog(false);
+                onSelectCountry('usa');
+                // Set budget to 35L if possible
+                if (typeof window !== 'undefined') {
+                  window.dispatchEvent(new CustomEvent('setBudget', { detail: '35L' }));
+                }
+                onContinue();
+              }}
+            >
+              Select USA with 35 lakhs budget
+            </button>
+          ) : (
+            <button style={{
+              background: 'linear-gradient(90deg, #6366f1 0%, #a78bfa 100%)',
+              color: '#fff',
+              border: 'none',
+              borderRadius: 8,
+              padding: '12px 22px',
+              fontWeight: 700,
+              fontSize: 15,
+              cursor: 'pointer',
+              boxShadow: '0 2px 8px rgba(99,102,241,0.08)',
+              letterSpacing: 0.2,
+              width: '100%',
+              marginBottom: 4,
+            }}
+              onClick={() => {
+                setShowCannot15Dialog(false);
+                onSelectCountry(cannot15Country.value);
+                onContinue();
+              }}
+            >
+              Select {cannot15Country.name} with 15 lakhs budget
+            </button>
+          )}
+          <button style={{
+            background: '#e0e7ff',
+            color: '#3730a3',
+            border: 'none',
+            borderRadius: 8,
+            padding: '12px 22px',
+            fontWeight: 700,
+            fontSize: 15,
+            cursor: 'pointer',
+            boxShadow: '0 2px 8px #6366f122',
+            letterSpacing: 0.2,
+            width: '100%',
+          }}
+            onClick={() => {
+              setShowCannot15Dialog(false);
+              onContinue();
+            }}
+          >
+            Talk to a counsellor for financial decision
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <div style={{ background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.06)', maxWidth: 800, width: '100%', padding: '24px 16px', margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative' }}>
       <h2 style={{ fontSize: 22, fontWeight: 700, color: '#1e293b', marginBottom: 8 }}>Country Eligibility</h2>
+      {cannot15Advisory}
       <div style={{ fontSize: 15, color: '#64748b', fontWeight: 500, marginBottom: 16, textAlign: 'center' }}>
         Choose the country which best suits for you
       </div>
@@ -820,6 +1022,7 @@ function CountryEligibilityStep({ country, budget, backlogs, onSelectCountry, on
           </button>
         </div>
       </div>
+      {cannot15Dialog}
       {usaConfirmDialog}
       {disqualDialog}
     </div>
@@ -857,6 +1060,8 @@ function App() {
   const [showPhDAdvisory, setShowPhDAdvisory] = useState(false);
   const [showMBBSAdvisory, setShowMBBSAdvisory] = useState(false);
   const [showBachelorsAdvisory, setShowBachelorsAdvisory] = useState(false);
+  const [preferredUniAnswer, setPreferredUniAnswer] = useState('not-sure');
+  const [selectedPreferredUni, setSelectedPreferredUni] = useState('');
 
   // Scroll to program fold when education is selected
   useEffect(() => {
@@ -956,6 +1161,9 @@ function App() {
     ].includes(program);
   };
 
+  // Preferred cities for offline counseling
+  const preferredCities = ['bangalore', 'chennai', 'pune', 'gurgaon', 'ludhiana'];
+
   // Main render
   return (
     <div
@@ -986,7 +1194,7 @@ function App() {
         <div style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', background: 'transparent', margin: '28px 0 0 0', padding: 0 }}>
           <img src={logoUrl} alt="Leap Scholar" style={{ height: 68, maxWidth: 260, background: 'transparent', marginBottom: 24 }} />
         </div>
-        {step !== 5 && <ProgressBar step={step} />}
+        {step !== 5 && step !== 'advisory-phd' && <ProgressBar step={step} />}
       </div>
 
       {/* Step 0: Country Selection */}
@@ -1069,6 +1277,8 @@ function App() {
             onOtpSubmit={(value) => {
               setOtp(value);
               setShowOtpPopup(false);
+              // Debug log for advisory logic
+              console.log({ education, program, step, advisoryType, showPhDAdvisory });
               // --- Custom advisory/disqualification logic ---
               // 1. MBBS or medical program
               if (
@@ -1099,7 +1309,7 @@ function App() {
               // 4. Bachelors + Bachelors (new logic)
               if (
                 (education === 'bachelors' || education === 'completed-bachelors' || education === 'final-bachelors' || education === 'non-final-bachelors') &&
-                program === 'bachelors'
+                (program === 'bachelors' || program === 'another-bachelors')
               ) {
                 setShowBachelorsAdvisory(true);
                 setStep('advisory-bachelors');
@@ -1246,131 +1456,146 @@ function App() {
           <FinanceStep
             onSelect={(mode) => {
               setFinanceMode(mode);
-              setStep(10);
+              // If budget is 'cannot15', always show CountryEligibilityStep
+              if (budget === 'cannot15') {
+                setStep(10);
+              } else if (budget === 'not-sure' && (academicDetails.backlogs === 0 || academicDetails.backlogs === '0')) {
+                setStep(11);
+              } else if (budget === 'not-sure' && country && isCountryEligibleByBacklogs(country, Number(academicDetails.backlogs))) {
+                setStep(11); // skip eligibility if not-sure and selected country is eligible by backlogs
+              } else {
+                setStep(10);
+              }
             }}
             initialValue={financeMode}
           />
         </div>
       )}
-      {/* Step 10: IELTS/English Test Details */}
-      {step === 10 && budget && financeMode && (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.06)', maxWidth: 500, padding: '32px 24px', marginTop: 0 }}>
-          <EnglishTestDetailsStep
-            englishTestStatus={null}
-            onSubmit={details => {
-              setEnglishTestDetails(details);
-              setStep(11);
-            }}
-            selectedCity={city}
-            intake={intake}
-            onEditIntake={() => setStep(10)}
-          />
-        </div>
+      {/* Step 10: Country Eligibility Step (moved up in flow) */}
+      {step === 10 && (
+        <CountryEligibilityStep
+          country={country}
+          budget={budget}
+          backlogs={academicDetails.backlogs}
+          onSelectCountry={(newCountry) => setCountry(newCountry)}
+          onContinue={() => setStep(11)}
+        />
       )}
-      {/* Step 11: University Preference + Application Timeline Step */}
+      {/* Step 11: Application Timeline + Preferred University (combined) */}
       {step === 11 && (
-        <div style={{ width: '100%', maxWidth: 700, margin: '0 auto', background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.06)', padding: '32px 24px', display: 'flex', flexDirection: 'column', gap: 0 }}>
-          <div style={{ marginBottom: 32 }}>
-            <UniversityPreferenceStep
-              country={country}
-              universitiesList={universityData[country] || universityData.any}
-              onSelect={(selected) => {
-                setSelectedUniversities(selected);
-                // Do not advance step here
-              }}
-            />
+        <div style={{ maxWidth: 520, width: '100%', background: '#fff', borderRadius: 24, boxShadow: '0 8px 32px rgba(99,102,241,0.10)', padding: '40px 32px 32px 32px', margin: '0 auto', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <h2 style={{ fontSize: 22, fontWeight: 700, color: '#1e293b', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span role="img" aria-label="hourglass">⏳</span> Application Timeline
+          </h2>
+          <div style={{ color: '#374151', fontSize: 16, marginBottom: 18 }}>When do you want to apply for your studies?</div>
+          <div style={{ display: 'flex', flexDirection: 'row', gap: 22, width: '100%', justifyContent: 'center', flexWrap: 'wrap', marginBottom: 18 }}>
+            {['immediately', '3-months', 'not-sure'].map(opt => {
+              const option = {
+                'immediately': { icon: '⚡', title: 'Immediately', subtitle: 'Start application process now' },
+                '3-months': { icon: '📅', title: 'Within 3 months', subtitle: 'Plan to apply soon' },
+                'not-sure': { icon: '🤔', title: 'Not Sure Yet', subtitle: 'Still deciding on timeline' },
+              }[opt];
+              return (
+                <div
+                  key={opt}
+                  onClick={() => setTimeline(opt)}
+                  style={{
+                    background: timeline === opt ? '#eef2ff' : '#fff',
+                    border: timeline === opt ? '2px solid #6366f1' : '1.5px solid #e5e7eb',
+                    borderRadius: 12,
+                    padding: '22px 18px',
+                    cursor: 'pointer',
+                    minWidth: 140,
+                    maxWidth: 180,
+                    minHeight: 120,
+                    flex: '1 1 140px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    boxShadow: timeline === opt ? '0 2px 8px #6366f122' : 'none',
+                    fontWeight: 500,
+                    fontSize: 15,
+                    marginBottom: 0,
+                    transition: 'all 0.2s',
+                  }}
+                >
+                  <span style={{ fontSize: 28, marginBottom: 8 }}>{option.icon}</span>
+                  <div style={{ fontWeight: 700, color: '#1e293b', fontSize: 16 }}>{option.title}</div>
+                  <div style={{ color: '#64748b', fontSize: 14 }}>{option.subtitle}</div>
+                </div>
+              );
+            })}
           </div>
-          {/* Show Application Timeline only if at least one university is selected */}
-          {selectedUniversities && selectedUniversities.length > 0 && (
-            <div>
-              <ApplicationTimelineStep
-                onSelect={(timeline) => {
-                  setTimeline(timeline);
-                  if (timeline) setStep(13); // auto-advance to intake
-                }}
-                initialValue={timeline}
-              />
+          {/* Preferred University Yes/No */}
+          <div style={{ marginTop: 24, width: '100%' }}>
+            <h3 style={{ fontSize: 18, fontWeight: 700, color: '#443eff', marginBottom: 10, textAlign: 'center' }}>
+              Do you have a preferred university?
+            </h3>
+            <div style={{ display: 'flex', gap: 18, justifyContent: 'center', marginBottom: 18 }}>
+              <button
+                style={{ background: preferredUniAnswer === 'yes' ? '#e0e7ff' : '#fff', color: '#3730a3', border: '1.5px solid #e5e7eb', borderRadius: 8, padding: '10px 22px', fontWeight: 700, fontSize: 15, cursor: 'pointer', minWidth: 100 }}
+                onClick={() => setPreferredUniAnswer('yes')}
+              >
+                Yes
+              </button>
+              <button
+                style={{ background: preferredUniAnswer === 'no' ? '#e0e7ff' : '#fff', color: '#3730a3', border: '1.5px solid #e5e7eb', borderRadius: 8, padding: '10px 22px', fontWeight: 700, fontSize: 15, cursor: 'pointer', minWidth: 100 }}
+                onClick={() => setPreferredUniAnswer('no')}
+              >
+                No
+              </button>
             </div>
-          )}
+            {/* If Yes, show dropdown */}
+            {preferredUniAnswer === 'yes' && (
+              <select
+                value={selectedPreferredUni || ''}
+                onChange={e => setSelectedPreferredUni(e.target.value)}
+                style={{ width: '100%', padding: '12px 14px', borderRadius: 10, border: '1.5px solid #e5e7eb', fontSize: 15, marginBottom: 18 }}
+              >
+                <option value='' disabled>Select your preferred university</option>
+                {(universityData[country] || universityData.any).map(uni => (
+                  <option key={uni.id} value={uni.id}>{uni.name}</option>
+                ))}
+              </select>
+            )}
+          </div>
+          <button
+            style={{ marginTop: 18, background: '#443eff', color: '#fff', border: 'none', borderRadius: 8, padding: '12px 32px', fontWeight: 700, fontSize: 16, cursor: 'pointer', minWidth: 120 }}
+            disabled={!timeline || (preferredUniAnswer === 'yes' && !selectedPreferredUni) || !preferredUniAnswer}
+            onClick={() => setStep(12)}
+          >
+            Continue
+          </button>
         </div>
       )}
-      {/* Step 13: Preferred Intake Step */}
-      {step === 13 && (
+      {/* Step 12: Preferred Intake Step */}
+      {step === 12 && (
         <IntakeSelectionStep
           visible={true}
           onSelect={(intakeValue) => {
             setIntake(intakeValue);
-            // --- Refactored eligibility navigation logic ---
-            const budgetNum = typeof budget === 'string' ? (budget.includes('35') ? 35 : budget.includes('15') ? 15 : 0) : budget;
-            const isUSA = country === 'usa';
-            const isNotSure = country === 'any' || country === 'not-sure';
-            const backlogs = academicDetails.backlogs;
-            // Country requirements
-            const countryReqs = [
-              { value: 'usa', minBudget: 35, minBacklogs: 10 },
-              { value: 'canada', minBudget: 25, minBacklogs: 10 },
-              { value: 'uk', minBudget: 25, minBacklogs: 15 },
-              { value: 'australia', minBudget: 15, minBacklogs: 15 },
-              { value: 'new-zealand', minBudget: 15, minBacklogs: 8 },
-              { value: 'ireland', minBudget: 15, minBacklogs: 7 },
-              { value: 'france', minBudget: 15, minBacklogs: 15 },
-              { value: 'germany', minBudget: 10, minBacklogs: 15 },
-              { value: 'netherlands', minBudget: 20, minBacklogs: 15 },
-              { value: 'singapore', minBudget: 30, minBacklogs: 12 },
-              { value: 'sweden', minBudget: 18, minBacklogs: 12 },
-              { value: 'denmark', minBudget: 18, minBacklogs: 12 },
-              { value: 'italy', minBudget: 12, minBacklogs: 15 },
-              { value: 'spain', minBudget: 12, minBacklogs: 15 },
-            ];
-            const req = countryReqs.find(c => c.value === country);
-            // --- USA flow ---
-            if (isUSA) {
-              if (backlogs > 10) {
-                setStep(14); // Hard disqualify for USA
-                return;
-              }
-              if (budgetNum < 35) {
-                setStep(14); // Show warning, allow confirmation
-                return;
-              }
-              // Eligible for USA
-              setStep(15);
-              return;
-            }
-            // --- Not Sure flow ---
-            if (isNotSure) {
-              setStep(14); // Always show eligibility page
-              return;
-            }
-            // --- Other country flow ---
-            if (req) {
-              if (backlogs > req.minBacklogs || budgetNum < req.minBudget) {
-                setStep(14); // Disqualify for selected country
-                return;
-              }
-              // Eligible for selected country
-              setStep(15);
-              return;
-            }
-            // Default: show eligibility page
-            setStep(14);
+            setStep(13);
           }}
           country={country}
           graduationYear={graduationYear}
           graduationMonth={graduationMonth}
         />
       )}
-      {/* Step 14: Country Eligibility Step */}
-      {step === 14 && (
-        <CountryEligibilityStep
-          country={country}
-          budget={budget}
-          backlogs={academicDetails.backlogs}
-          onSelectCountry={(newCountry) => setCountry(newCountry)}
-          onContinue={() => setStep(15)}
+      {/* Step 13: English Proficiency Test Step */}
+      {step === 13 && (
+        <EnglishTestDetailsStep
+          englishTestStatus={null}
+          onSubmit={details => {
+            setEnglishTestDetails(details);
+            // Always go to name/email page (step 15) after English test/counseling selection
+            setStep(15);
+          }}
+          selectedCity={city}
+          intake={intake}
+          onEditIntake={() => setStep(11)}
         />
       )}
-      {/* Step 15: Contact Details */}
+      {/* Step 15: Final Name and Email Page */}
       {step === 15 && (
         <div style={{ marginTop: 0, background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.06)', maxWidth: 500, width: '100%', padding: '32px 24px', display: 'flex', flexDirection: 'column', gap: 0 }}>
           <ContactDetailsStep
@@ -1384,7 +1609,7 @@ function App() {
       {/* Step 16: Final Congratulations */}
       {step === 16 && (
         <div style={{ marginTop: 0, background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.06)', maxWidth: 500, width: '100%', padding: '32px 24px', display: 'flex', flexDirection: 'column', gap: 0 }}>
-          <FinalCongratulationsPage universityCount={42} />
+          <FinalCongratulationsPage universityCount={42} passportStatus={passport} />
         </div>
       )}
       {/* Render the disqualification page if needed */}
@@ -1402,3 +1627,13 @@ function App() {
 }
 
 export default App;
+
+// Helper function to check country eligibility by backlogs
+function isCountryEligibleByBacklogs(country, backlogs) {
+  if (!country) return false;
+  if (backlogs > 15) return false;
+  if ((country === 'canada' || country === 'usa') && backlogs > 10) return false;
+  if (country === 'ireland' && backlogs > 7) return false;
+  if (country === 'new-zealand' && backlogs > 8) return false;
+  return true;
+}

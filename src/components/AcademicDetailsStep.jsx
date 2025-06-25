@@ -45,7 +45,7 @@ const backlogOptions = [
   { value: '10+', label: 'More than 10 Backlogs' },
 ];
 const yearOptions = [
-  '2026', '2025', '2024', '2023', '2022', '2021', '2020', 'before-2020'
+  '2027-and-later', '2026', '2025', '2024', '2023', '2022', '2021', '2020', 'before-2020', 'before-2005'
 ];
 const gapOptions = [
   { value: '0', label: 'No gap' },
@@ -179,6 +179,15 @@ const inputStyle = {
   boxSizing: 'border-box',
 };
 
+const workExpOptions = [
+  { value: '0', label: '0 years' },
+  { value: '1', label: '1 year' },
+  { value: '2', label: '2 years' },
+  { value: '3', label: '3 years' },
+  { value: '4', label: '4 years' },
+  { value: '5+', label: '5+ years' },
+];
+
 const AcademicDetailsStep = ({ highestEducation, initialDetails = {}, onSubmit }) => {
   const [degree] = useState(highestEducation);
   const [specialization, setSpecialization] = useState(initialDetails.specialization || '');
@@ -195,6 +204,9 @@ const AcademicDetailsStep = ({ highestEducation, initialDetails = {}, onSubmit }
   const [showGapDoc, setShowGapDoc] = useState(false);
   const [showWork, setShowWork] = useState(false);
   const [showExpDuration, setShowExpDuration] = useState(false);
+  const [jobSpecializations, setJobSpecializations] = useState(initialDetails.jobSpecializations || []);
+  const [workExp, setWorkExp] = useState(initialDetails.workExp || '0');
+  const [showSpecDropdown, setShowSpecDropdown] = useState(false);
 
   const currentYear = new Date().getFullYear();
   const showMonth = graduationYear && Number(graduationYear) >= currentYear;
@@ -211,6 +223,19 @@ const AcademicDetailsStep = ({ highestEducation, initialDetails = {}, onSubmit }
     if (job && job !== 'none') setShowExpDuration(true);
     else setShowExpDuration(false);
   }, [job]);
+  useEffect(() => {
+    function handleClick(e) {
+      if (!e.target.closest('.spec-dropdown-root')) {
+        setShowSpecDropdown(false);
+      }
+    }
+    if (showSpecDropdown) {
+      document.addEventListener('mousedown', handleClick);
+    } else {
+      document.removeEventListener('mousedown', handleClick);
+    }
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [showSpecDropdown]);
 
   const handleContinue = () => {
     onSubmit({
@@ -281,11 +306,19 @@ const AcademicDetailsStep = ({ highestEducation, initialDetails = {}, onSubmit }
             gap: 10,
           }}>
             <span>
-              <span role="img" aria-label="degree">🎓</span> I am pursuing
-              <select style={{ ...selectStyle, minWidth: 120, fontSize: 16, borderRadius: 10, margin: '0 8px' }} value={degree} disabled>
-                {degreeOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
-              </select>
-              with specialization in
+              <span role="img" aria-label="degree">🎓</span> 
+              {['completed-bachelors', 'masters', 'mbbs'].includes(degree) ? (
+                <>
+                  I have completed / Pursuing <b>{degreeOptions.find(opt => opt.value === degree)?.label.replace(' Completed', '')}</b> and 
+                </>
+              ) : (
+                <>
+                  I am pursuing <b>{degreeOptions.find(opt => opt.value === degree)?.label.replace(' Completed', '')}</b>
+                </>
+              )}
+            </span>
+            <span>
+              <span role="img" aria-label="specialization">🔬</span> My specialization is
               <select style={{ ...selectStyle, minWidth: 120, fontSize: 16, borderRadius: 10, margin: '0 8px' }} value={specialization} onChange={e => setSpecialization(e.target.value)} required>
                 <option value="">Specialization</option>
                 {specializationOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
@@ -358,7 +391,7 @@ const AcademicDetailsStep = ({ highestEducation, initialDetails = {}, onSubmit }
                     type="button"
                     onClick={() => setGapDoc('yes')}
                     style={{
-                      padding: '7px 8px',
+                      padding: '7px 14px',
                       borderRadius: 20,
                       border: gapDoc === 'yes' ? '2px solid #443eff' : '1.5px solid #c7d2fe',
                       background: gapDoc === 'yes' ? '#443eff' : '#fff',
@@ -369,6 +402,9 @@ const AcademicDetailsStep = ({ highestEducation, initialDetails = {}, onSubmit }
                       boxShadow: gapDoc === 'yes' ? '0 2px 8px rgba(74,144,226,0.10)' : 'none',
                       outline: 'none',
                       transition: 'all 0.15s',
+                      minWidth: 60,
+                      maxWidth: 90,
+                      whiteSpace: 'nowrap',
                     }}
                   >
                     Yes
@@ -377,7 +413,7 @@ const AcademicDetailsStep = ({ highestEducation, initialDetails = {}, onSubmit }
                     type="button"
                     onClick={() => setGapDoc('no')}
                     style={{
-                      padding: '7px 16px',
+                      padding: '7px 14px',
                       borderRadius: 20,
                       border: gapDoc === 'no' ? '2px solid #dc2626' : '1.5px solid #c7d2fe',
                       background: gapDoc === 'no' ? '#dc2626' : '#fff',
@@ -388,6 +424,9 @@ const AcademicDetailsStep = ({ highestEducation, initialDetails = {}, onSubmit }
                       boxShadow: gapDoc === 'no' ? '0 2px 8px rgba(220,38,38,0.10)' : 'none',
                       outline: 'none',
                       transition: 'all 0.15s',
+                      minWidth: 60,
+                      maxWidth: 90,
+                      whiteSpace: 'nowrap',
                     }}
                   >
                     No
@@ -397,20 +436,89 @@ const AcademicDetailsStep = ({ highestEducation, initialDetails = {}, onSubmit }
             )}
             {showWork && (
               <span>
-                <span role="img" aria-label="work">💼</span> I have worked as a
-                <select style={{ ...selectStyle, minWidth: 140, fontSize: 16, borderRadius: 10, margin: '0 8px' }} value={job} onChange={e => setJob(e.target.value)} required>
-                  <option value="">Select job</option>
-                  {jobOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+                <span role="img" aria-label="work">💼</span> I have a work experience of
+                <select
+                  style={{ ...selectStyle, minWidth: 120, fontSize: 16, borderRadius: 10, margin: '0 8px' }}
+                  value={workExp}
+                  onChange={e => setWorkExp(e.target.value)}
+                  required
+                >
+                  {workExpOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
                 </select>
+                years
               </span>
             )}
-            {showExpDuration && (
-              <span>
-                <span role="img" aria-label="duration">⌛</span> For a duration of
-                <select style={{ ...selectStyle, minWidth: 120, fontSize: 16, borderRadius: 10, margin: '0 8px' }} value={expDuration} onChange={e => setExpDuration(e.target.value)} required>
-                  <option value="">Select duration</option>
-                  {expDurationOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
-                </select>
+            {showWork && workExp !== '0' && (
+              <span style={{ display: 'block', marginTop: 8 }}>
+                with specialization in
+                <div className="spec-dropdown-root" style={{ position: 'relative', display: 'inline-block', minWidth: 180 }}>
+                  <button
+                    type="button"
+                    style={{
+                      border: '1.5px solid #c7d2fe',
+                      borderRadius: 10,
+                      background: '#f8fafc',
+                      padding: '10px 12px',
+                      minWidth: 180,
+                      margin: '8px 0',
+                      fontSize: 15,
+                      fontWeight: 500,
+                      color: '#1e293b',
+                      cursor: 'pointer',
+                      textAlign: 'left',
+                      boxShadow: '0 1px 2px rgba(99,102,241,0.04)',
+                      maxWidth: 320,
+                      width: '100%',
+                    }}
+                    onClick={() => setShowSpecDropdown(v => !v)}
+                  >
+                    {jobSpecializations.length > 0
+                      ? jobOptions.filter(opt => jobSpecializations.includes(opt.value)).map(opt => opt.label).join(', ')
+                      : 'Select specializations'}
+                    <span style={{ float: 'right', marginLeft: 8, color: '#6366f1' }}>▼</span>
+                  </button>
+                  {showSpecDropdown && (
+                    <div
+                      style={{
+                        position: 'absolute',
+                        top: '100%',
+                        left: 0,
+                        zIndex: 10,
+                        background: '#fff',
+                        border: '1.5px solid #c7d2fe',
+                        borderRadius: 10,
+                        boxShadow: '0 4px 16px rgba(99,102,241,0.10)',
+                        marginTop: 2,
+                        maxHeight: 200,
+                        overflowY: 'auto',
+                        minWidth: 180,
+                        width: '100%',
+                        padding: 8,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: 6,
+                      }}
+                    >
+                      {jobOptions.filter(opt => opt.value !== 'none').map(opt => (
+                        <label key={opt.value} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 15, fontWeight: 500, color: '#1e293b', cursor: 'pointer', padding: '2px 0' }}>
+                          <input
+                            type="checkbox"
+                            checked={jobSpecializations.includes(opt.value)}
+                            onChange={e => {
+                              if (e.target.checked) {
+                                setJobSpecializations([...jobSpecializations, opt.value]);
+                              } else {
+                                setJobSpecializations(jobSpecializations.filter(val => val !== opt.value));
+                              }
+                            }}
+                            style={{ accentColor: '#6366f1', width: 16, height: 16 }}
+                          />
+                          {opt.label}
+                        </label>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </span>
             )}
           </div>
