@@ -368,7 +368,7 @@ const AcademicDetailsStep = ({ highestEducation, initialDetails = {}, onSubmit }
             <span>
               <span role="img" aria-label="graduation">🎓</span> I Graduated or I am graduating in
               <select style={{ ...selectStyle, minWidth: 120, fontSize: 16, borderRadius: 10, margin: '0 8px' }} value={graduationYear} onChange={e => { setGraduationYear(e.target.value); setGraduationMonth(''); }} required>
-                <option value="">Year</option>
+                <option value=""></option>
                 {yearOptions.map(opt => (
                   <option key={opt} value={opt}>{opt === '2027-later' ? '2027 or later' : opt.replace('-', ' ')}</option>
                 ))}
