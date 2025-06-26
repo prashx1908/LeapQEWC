@@ -172,27 +172,27 @@ function FinalCongratulationsPage({ universityCount = 42, passportStatus }) {
         </div>
         {/* Milestone 3: Passport or University Shortlisting */}
         {needsPassport ? (
-          <div style={{
-            width: '100%',
-            display: 'flex',
-            flexDirection: 'column',
-            marginBottom: 10,
-            background: '#f3f4f6',
-            borderRadius: 16,
-            padding: '16px 10px',
-            boxShadow: '0 1px 4px rgba(74,144,226,0.04)',
-            border: '2.5px solid #6366f1',
-            opacity: 1,
-            position: 'relative',
-            minHeight: 80,
-          }}>
-            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 16, width: '100%' }}>
+        <div style={{
+          width: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          marginBottom: 10,
+          background: '#f3f4f6',
+          borderRadius: 16,
+          padding: '16px 10px',
+          boxShadow: '0 1px 4px rgba(74,144,226,0.04)',
+          border: '2.5px solid #6366f1',
+          opacity: 1,
+          position: 'relative',
+          minHeight: 80,
+        }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 16, width: '100%' }}>
               <span style={{ fontSize: 28, color: '#6366f1', marginLeft: 2, marginTop: 2 }}>🛂</span>
-              <div style={{ flex: 1, textAlign: 'left', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                <div style={{ fontWeight: 800, fontSize: 17, color: '#6366f1', marginBottom: 2 }}>
+            <div style={{ flex: 1, textAlign: 'left', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+              <div style={{ fontWeight: 800, fontSize: 17, color: '#6366f1', marginBottom: 2 }}>
                   Milestone 3: Apply and receive passport <span style={{ fontWeight: 700, fontSize: 14, color: '#6366f1' }}>- Pending</span>
-                </div>
-                <div style={{ color: '#64748b', fontSize: 15, fontWeight: 500 }}>
+              </div>
+              <div style={{ color: '#64748b', fontSize: 15, fontWeight: 500 }}>
                   To proceed with your study abroad journey, you need a valid passport. Start your application now!
                 </div>
                 {/* Resources */}
@@ -230,34 +230,34 @@ function FinalCongratulationsPage({ universityCount = 42, passportStatus }) {
                   Milestone 3: University Shortlisting <span style={{ fontWeight: 700, fontSize: 14, color: '#6366f1' }}>- Pending</span>
                 </div>
                 <div style={{ color: '#64748b', fontSize: 15, fontWeight: 500, marginBottom: 0 }}>
-                  Get your personalized university shortlist and next steps.
-                </div>
+                Get your personalized university shortlist and next steps.
               </div>
             </div>
+          </div>
             <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-end', width: '100%', marginTop: 18 }}>
-              <button
-                style={{
-                  background: 'linear-gradient(90deg, #6366f1 0%, #a78bfa 100%)',
-                  color: '#fff',
-                  border: 'none',
+          <button
+            style={{
+              background: 'linear-gradient(90deg, #6366f1 0%, #a78bfa 100%)',
+              color: '#fff',
+              border: 'none',
                   borderRadius: 10,
                   padding: '14px 32px',
                   fontWeight: 800,
                   fontSize: 16,
-                  cursor: 'pointer',
+              cursor: 'pointer',
                   boxShadow: '0 4px 16px #6366f133',
-                  letterSpacing: 0.2,
+              letterSpacing: 0.2,
                   transition: 'background 0.2s, box-shadow 0.2s',
-                  whiteSpace: 'nowrap',
+              whiteSpace: 'nowrap',
                   alignSelf: 'flex-end',
-                }}
-                onClick={() => window.open('https://calendly.com/leapcounselor', '_blank')}
+            }}
+            onClick={() => window.open('https://calendly.com/leapcounselor', '_blank')}
                 onMouseOver={e => e.currentTarget.style.boxShadow = '0 6px 24px #6366f155'}
                 onMouseOut={e => e.currentTarget.style.boxShadow = '0 4px 16px #6366f133'}
-              >
-                Book a call with counsellor
-              </button>
-            </div>
+          >
+            Book a call with counsellor
+          </button>
+        </div>
           </div>
         )}
       </div>
@@ -408,19 +408,19 @@ function CountryEligibilityStep({ country, budget, backlogs, onSelectCountry, on
   let budgetMax = userBudget === 15 ? 35 : 1000; // 15L means eligible for all with minBudget <= 35L
 
   // Determine if user is 'not sure' and has enough budget
-  const isNotSure = country === 'any' || country === 'not-sure';
-  const notSureAnd15L = isNotSure && userBudget >= 15;
-  const notSureAnd35L = isNotSure && userBudget >= 35;
+  const isNotSureBudget = budget === 'not-sure';
+  const notSureAnd15L = isNotSureBudget && userBudget >= 15;
+  const notSureAnd35L = isNotSureBudget && userBudget >= 35;
 
   // If budget is 'not-sure', only use backlogs for eligibility/disqualification
   const isBudgetNotSure = budget === 'not-sure';
 
   // Helper to check if a country is eligible (backlogs only if budget is not-sure)
   const isCountryEligible = (c) => {
+    if (notSureAnd15L) return true; // All countries eligible if not sure and budget >= 15L
     if (isBudgetNotSure) {
       return backlogs <= c.minBacklogs;
     }
-    if (notSureAnd15L) return true; // All countries eligible if not sure and budget >= 15L
     return userBacklogs <= c.minBacklogs && c.minBudget <= budgetMax;
   };
 
@@ -478,6 +478,79 @@ function CountryEligibilityStep({ country, budget, backlogs, onSelectCountry, on
 
   // --- Main country button click handler ---
   function handleCountryClick(c, isEligible) {
+    // Special handling for 'not-sure' country: treat as a country picker with finance sub-options
+    if (country === 'not-sure') {
+      
+      if (!notSureFinanceOption) {
+        setShowNotSureDialog(true);
+        return;
+      }
+      if (notSureFinanceOption === '35L') {
+        if (c.value === 'usa') {
+          setShowUSAConfirm(true);
+          return;
+        }
+        setYesNoCountry(c);
+        setShowYesNoDialog(true);
+        return;
+      }
+      if (notSureFinanceOption === '15L') {
+        if (c.value === 'usa') {
+          setShowUSAConfirm(true);
+          return;
+        }
+        setYesNoCountry(c);
+        setShowYesNoDialog(true);
+        return;
+      }
+      if (notSureFinanceOption === 'cannot15') {
+        setCannot15Country(c);
+        setShowCannot15Dialog(true);
+        return;
+      }
+      if (notSureFinanceOption === 'counsellor') {
+        // Only check backlog eligibility, never show USA budget warning
+        if (backlogs > c.minBacklogs) {
+          setDisqualCountry(c);
+          setDisqualReason('Not eligible due to backlogs');
+          setShowDisqualDialog(true);
+          return;
+        }
+        setYesNoCountry(c);
+        setShowYesNoDialog(true);
+        return;
+      }
+      return;
+    }
+    // If budget is 'cannot15', always show the cannot15Dialog for any country
+    if (budget === 'cannot15') {
+      setCannot15Country(c);
+      setShowCannot15Dialog(true);
+      return;
+    }
+    // If user previously selected USA and cannot invest 15L, and now selects another country, show confirmation
+    if (country === 'usa' && budget === 'cannot15' && c.value !== 'usa') {
+      setPendingCountryConfirm(c.value);
+      setShowCountryConfirm(true);
+      return;
+    }
+    // If user selects USA and cannot invest 15L, show advisory only, do not show popup
+    if (c.value === 'usa' && budget === 'cannot15' && !usaConfirmed) {
+      // Just select USA, do not show popup
+      onSelectCountry(c.value);
+      return;
+    }
+    // If user selects USA again after previously attempting with cannot15, show the popup
+    if (c.value === 'usa' && budget === 'cannot15' && usaConfirmed) {
+      setShowUSAConfirm(true);
+      return;
+    }
+    // For other countries, show confirmation dialog before proceeding
+    if (c.value !== 'usa') {
+      setPendingCountryConfirm(c.value);
+      setShowCountryConfirm(true);
+      return;
+    }
     if (budget === 'cannot15' && isEligible) {
       setCannot15Country(c);
       setShowCannot15Dialog(true);
@@ -771,93 +844,12 @@ function CountryEligibilityStep({ country, budget, backlogs, onSelectCountry, on
   // State for USA confirmation
   const [showUSAConfirm, setShowUSAConfirm] = React.useState(false);
   const [usaConfirmed, setUSAConfirmed] = React.useState(false);
+  // State for generic country confirmation
+  const [showCountryConfirm, setShowCountryConfirm] = React.useState(false);
+  const [pendingCountryConfirm, setPendingCountryConfirm] = React.useState(null);
 
-  // Show USA confirm dialog if user selects 15L budget and USA, even after 'not-sure' or 'any'
-  React.useEffect(() => {
-    if (country === 'usa' && userBudget === 15 && !usaConfirmed) {
-      setShowUSAConfirm(true);
-    }
-  }, [country, userBudget, usaConfirmed]);
-
-  // Dropdown options: always include USA, but with warning if not eligible by budget
-  const dropdownOptions = countryReqs.filter(c => {
-    if (c.value === 'usa') return true;
-    return isCountryEligible(c);
-  });
-
-  // Eligible for proceed: all eligible countries, or USA if confirmed
-  const canProceed = (country === 'usa' && userBudget < 35) ? usaConfirmed : !!country;
-
-  // --- USA confirmation dialog with 3 options ---
-  const dialogButtonStyle = {
-    flex: 1,
-    minWidth: 0,
-    height: 48,
-    borderRadius: 8,
-    fontWeight: 700,
-    fontSize: 15,
-    padding: '0 8px',
-    margin: 0,
-    cursor: 'pointer',
-    transition: 'background 0.2s, color 0.2s, border 0.2s',
-    outline: 'none',
-    boxShadow: 'none',
-    border: 'none',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    textAlign: 'center',
-    gap: 0,
-  };
-  const dialogButtonPrimary = {
-    ...dialogButtonStyle,
-    background: '#fde68a',
-    color: '#b45309',
-    border: '1.5px solid #fde68a',
-  };
-  const dialogButtonSecondary = {
-    ...dialogButtonStyle,
-    background: '#fff7ed',
-    color: '#b45309',
-    border: '1.5px solid #fde68a',
-  };
-  const dialogButtonNeutral = {
-    ...dialogButtonStyle,
-    background: '#f3f4f6',
-    color: '#374151',
-    border: '1.5px solid #e5e7eb',
-  };
-  const dialogButtonBlue = {
-    ...dialogButtonStyle,
-    background: '#e0e7ff',
-    color: '#3730a3',
-    border: '1.5px solid #e0e7ff',
-  };
-  const usaConfirmDialog = showUSAConfirm && (
-    <div style={{
-      position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.25)', zIndex: 1000,
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-    }}>
-      <div style={{ background: '#fff', borderRadius: 14, boxShadow: '0 4px 24px #0002', padding: 32, minWidth: 340, textAlign: 'center' }}>
-        <div style={{ fontWeight: 700, fontSize: 18, color: '#b45309', marginBottom: 12 }}>USA admits are higher with 35L+ budget. With 15L, options are more limited.</div>
-        <div style={{ color: '#a16207', fontSize: 15, marginBottom: 18 }}>What would you like to do next?</div>
-        <div style={{ display: 'flex', gap: 16, marginTop: 8 }}>
-          <button style={{ background: '#fde68a', color: '#b45309', border: '1.5px solid #fde68a', borderRadius: 8, fontWeight: 700, fontSize: 15, padding: '10px 18px', cursor: 'pointer' }}
-            onClick={() => { setShowUSAConfirm(false); onSelectCountry('usa'); onContinue('extend-budget'); }}>
-            Extend budget to 35 lakhs
-          </button>
-          <button style={{ background: '#fff7ed', color: '#b45309', border: '1.5px solid #fde68a', borderRadius: 8, fontWeight: 700, fontSize: 15, padding: '10px 18px', cursor: 'pointer' }}
-            onClick={() => { setShowUSAConfirm(false); onSelectCountry('usa'); onContinue('continue-15l'); }}>
-            Continue with 15 lakhs (Low admit rate)
-          </button>
-          <button style={{ background: '#f3f4f6', color: '#374151', border: '1.5px solid #e5e7eb', borderRadius: 8, fontWeight: 700, fontSize: 15, padding: '10px 18px', cursor: 'pointer' }}
-            onClick={() => { setShowUSAConfirm(false); }}>
-            Explore other countries
-          </button>
-        </div>
-      </div>
-    </div>
-  );
+  // --- USA advisory message (yellow box) ---
+  const showUSABudgetAdvisoryBox = country === 'usa' && budget === 'cannot15';
 
   // --- Disqualification dialog for other countries ---
   const disqualDialog = showDisqualDialog && disqualCountry && (
@@ -865,15 +857,35 @@ function CountryEligibilityStep({ country, budget, backlogs, onSelectCountry, on
       position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.25)', zIndex: 1000,
       display: 'flex', alignItems: 'center', justifyContent: 'center',
     }}>
-      <div style={{ background: '#fff', borderRadius: 14, boxShadow: '0 4px 24px #0002', padding: 32, minWidth: 340, textAlign: 'center' }}>
+      <div style={{ background: '#fff', borderRadius: 14, boxShadow: '0 4px 24px #0002', padding: 32, minWidth: 340, textAlign: 'center', position: 'relative' }}>
+        {/* Close button */}
+        <button onClick={() => setShowDisqualDialog(false)} style={{ position: 'absolute', top: 12, right: 16, background: 'none', border: 'none', fontSize: 22, color: '#64748b', cursor: 'pointer', fontWeight: 700, zIndex: 2 }} aria-label="Close">×</button>
         <div style={{ fontWeight: 700, fontSize: 18, color: '#dc2626', marginBottom: 12 }}>Low admit chances for {disqualCountry.name}.</div>
         <div style={{ color: '#b91c1c', fontSize: 15, marginBottom: 18 }}>{disqualReason}</div>
         <div style={{ display: 'flex', gap: 16, marginTop: 8 }}>
-          <button style={dialogButtonBlue}
+          <button style={{
+            background: '#6366f1',
+            color: '#fff',
+            border: 'none',
+            borderRadius: 8,
+            fontWeight: 700,
+            fontSize: 15,
+            padding: '10px 18px',
+            cursor: 'pointer'
+          }}
             onClick={() => { setShowDisqualDialog(false); onSelectCountry(disqualCountry.value); onContinue(); }}>
             Continue with {disqualCountry.name}
           </button>
-          <button style={dialogButtonNeutral}
+          <button style={{
+            background: '#f3f4f6',
+            color: '#374151',
+            border: '1.5px solid #e5e7eb',
+            borderRadius: 8,
+            fontWeight: 700,
+            fontSize: 15,
+            padding: '10px 18px',
+            cursor: 'pointer'
+          }}
             onClick={() => setShowDisqualDialog(false)}>
             Explore other countries
           </button>
@@ -915,7 +927,9 @@ function CountryEligibilityStep({ country, budget, backlogs, onSelectCountry, on
       position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.25)', zIndex: 1000,
       display: 'flex', alignItems: 'center', justifyContent: 'center',
     }}>
-      <div style={{ background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px #0002', padding: 36, minWidth: 340, textAlign: 'center', maxWidth: 380 }}>
+      <div style={{ background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px #0002', padding: 36, minWidth: 340, textAlign: 'center', maxWidth: 380, position: 'relative' }}>
+        {/* Close button */}
+        <button onClick={() => setShowCannot15Dialog(false)} style={{ position: 'absolute', top: 12, right: 16, background: 'none', border: 'none', fontSize: 22, color: '#64748b', cursor: 'pointer', fontWeight: 700, zIndex: 2 }} aria-label="Close">×</button>
         <div style={{ fontWeight: 800, fontSize: 19, color: '#b45309', marginBottom: 10 }}>Next Steps for {cannot15Country.name}</div>
         <div style={{ color: '#a16207', fontSize: 15, marginBottom: 18 }}>
           {cannot15Country.value === 'usa'
@@ -928,11 +942,11 @@ function CountryEligibilityStep({ country, budget, backlogs, onSelectCountry, on
               background: 'linear-gradient(90deg, #6366f1 0%, #a78bfa 100%)',
               color: '#fff',
               border: 'none',
-              borderRadius: 8,
+    borderRadius: 8,
               padding: '12px 22px',
-              fontWeight: 700,
-              fontSize: 15,
-              cursor: 'pointer',
+    fontWeight: 700,
+    fontSize: 15,
+    cursor: 'pointer',
               boxShadow: '0 2px 8px rgba(99,102,241,0.08)',
               letterSpacing: 0.2,
               width: '100%',
@@ -954,7 +968,7 @@ function CountryEligibilityStep({ country, budget, backlogs, onSelectCountry, on
             <button style={{
               background: 'linear-gradient(90deg, #6366f1 0%, #a78bfa 100%)',
               color: '#fff',
-              border: 'none',
+    border: 'none',
               borderRadius: 8,
               padding: '12px 22px',
               fontWeight: 700,
@@ -975,8 +989,8 @@ function CountryEligibilityStep({ country, budget, backlogs, onSelectCountry, on
             </button>
           )}
           <button style={{
-            background: '#e0e7ff',
-            color: '#3730a3',
+    background: '#e0e7ff',
+    color: '#3730a3',
             border: 'none',
             borderRadius: 8,
             padding: '12px 22px',
@@ -989,7 +1003,7 @@ function CountryEligibilityStep({ country, budget, backlogs, onSelectCountry, on
           }}
             onClick={() => {
               setShowCannot15Dialog(false);
-              onContinue();
+              onContinue && onContinue('counsellor');
             }}
           >
             Talk to a counsellor for financial decision
@@ -999,12 +1013,134 @@ function CountryEligibilityStep({ country, budget, backlogs, onSelectCountry, on
     </div>
   );
 
+  // --- Generic country confirmation dialog ---
+  const countryConfirmDialog = showCountryConfirm && pendingCountryConfirm && (
+    <div style={{
+      position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.25)', zIndex: 1000,
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+    }}>
+      <div style={{ background: '#fff', borderRadius: 14, boxShadow: '0 4px 24px #0002', padding: 32, minWidth: 340, textAlign: 'center', position: 'relative' }}>
+        {/* Close button */}
+        <button onClick={() => { setShowCountryConfirm(false); setPendingCountryConfirm(null); }} style={{ position: 'absolute', top: 12, right: 16, background: 'none', border: 'none', fontSize: 22, color: '#64748b', cursor: 'pointer', fontWeight: 700, zIndex: 2 }} aria-label="Close">×</button>
+        <div style={{ fontWeight: 700, fontSize: 18, color: '#b45309', marginBottom: 12 }}>Switch Country?</div>
+        <div style={{ color: '#1e293b', fontSize: 15, marginBottom: 18 }}>
+          Do you want to switch to <b>{pendingCountryConfirm && pendingCountryConfirm.toUpperCase()}</b>?
+        </div>
+        <div style={{ display: 'flex', gap: 16, marginTop: 8, justifyContent: 'center' }}>
+          <button style={{ background: '#6366f1', color: '#fff', border: 'none', borderRadius: 8, fontWeight: 700, fontSize: 15, padding: '10px 18px', cursor: 'pointer' }}
+            onClick={() => {
+              onSelectCountry(pendingCountryConfirm);
+              setShowCountryConfirm(false);
+              setPendingCountryConfirm(null);
+              onContinue();
+            }}>
+            Yes, switch to {pendingCountryConfirm && pendingCountryConfirm.toUpperCase()}
+          </button>
+          <button style={{ background: '#f3f4f6', color: '#374151', border: '1.5px solid #e5e7eb', borderRadius: 8, fontWeight: 700, fontSize: 15, padding: '10px 18px', cursor: 'pointer' }}
+            onClick={() => {
+              setShowCountryConfirm(false);
+              setPendingCountryConfirm(null);
+            }}>
+            No, stay with current country
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  // --- USA confirmation dialog with 3 options ---
+  const usaConfirmDialog = showUSAConfirm && (
+    <div style={{
+      position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.25)', zIndex: 1000,
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+    }}>
+      <div style={{ background: '#fff', borderRadius: 14, boxShadow: '0 4px 24px #0002', padding: 32, minWidth: 340, textAlign: 'center', position: 'relative' }}>
+        {/* Close button */}
+        <button onClick={() => setShowUSAConfirm(false)} style={{ position: 'absolute', top: 12, right: 16, background: 'none', border: 'none', fontSize: 22, color: '#64748b', cursor: 'pointer', fontWeight: 700, zIndex: 2 }} aria-label="Close">×</button>
+        <div style={{ fontWeight: 700, fontSize: 18, color: '#b45309', marginBottom: 12 }}>USA admits are higher with 35L+ budget. With 15L, options are more limited.</div>
+        <div style={{ color: '#a16207', fontSize: 15, marginBottom: 18 }}>What would you like to do next?</div>
+        <div style={{ display: 'flex', gap: 16, marginTop: 8 }}>
+          <button style={{ background: '#fde68a', color: '#b45309', border: '1.5px solid #fde68a', borderRadius: 8, fontWeight: 700, fontSize: 15, padding: '10px 18px', cursor: 'pointer' }}
+            onClick={() => { setShowUSAConfirm(false); onSelectCountry('usa'); onContinue('extend-budget'); }}>
+            Extend budget to 35 lakhs
+          </button>
+          <button style={{ background: '#e0e7ff', color: '#3730a3', border: 'none', borderRadius: 8, fontWeight: 700, fontSize: 15, padding: '10px 18px', cursor: 'pointer' }}
+            onClick={() => { setShowUSAConfirm(false); onContinue && onContinue('counsellor'); }}>
+            Talk with the counsellor
+          </button>
+          <button style={{ background: '#f3f4f6', color: '#374151', border: '1.5px solid #e5e7eb', borderRadius: 8, fontWeight: 700, fontSize: 15, padding: '10px 18px', cursor: 'pointer' }}
+            onClick={() => { setShowUSAConfirm(false); setCountry(null); setStep(10); }}>
+            Explore other countries
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  // --- Render country picker for 'not-sure' country with finance sub-options ---
+  
+  // --- Render country picker for 'not-sure' country with finance sub-options ---
+  if (country === 'not-sure') {
+    // Determine eligible countries based on sub-option
+    let eligibleList = eligibleCountries;
+    if (notSureFinanceOption === '35L') {
+      eligibleList = countryReqs.filter(c => backlogs <= c.minBacklogs);
+    } else if (notSureFinanceOption === '15L') {
+      eligibleList = countryReqs.filter(c => backlogs <= c.minBacklogs && c.minBudget <= 15);
+    } else if (notSureFinanceOption === 'cannot15') {
+      eligibleList = countryReqs.filter(c => backlogs <= c.minBacklogs && c.minBudget <= 15);
+    } else if (notSureFinanceOption === 'counsellor') {
+      eligibleList = countryReqs.filter(c => backlogs <= c.minBacklogs);
+    }
+    return (
+      <div style={{ background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.06)', maxWidth: 800, width: '100%', padding: '24px 16px', margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative' }}>
+        <h2 style={{ fontSize: 22, fontWeight: 700, color: '#1e293b', marginBottom: 8 }}>Select a Country to Proceed</h2>
+        <div style={{ fontSize: 15, color: '#64748b', fontWeight: 500, marginBottom: 16, textAlign: 'center' }}>
+          Not sure which country? Explore all eligible options below or talk to a counsellor.
+        </div>
+        {/* Show finance sub-option dialog if not picked yet */}
+        {showNotSureDialog && notSureDialog}
+        <div style={{ width: '100%', background: '#f3f4f6', borderRadius: 16, border: '2px solid #e5e7eb', padding: '14px 18px', marginBottom: 18, maxWidth: 700, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ fontWeight: 700, fontSize: 15, color: '#6366f1', marginBottom: 8, width: '100%', textAlign: 'left' }}>Eligible Countries</div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(110px, 1fr))', gap: 10, width: '100%' }}>
+            {eligibleList.map(c => (
+              <button
+                key={c.value}
+                style={{
+                  ...compactButtonStyle,
+                  border: compactButtonStyle.border,
+                  background: compactButtonStyle.background,
+                  color: compactButtonStyle.color,
+                  position: 'relative',
+                }}
+                onClick={() => handleCountryClick(c, true)}
+              >
+                <span style={{ fontSize: 22, marginBottom: 2 }}>{c.flag}</span>
+                <span>{c.name}</span>
+                <span style={{ color: '#64748b', fontSize: 11, fontWeight: 500 }}>ROI: ₹{c.roi}L</span>
+              </button>
+            ))}
+          </div>
+        </div>
+        <button
+          style={{ background: '#e0e7ff', color: '#6366f1', border: 'none', borderRadius: 8, padding: '12px 32px', fontWeight: 700, fontSize: 16, cursor: 'pointer', minWidth: 180, marginTop: 18 }}
+          onClick={() => setNotSureFinanceOption('counsellor')}
+        >
+          Talk to a counsellor
+        </button>
+        {/* Yes/No, USA, and cannot15 dialogs are rendered globally below */}
+        {yesNoDialog}
+        {usaConfirmDialog}
+        {cannot15Dialog}
+        {countryConfirmDialog}
+      </div>
+    );
+  }
+
   return (
     <div style={{ background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.06)', maxWidth: 800, width: '100%', padding: '24px 16px', margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative' }}>
       <h2 style={{ fontSize: 22, fontWeight: 700, color: '#1e293b', marginBottom: 8 }}>Country Eligibility</h2>
-      {cannot15Advisory}
-      {/* USA Advisory Container */}
-      {(showUSABudgetAdvisory || showUSABacklogAdvisory) && (
+      {showUSABudgetAdvisoryBox && (
         <div style={{
           background: '#fef9c3',
           color: '#b45309',
@@ -1023,19 +1159,9 @@ function CountryEligibilityStep({ country, budget, backlogs, onSelectCountry, on
           alignItems: 'center',
           gap: 10,
         }}>
-          {showUSABudgetAdvisory && (
-            <div style={{ marginBottom: showUSABacklogAdvisory ? 8 : 0 }}>
-              USA admits are higher with 35L+ budget. With 15L, options are more limited.
-            </div>
-          )}
-          {showUSABacklogAdvisory && (
-            <div>
-              USA admits are limited if you have more than 10 backlogs.
-            </div>
-          )}
+          USA admits are higher with 35L+ budget. With 15L, options are more limited.
         </div>
       )}
-      {/* End USA Advisory Container */}
       <div style={{ fontSize: 15, color: '#64748b', fontWeight: 500, marginBottom: 16, textAlign: 'center' }}>
         Choose the country which best suits for you
       </div>
@@ -1064,6 +1190,7 @@ function CountryEligibilityStep({ country, budget, backlogs, onSelectCountry, on
       {cannot15Dialog}
       {usaConfirmDialog}
       {disqualDialog}
+      {countryConfirmDialog}
     </div>
   );
 }
@@ -1101,6 +1228,12 @@ function App() {
   const [showBachelorsAdvisory, setShowBachelorsAdvisory] = useState(false);
   const [preferredUniAnswer, setPreferredUniAnswer] = useState('not-sure');
   const [selectedPreferredUnis, setSelectedPreferredUnis] = useState([]);
+  // Add at the top of App component
+  const [showCountrySwitchConfirm, setShowCountrySwitchConfirm] = useState(false);
+  const [pendingCountrySwitch, setPendingCountrySwitch] = useState(null);
+  const [usaBudgetFlow, setUsaBudgetFlow] = useState(false);
+  // Add a flag to track if user has previously selected USA and cannot invest 15L
+  const [usaCannot15Attempted, setUsaCannot15Attempted] = useState(false);
 
   // Scroll to program fold when education is selected
   useEffect(() => {
@@ -1495,23 +1628,7 @@ function App() {
           <FinanceStep
             onSelect={(mode) => {
               setFinanceMode(mode);
-              // New logic for skipping/showing Country Eligibility step
-              const backlogs = Number(academicDetails.backlogs);
-              if (budget === 'cannot15') {
-                setStep(10);
-              } else if (country === 'usa' && budget === '15L') {
-                setStep(10);
-              } else if (country === 'usa' && backlogs > 10) {
-                setStep(10);
-              } else if (budget === 'not-sure' && (backlogs === 0 || backlogs === '0')) {
-                setStep(11);
-              } else if (budget === 'not-sure' && country && isCountryEligibleByBacklogs(country, backlogs)) {
-                setStep(11);
-              } else if (country && isCountryEligibleByBacklogs(country, backlogs)) {
-                setStep(11);
-              } else {
-                setStep(10);
-              }
+              setStep(10);
             }}
             initialValue={financeMode}
           />
@@ -1523,9 +1640,16 @@ function App() {
           country={country}
           budget={budget}
           backlogs={academicDetails.backlogs}
-          onSelectCountry={(newCountry) => setCountry(newCountry)}
+          onSelectCountry={(newCountry) => {
+            // Only update country immediately if not switching from USA with cannot15
+            if (country === 'usa' && budget === 'cannot15' && newCountry !== 'usa') {
+              // Do not update country here; let the confirmation dialog handle it
+              return;
+            }
+            setCountry(newCountry);
+          }}
           onContinue={() => setStep(11)}
-        />
+          />
       )}
       {/* Step 11: Application Timeline + Preferred University (combined) */}
       {step === 11 && (
@@ -1664,6 +1788,40 @@ function App() {
             ? 'passport'
             : undefined
         } />
+      )}
+      {showCountrySwitchConfirm && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.25)', zIndex: 1000,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          <div style={{ background: '#fff', borderRadius: 14, boxShadow: '0 4px 24px #0002', padding: 32, minWidth: 340, textAlign: 'center', position: 'relative' }}>
+            {/* Close button */}
+            <button onClick={() => { setShowCountrySwitchConfirm(false); setPendingCountrySwitch(null); }} style={{ position: 'absolute', top: 12, right: 16, background: 'none', border: 'none', fontSize: 22, color: '#64748b', cursor: 'pointer', fontWeight: 700, zIndex: 2 }} aria-label="Close">×</button>
+            <div style={{ fontWeight: 700, fontSize: 18, color: '#b45309', marginBottom: 12 }}>Switch Country?</div>
+            <div style={{ color: '#1e293b', fontSize: 15, marginBottom: 18 }}>
+              You previously selected USA but cannot invest a minimum of 15 lakhs. Do you want to switch to <b>{pendingCountrySwitch && pendingCountrySwitch.toUpperCase()}</b> or stay with USA?
+            </div>
+            <div style={{ display: 'flex', gap: 16, marginTop: 8, justifyContent: 'center' }}>
+              <button style={{ background: '#6366f1', color: '#fff', border: 'none', borderRadius: 8, fontWeight: 700, fontSize: 15, padding: '10px 18px', cursor: 'pointer' }}
+                onClick={() => {
+                  setCountry(pendingCountrySwitch);
+                  setShowCountrySwitchConfirm(false);
+                  setPendingCountrySwitch(null);
+                  // Optionally, advance the flow
+                  setStep(10); // or whatever is appropriate
+                }}>
+                Yes, switch to {pendingCountrySwitch && pendingCountrySwitch.toUpperCase()}
+              </button>
+              <button style={{ background: '#f3f4f6', color: '#374151', border: '1.5px solid #e5e7eb', borderRadius: 8, fontWeight: 700, fontSize: 15, padding: '10px 18px', cursor: 'pointer' }}
+                onClick={() => {
+                  setShowCountrySwitchConfirm(false);
+                  setPendingCountrySwitch(null);
+                }}>
+                No, stay with USA
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
