@@ -28,7 +28,6 @@ const programOptionsMap = {
   ],
   '12th': [
     { value: 'bachelors', label: "Bachelor's Degree", icon: '🎓', recommended: true },
-    { value: 'diploma', label: "PG Diploma", icon: '📜', disabled: true },
     { value: 'masters', label: "Master's Degree", icon: '🎯', disabled: true },
     { value: 'mba', label: "MBA Program", icon: '💼', disabled: true },
     { value: 'phd', label: "PhD Program", icon: '🔬', disabled: true }
@@ -37,28 +36,24 @@ const programOptionsMap = {
     { value: 'masters', label: "Master's Degree", icon: '🎯', recommended: true },
     { value: 'mba', label: "MBA Program", icon: '💼', recommended: true },
     { value: 'bachelors', label: "Another Bachelor's", icon: '🎓' },
-    { value: 'diploma', label: "PG Diploma", icon: '📜' },
     { value: 'phd', label: "PhD Program", icon: '🔬' }
   ],
   'final-bachelors': [
     { value: 'masters', label: "Master's Degree", icon: '🎯', recommended: true },
     { value: 'mba', label: "MBA Program", icon: '💼', recommended: true },
     { value: 'bachelors', label: "Another Bachelor's", icon: '🎓' },
-    { value: 'diploma', label: "PG Diploma", icon: '📜' },
     { value: 'phd', label: "PhD Program", icon: '🔬' }
   ],
   'completed-bachelors': [
     { value: 'masters', label: "Master's Degree", icon: '🎯', recommended: true },
     { value: 'mba', label: "MBA Program", icon: '💼', recommended: true },
     { value: 'bachelors', label: "Another Bachelor's", icon: '🎓' },
-    { value: 'diploma', label: "PG Diploma", icon: '📜' },
     { value: 'phd', label: "PhD Program", icon: '🔬' }
   ],
   'masters': [
     { value: 'phd', label: "PhD Program", icon: '🔬', recommended: true },
     { value: 'masters', label: "Another Master's", icon: '🎯' },
     { value: 'mba', label: "MBA Program", icon: '💼' },
-    { value: 'diploma', label: "PG Diploma", icon: '📜' },
     { value: 'bachelors', label: "Bachelor's Degree", icon: '🎓', disabled: true }
   ],
   'mbbs': [
@@ -213,53 +208,53 @@ function FinalCongratulationsPage({ universityCount = 42, passportStatus }) {
             </div>
           </div>
         ) : (
-          <div style={{
-            width: '100%',
-            display: 'flex',
-            flexDirection: 'column',
-            marginBottom: 10,
-            background: '#f3f4f6',
-            borderRadius: 16,
-            padding: '16px 10px',
-            boxShadow: '0 1px 4px rgba(74,144,226,0.04)',
-            border: '2.5px solid #6366f1',
-            opacity: 1,
-            position: 'relative',
-            minHeight: 80,
-          }}>
-            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 16, width: '100%' }}>
-              <span style={{ fontSize: 28, color: '#6366f1', marginLeft: 2, marginTop: 2 }}>🔵</span>
-              <div style={{ flex: 1, textAlign: 'left', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                <div style={{ fontWeight: 800, fontSize: 17, color: '#6366f1', marginBottom: 2 }}>
-                  Milestone 3: University Shortlisting <span style={{ fontWeight: 700, fontSize: 14, color: '#6366f1' }}>- Pending</span>
-                </div>
-                <div style={{ color: '#64748b', fontSize: 15, fontWeight: 500 }}>
-                  Get your personalized university shortlist and next steps.
-                </div>
+        <div style={{
+          width: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          marginBottom: 10,
+          background: '#f3f4f6',
+          borderRadius: 16,
+          padding: '16px 10px',
+          boxShadow: '0 1px 4px rgba(74,144,226,0.04)',
+          border: '2.5px solid #6366f1',
+          opacity: 1,
+          position: 'relative',
+          minHeight: 80,
+        }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 16, width: '100%' }}>
+            <span style={{ fontSize: 28, color: '#6366f1', marginLeft: 2, marginTop: 2 }}>🔵</span>
+            <div style={{ flex: 1, textAlign: 'left', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+              <div style={{ fontWeight: 800, fontSize: 17, color: '#6366f1', marginBottom: 2 }}>
+                Milestone 3: University Shortlisting <span style={{ fontWeight: 700, fontSize: 14, color: '#6366f1' }}>- Pending</span>
               </div>
-              <button
-                style={{
-                  background: 'linear-gradient(90deg, #6366f1 0%, #a78bfa 100%)',
-                  color: '#fff',
-                  border: 'none',
-                  borderRadius: 8,
-                  padding: '12px 22px',
-                  fontWeight: 700,
-                  fontSize: 15,
-                  cursor: 'pointer',
-                  marginTop: 18,
-                  boxShadow: '0 2px 8px rgba(99,102,241,0.08)',
-                  letterSpacing: 0.2,
-                  transition: 'background 0.2s',
-                  whiteSpace: 'nowrap',
-                  width: '100%',
-                  alignSelf: 'center',
-                }}
-                onClick={() => window.open('https://calendly.com/leapcounselor', '_blank')}
-              >
-                Book a call with counsellor
-              </button>
+              <div style={{ color: '#64748b', fontSize: 15, fontWeight: 500 }}>
+                Get your personalized university shortlist and next steps.
             </div>
+          </div>
+          <button
+            style={{
+              background: 'linear-gradient(90deg, #6366f1 0%, #a78bfa 100%)',
+              color: '#fff',
+              border: 'none',
+              borderRadius: 8,
+              padding: '12px 22px',
+              fontWeight: 700,
+              fontSize: 15,
+              cursor: 'pointer',
+              marginTop: 18,
+              boxShadow: '0 2px 8px rgba(99,102,241,0.08)',
+              letterSpacing: 0.2,
+              transition: 'background 0.2s',
+              whiteSpace: 'nowrap',
+              width: '100%',
+              alignSelf: 'center',
+            }}
+            onClick={() => window.open('https://calendly.com/leapcounselor', '_blank')}
+          >
+            Book a call with counsellor
+          </button>
+        </div>
           </div>
         )}
       </div>
@@ -458,21 +453,21 @@ function CountryEligibilityStep({ country, budget, backlogs, onSelectCountry, on
         </div>
       ))
       : (!notSureAnd15L && (
-        <div style={{
-          background: '#f8fafc',
-          color: '#b91c1c',
-          borderRadius: 10,
-          padding: '12px 18px',
-          fontWeight: 500,
-          fontSize: 15,
-          marginBottom: 18,
-          textAlign: 'center',
-          maxWidth: 700,
-          width: '100%',
-          border: '1.5px solid #e0e7ff',
-        }}>
-          {selectedCountryObj?.name} with {reasonMap[country]} has low admit chances. Explore other options or continue if you wish.
-        </div>
+    <div style={{
+      background: '#f8fafc',
+      color: '#b91c1c',
+      borderRadius: 10,
+      padding: '12px 18px',
+      fontWeight: 500,
+      fontSize: 15,
+      marginBottom: 18,
+      textAlign: 'center',
+      maxWidth: 700,
+      width: '100%',
+      border: '1.5px solid #e0e7ff',
+    }}>
+      {selectedCountryObj?.name} with {reasonMap[country]} has low admit chances. Explore other options or continue if you wish.
+    </div>
       ))
   ));
 
@@ -1061,7 +1056,7 @@ function App() {
   const [showMBBSAdvisory, setShowMBBSAdvisory] = useState(false);
   const [showBachelorsAdvisory, setShowBachelorsAdvisory] = useState(false);
   const [preferredUniAnswer, setPreferredUniAnswer] = useState('not-sure');
-  const [selectedPreferredUni, setSelectedPreferredUni] = useState('');
+  const [selectedPreferredUnis, setSelectedPreferredUnis] = useState([]);
 
   // Scroll to program fold when education is selected
   useEffect(() => {
@@ -1458,7 +1453,7 @@ function App() {
               setFinanceMode(mode);
               // If budget is 'cannot15', always show CountryEligibilityStep
               if (budget === 'cannot15') {
-                setStep(10);
+              setStep(10);
               } else if (budget === 'not-sure' && (academicDetails.backlogs === 0 || academicDetails.backlogs === '0')) {
                 setStep(11);
               } else if (budget === 'not-sure' && country && isCountryEligibleByBacklogs(country, Number(academicDetails.backlogs))) {
@@ -1522,10 +1517,10 @@ function App() {
                   <span style={{ fontSize: 28, marginBottom: 8 }}>{option.icon}</span>
                   <div style={{ fontWeight: 700, color: '#1e293b', fontSize: 16 }}>{option.title}</div>
                   <div style={{ color: '#64748b', fontSize: 14 }}>{option.subtitle}</div>
-                </div>
+          </div>
               );
             })}
-          </div>
+            </div>
           {/* Preferred University Yes/No */}
           <div style={{ marginTop: 24, width: '100%' }}>
             <h3 style={{ fontSize: 18, fontWeight: 700, color: '#443eff', marginBottom: 10, textAlign: 'center' }}>
@@ -1545,23 +1540,20 @@ function App() {
                 No
               </button>
             </div>
-            {/* If Yes, show dropdown */}
+            {/* If Yes, show custom multi-select dropdown with checkboxes and chips */}
             {preferredUniAnswer === 'yes' && (
-              <select
-                value={selectedPreferredUni || ''}
-                onChange={e => setSelectedPreferredUni(e.target.value)}
-                style={{ width: '100%', padding: '12px 14px', borderRadius: 10, border: '1.5px solid #e5e7eb', fontSize: 15, marginBottom: 18 }}
-              >
-                <option value='' disabled>Select your preferred university</option>
-                {(universityData[country] || universityData.any).map(uni => (
-                  <option key={uni.id} value={uni.id}>{uni.name}</option>
-                ))}
-              </select>
+              <MultiSelectDropdown
+                options={universityData[country] || universityData.any}
+                selected={selectedPreferredUnis}
+                setSelected={setSelectedPreferredUnis}
+                max={5}
+                placeholder="Select up to 5 preferred universities"
+              />
             )}
           </div>
           <button
             style={{ marginTop: 18, background: '#443eff', color: '#fff', border: 'none', borderRadius: 8, padding: '12px 32px', fontWeight: 700, fontSize: 16, cursor: 'pointer', minWidth: 120 }}
-            disabled={!timeline || (preferredUniAnswer === 'yes' && !selectedPreferredUni) || !preferredUniAnswer}
+            disabled={!timeline || (preferredUniAnswer === 'yes' && selectedPreferredUnis.length === 0) || !preferredUniAnswer}
             onClick={() => setStep(12)}
           >
             Continue
@@ -1636,4 +1628,94 @@ function isCountryEligibleByBacklogs(country, backlogs) {
   if (country === 'ireland' && backlogs > 7) return false;
   if (country === 'new-zealand' && backlogs > 8) return false;
   return true;
+}
+
+// Add MultiSelectDropdown component at the bottom of the file
+function MultiSelectDropdown({ options, selected, setSelected, max = 5, placeholder = "Select..." }) {
+  const [open, setOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setOpen(false);
+      }
+    }
+    if (open) {
+      document.addEventListener('mousedown', handleClickOutside);
+    } else {
+      document.removeEventListener('mousedown', handleClickOutside);
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [open]);
+
+  const handleToggle = () => setOpen(o => !o);
+  const handleSelect = (id) => {
+    if (selected.includes(id)) {
+      setSelected(selected.filter(sid => sid !== id));
+    } else if (selected.length < max) {
+      setSelected([...selected, id]);
+    }
+  };
+
+  return (
+    <div ref={dropdownRef} style={{ position: 'relative', width: '100%', marginBottom: 18 }}>
+      <div
+        style={{
+          minHeight: 48,
+          border: '1.5px solid #e5e7eb',
+          borderRadius: 10,
+          background: '#f8fafc',
+          padding: '10px 14px',
+          display: 'flex',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: 8,
+          cursor: 'pointer',
+          fontSize: 15,
+          position: 'relative',
+        }}
+        onClick={handleToggle}
+      >
+        {selected.length === 0 && <span style={{ color: '#64748b' }}>{placeholder}</span>}
+        {selected.length > 0 && options.filter(u => selected.includes(u.id)).map(u => (
+          <span key={u.id} style={{ background: '#e0e7ff', color: '#3730a3', borderRadius: 16, padding: '6px 14px', fontWeight: 600, fontSize: 14, display: 'flex', alignItems: 'center', gap: 6 }}>
+            {u.icon || '🎓'} {u.name}
+          </span>
+        ))}
+        <span style={{ marginLeft: 'auto', color: '#6366f1', fontSize: 18, fontWeight: 700, userSelect: 'none' }}>{open ? '▲' : '▼'}</span>
+      </div>
+      {open && (
+        <div style={{
+          position: 'absolute',
+          top: '110%',
+          left: 0,
+          width: '100%',
+          background: '#fff',
+          border: '1.5px solid #e5e7eb',
+          borderRadius: 10,
+          boxShadow: '0 4px 16px rgba(99,102,241,0.10)',
+          zIndex: 20,
+          maxHeight: 260,
+          overflowY: 'auto',
+          padding: '8px 0',
+        }}>
+          {options.map(u => (
+            <label key={u.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 18px', cursor: 'pointer', fontSize: 15 }}>
+              <input
+                type="checkbox"
+                checked={selected.includes(u.id)}
+                onChange={() => handleSelect(u.id)}
+                style={{ accentColor: '#6366f1', width: 18, height: 18 }}
+                disabled={!selected.includes(u.id) && selected.length >= max}
+              />
+              <span style={{ fontWeight: 500 }}>{u.name}</span>
+              {u.rank && <span style={{ color: '#64748b', fontSize: 13, marginLeft: 8 }}>{u.rank}</span>}
+            </label>
+          ))}
+        </div>
+      )}
+      <div style={{ color: '#64748b', fontSize: 13, marginTop: 4 }}>Selected: {selected.length}/{max}</div>
+    </div>
+  );
 }

@@ -18,8 +18,8 @@ const specializationOptions = [
   { value: 'other', label: 'Other' },
 ];
 const gradeTypeOptions = [
-  { value: 'cgpa', label: 'CGPA of' },
-  { value: 'percentage', label: 'Percentage of' },
+  { value: 'cgpa', label: 'CGPA' },
+  { value: 'percentage', label: 'Percentage' },
 ];
 const gradeValueOptions = {
   cgpa: [
@@ -48,7 +48,7 @@ const yearOptions = [
   '2027-and-later', '2026', '2025', '2024', '2023', '2022', '2021', '2020', 'before-2020', 'before-2005'
 ];
 const gapOptions = [
-  { value: '0', label: 'No gap' },
+  { value: '0', label: '0 months' },
   { value: '12', label: 'Less than 12 months' },
   { value: '24', label: '12-24 months' },
   { value: '36', label: 'More than 24 months' },
@@ -330,7 +330,7 @@ const AcademicDetailsStep = ({ highestEducation, initialDetails = {}, onSubmit }
                 <option value="">Grade Type</option>
                 {gradeTypeOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
               </select>
-              with a grade of
+              and I have
               <input
                 type="number"
                 style={{ ...selectStyle, minWidth: 80, fontSize: 16, borderRadius: 10, margin: '0 8px', width: 120 }}
@@ -342,6 +342,8 @@ const AcademicDetailsStep = ({ highestEducation, initialDetails = {}, onSubmit }
                 step={gradeType === 'cgpa' ? 0.01 : 1}
                 placeholder={gradeType === 'cgpa' ? 'e.g. 8.5' : 'e.g. 85'}
               />
+              {gradeType === 'cgpa' && <span style={{ marginLeft: 4, fontWeight: 600, color: '#555' }}>CGPA</span>}
+              {gradeType === 'percentage' && <span style={{ marginLeft: 4, fontWeight: 600, color: '#555' }}>%</span>}
             </span>
             <span>
               <span role="img" aria-label="backlogs">📚</span> I have
@@ -359,14 +361,14 @@ const AcademicDetailsStep = ({ highestEducation, initialDetails = {}, onSubmit }
               backlogs
             </span>
             <span>
-              <span role="img" aria-label="graduation">🎓</span> Graduated or graduating in
+              <span role="img" aria-label="graduation">🎓</span> I Graduated or I am graduating in
               <select style={{ ...selectStyle, minWidth: 120, fontSize: 16, borderRadius: 10, margin: '0 8px' }} value={graduationYear} onChange={e => { setGraduationYear(e.target.value); setGraduationMonth(''); }} required>
                 <option value="">Year</option>
                 {yearOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
               </select>
               {showMonth && (
                 <>
-                  in
+               
                   <select style={{ ...selectStyle, minWidth: 120, fontSize: 16, borderRadius: 10, margin: '0 8px' }} value={graduationMonth} onChange={e => setGraduationMonth(e.target.value)} required>
                     <option value="">Month</option>
                     {monthOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
@@ -376,7 +378,7 @@ const AcademicDetailsStep = ({ highestEducation, initialDetails = {}, onSubmit }
             </span>
             {showGap && (
               <span>
-                <span role="img" aria-label="gap">⏳</span> I have a gap of
+                <span role="img" aria-label="gap">⏳</span> I have a gap year of
                 <select style={{ ...selectStyle, minWidth: 120, fontSize: 16, borderRadius: 10, margin: '0 8px' }} value={gap} onChange={e => setGap(e.target.value)} required>
                   <option value="">Select gap</option>
                   {gapOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
@@ -534,7 +536,7 @@ const AcademicDetailsStep = ({ highestEducation, initialDetails = {}, onSubmit }
               fontWeight: 800,
               cursor: 'pointer',
               boxShadow: '0 2px 8px rgba(74,144,226,0.08)',
-              transition: 'background 0.2s',
+              transition: 'CGPA 0.2s',
               letterSpacing: 1,
               width: '100%',
               marginTop: 18,
