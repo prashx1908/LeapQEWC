@@ -46,14 +46,11 @@ export default function FinanceStep({ onSelect, initialValue }) {
         flexDirection: 'column',
         alignItems: 'center',
       }}>
-        <h2 style={{ fontSize: 26, fontWeight: 800, color: '#1e293b', marginBottom: 10, letterSpacing: 0.2 }}>
-          How do you plan to finance your education?
-        </h2>
-        <div style={{ color: '#374151', fontSize: 17, marginBottom: 12, fontWeight: 500 }}>
-          With a minimum assurance of 20% scholarship, keeping it aside, how would you fund your education?
-        </div>
-        <div style={{ color: '#374151', fontSize: 17, marginBottom: 28, fontWeight: 500 }}>
-          Select your preferred mode of financing
+        <div style={{ background: '#f8fafc', borderRadius: 16, padding: '28px 24px', boxShadow: '0 2px 8px #6366f122', marginBottom: 18, maxWidth: 420, width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <h3 style={{ fontSize: 20, fontWeight: 800, color: '#443eff', marginBottom: 8 }}>How do you plan to finance your education?</h3>
+          <div style={{ color: '#64748b', fontSize: 15, marginBottom: 18, textAlign: 'center' }}>
+            With a minimum assurance of 20% scholarship, keeping it aside, how would you fund your education?
+          </div>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 22, width: '100%' }}>
           {financeOptions.map(opt => (

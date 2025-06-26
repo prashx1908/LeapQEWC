@@ -45,7 +45,7 @@ const backlogOptions = [
   { value: '10+', label: 'More than 10 Backlogs' },
 ];
 const yearOptions = [
-  '2027-and-later', '2026', '2025', '2024', '2023', '2022', '2021', '2020', 'before-2020', 'before-2005'
+  '2027-later', '2026', '2025', '2024', '2023', '2022', '2021', '2020', 'before-2020', 'before-2005'
 ];
 const gapOptions = [
   { value: '0', label: '0 months' },
@@ -205,7 +205,7 @@ const AcademicDetailsStep = ({ highestEducation, initialDetails = {}, onSubmit }
   const [showWork, setShowWork] = useState(false);
   const [showExpDuration, setShowExpDuration] = useState(false);
   const [jobSpecializations, setJobSpecializations] = useState(initialDetails.jobSpecializations || []);
-  const [workExp, setWorkExp] = useState(initialDetails.workExp || '0');
+  const [workExp, setWorkExp] = useState(initialDetails.workExp || '');
   const [showSpecDropdown, setShowSpecDropdown] = useState(false);
 
   const currentYear = new Date().getFullYear();
@@ -257,11 +257,16 @@ const AcademicDetailsStep = ({ highestEducation, initialDetails = {}, onSubmit }
 
   // Intake recommendation logic
   function getRecommendedIntake(year, month) {
-    if (!year || !month) return null;
+    if (!year) return null;
+    if (year === '2027-later') return '2027-later'; // <-- Fix here
+    if (!month) return null;
+  
     const m = parseInt(month, 10);
-    if (m >= 1 && m <= 5) return `Fall ${year}`;
-    if (m >= 6 && m <= 8) return `Spring ${year}`;
-    return `Next available intake after ${month}/${year}`;
+    const y = parseInt(year, 10);
+  
+    if (m >= 1 && m <= 5) return `Fall ${y}`;
+    if (m >= 6 && m <= 8) return `Spring ${y}`;
+    return `Next available intake after ${month}/${y}`;
   }
   const recommendedIntake = getRecommendedIntake(graduationYear, graduationMonth);
 
@@ -364,7 +369,9 @@ const AcademicDetailsStep = ({ highestEducation, initialDetails = {}, onSubmit }
               <span role="img" aria-label="graduation">🎓</span> I Graduated or I am graduating in
               <select style={{ ...selectStyle, minWidth: 120, fontSize: 16, borderRadius: 10, margin: '0 8px' }} value={graduationYear} onChange={e => { setGraduationYear(e.target.value); setGraduationMonth(''); }} required>
                 <option value="">Year</option>
-                {yearOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                {yearOptions.map(opt => (
+                  <option key={opt} value={opt}>{opt === '2027-later' ? '2027 or later' : opt.replace('-', ' ')}</option>
+                ))}
               </select>
               {showMonth && (
                 <>
@@ -379,15 +386,18 @@ const AcademicDetailsStep = ({ highestEducation, initialDetails = {}, onSubmit }
             {showGap && (
               <span>
                 <span role="img" aria-label="gap">⏳</span> I have a gap year of
-                <select style={{ ...selectStyle, minWidth: 120, fontSize: 16, borderRadius: 10, margin: '0 8px' }} value={gap} onChange={e => setGap(e.target.value)} required>
-                  <option value="">Select gap</option>
-                  {gapOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+                <select style={{ ...selectStyle, minWidth: 140, fontSize: 16, borderRadius: 10, margin: '0 8px', width: 180 }} value={gap} onChange={e => setGap(e.target.value)} required>
+                  <option value="" disabled>Select gap</option>
+                  <option value="0">No gap</option>
+                  <option value="12">Less than 12 months</option>
+                  <option value="24">12-24 months</option>
+                  <option value="36">24+ months</option>
                 </select>
               </span>
             )}
-            {showGapDoc && (
-              <span style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
-                <span role="img" aria-label="document">📄</span> Valid documents:
+            {gap === '36' && (
+              <span style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginTop: 8 }}>
+                <span role="img" aria-label="document">📄</span> Do you have valid documents to justify the gap?
                 <span style={{ display: 'inline-flex', gap: 10, marginLeft: 4, verticalAlign: 'middle' }}>
                   <button
                     type="button"
@@ -439,18 +449,18 @@ const AcademicDetailsStep = ({ highestEducation, initialDetails = {}, onSubmit }
             {showWork && (
               <span>
                 <span role="img" aria-label="work">💼</span> I have a work experience of
-                <select
-                  style={{ ...selectStyle, minWidth: 120, fontSize: 16, borderRadius: 10, margin: '0 8px' }}
-                  value={workExp}
-                  onChange={e => setWorkExp(e.target.value)}
-                  required
-                >
-                  {workExpOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+                <select style={{ ...selectStyle, minWidth: 140, fontSize: 16, borderRadius: 10, margin: '0 8px', width: 170 }} value={workExp} onChange={e => setWorkExp(e.target.value)} required>
+                  <option value="" disabled>Select no. of years</option>
+                  <option value="0">0 years</option>
+                  <option value="1">1 year</option>
+                  <option value="2">2 years</option>
+                  <option value="3">3 years</option>
+                  <option value="4">4 years</option>
+                  <option value="5+">5+ years</option>
                 </select>
-                years
               </span>
             )}
-            {showWork && workExp !== '0' && (
+            {showWork && workExp && workExp !== '0' && (
               <span style={{ display: 'block', marginTop: 8 }}>
                 with specialization in
                 <div className="spec-dropdown-root" style={{ position: 'relative', display: 'inline-block', minWidth: 180 }}>
@@ -495,27 +505,23 @@ const AcademicDetailsStep = ({ highestEducation, initialDetails = {}, onSubmit }
                         overflowY: 'auto',
                         minWidth: 180,
                         width: '100%',
-                        padding: 8,
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: 6,
                       }}
                     >
                       {jobOptions.filter(opt => opt.value !== 'none').map(opt => (
-                        <label key={opt.value} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 15, fontWeight: 500, color: '#1e293b', cursor: 'pointer', padding: '2px 0' }}>
+                        <label key={opt.value} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 18px', cursor: 'pointer', fontSize: 15 }}>
                           <input
                             type="checkbox"
                             checked={jobSpecializations.includes(opt.value)}
-                            onChange={e => {
-                              if (e.target.checked) {
-                                setJobSpecializations([...jobSpecializations, opt.value]);
+                            onChange={() => {
+                              if (jobSpecializations.includes(opt.value)) {
+                                setJobSpecializations(jobSpecializations.filter(j => j !== opt.value));
                               } else {
-                                setJobSpecializations(jobSpecializations.filter(val => val !== opt.value));
+                                setJobSpecializations([...jobSpecializations, opt.value]);
                               }
                             }}
-                            style={{ accentColor: '#6366f1', width: 16, height: 16 }}
+                            style={{ accentColor: '#6366f1', width: 18, height: 18 }}
                           />
-                          {opt.label}
+                          <span style={{ fontWeight: 500 }}>{opt.label}</span>
                         </label>
                       ))}
                     </div>
