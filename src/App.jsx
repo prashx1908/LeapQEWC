@@ -454,7 +454,7 @@ function CountryEligibilityStep({ country, budget, backlogs, onSelectCountry, on
           width: '100%',
           border: '1.5px solid #e0e7ff',
         }}>
-          {selectedCountryObj?.name} with {reasonMap[country]} has low admit chances due to backlogs. Explore other options or continue if you wish.
+          You selected {selectedCountryObj?.name} 🇺🇸 {reasonMap[country]} and it has 1 in 10 admit chances with an academic profile of 10+ backlogs. Consider our recommended options below or continue if you wish.
         </div>
       ))
       : (!notSureAnd15L && (
@@ -471,7 +471,7 @@ function CountryEligibilityStep({ country, budget, backlogs, onSelectCountry, on
       width: '100%',
       border: '1.5px solid #e0e7ff',
     }}>
-      {selectedCountryObj?.name} with {reasonMap[country]} has low admit chances. Explore other options or continue if you wish.
+      You selected {selectedCountryObj?.name} 🇺🇸 and it has 1 in 10 admit chances with an academic profile of 10+ backlogs. Consider our recommended options below or continue if you wish.
     </div>
       ))
   ));
@@ -610,9 +610,9 @@ function CountryEligibilityStep({ country, budget, backlogs, onSelectCountry, on
     <button
       style={{
         ...compactButtonStyle,
-        background: usaEligible ? compactButtonStyle.background : '#f3f4f6',
-        border: usaEligible ? compactButtonStyle.border : '2px solid #eab308',
-        color: usaEligible ? compactButtonStyle.color : '#b45309',
+        background: userBacklogs > 10 ? '#fef2f2' : compactButtonStyle.background,
+        border: userBacklogs > 10 ? '2px solid #fca5a5' : compactButtonStyle.border,
+        color: userBacklogs > 10 ? '#b91c1c' : compactButtonStyle.color,
         fontWeight: 700,
         fontSize: 14,
         minWidth: 120,
@@ -621,7 +621,11 @@ function CountryEligibilityStep({ country, budget, backlogs, onSelectCountry, on
         position: 'relative',
       }}
       onClick={() => {
-        if (userBudget < 35 && userBacklogs <= 10) {
+        if (userBacklogs > 10) {
+          setDisqualCountry(usa);
+          setDisqualReason('Low admit chances for USA with more than 10 backlogs.');
+          setShowDisqualDialog(true);
+        } else if (userBudget < 35) {
           setShowUSAConfirm(true);
         } else {
           handleCountryClick(usa, usaEligible);
@@ -630,8 +634,8 @@ function CountryEligibilityStep({ country, budget, backlogs, onSelectCountry, on
     >
       <span style={{ fontSize: 22, marginBottom: 2 }}>{usa.flag}</span>
       <span>{usa.name}</span>
-      <span style={{ color: usaEligible ? '#64748b' : '#a16207', fontSize: 11, fontWeight: 600 }}>ROI: ₹{usa.roi}L</span>
-      {userBudget < 35 && (
+      <span style={{ color: userBacklogs > 10 ? '#b91c1c' : '#64748b', fontSize: 11, fontWeight: 600 }}>ROI: ₹{usa.roi}L</span>
+      {userBacklogs > 10 && (
         <span style={{
           position: 'absolute',
           top: 6,
@@ -642,7 +646,7 @@ function CountryEligibilityStep({ country, budget, backlogs, onSelectCountry, on
           fontSize: 9,
           borderRadius: 7,
           padding: '1px 6px',
-        }}>Low admit rate</span>
+        }}>Low admit</span>
       )}
     </button>
   );
@@ -1159,7 +1163,7 @@ function CountryEligibilityStep({ country, budget, backlogs, onSelectCountry, on
           alignItems: 'center',
           gap: 10,
         }}>
-          USA admits are higher with 35L+ budget. With 15L, options are more limited.
+       
         </div>
       )}
       <div style={{ fontSize: 15, color: '#64748b', fontWeight: 500, marginBottom: 16, textAlign: 'center' }}>
