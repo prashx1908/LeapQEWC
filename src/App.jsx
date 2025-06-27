@@ -16,6 +16,8 @@ import ApplicationTimelineStep from './components/ApplicationTimelineStep';
 import EnglishTestDetailsStep from './components/EnglishTestDetailsStep';
 import ContactDetailsStep from './components/ContactDetailsStep';
 import { AdvisoryMBBSPage, AdvisoryPhDPathPage, AdvisoryBachelorsPathPage } from './components/WarmDisqualificationPage';
+import UniformDialog from './components/UniformDialog';
+
 import './App.css';
 
 // Mapping of education to recommended programs (from your script.js)
@@ -438,26 +440,7 @@ function CountryEligibilityStep({ country, budget, backlogs, onSelectCountry, on
   // --- Show advisory message if selected country is ineligible (softer wording) ---
   const selectedCountryObj = countryReqs.find(c => c.value === country);
   const selectedCountryIneligible = selectedCountryObj && !isCountryEligible(selectedCountryObj);
-  const advisoryMessage = (selectedCountryIneligible && (
-    isBudgetNotSure
-      ? (reasonMap[country]?.includes('Backlogs') && (
-        <div style={{
-          background: '#f8fafc',
-          color: '#b91c1c',
-          borderRadius: 10,
-          padding: '12px 18px',
-          fontWeight: 500,
-          fontSize: 15,
-          marginBottom: 18,
-          textAlign: 'center',
-          maxWidth: 700,
-          width: '100%',
-          border: '1.5px solid #e0e7ff',
-        }}>
-          You selected {selectedCountryObj?.name} 🇺🇸 {reasonMap[country]} and it has 1 in 10 admit chances with an academic profile of 10+ backlogs. Consider our recommended options below or continue if you wish.
-        </div>
-      ))
-      : (!notSureAnd15L && (
+  const advisoryMessage = (selectedCountryIneligible && backlogs > selectedCountryObj.minBacklogs && (
     <div style={{
       background: '#f8fafc',
       color: '#b91c1c',
@@ -471,9 +454,8 @@ function CountryEligibilityStep({ country, budget, backlogs, onSelectCountry, on
       width: '100%',
       border: '1.5px solid #e0e7ff',
     }}>
-      You selected {selectedCountryObj?.name} 🇺🇸 and it has 1 in 10 admit chances with an academic profile of 10+ backlogs. Consider our recommended options below or continue if you wish.
+      {getBacklogWarningMessage(selectedCountryObj)}
     </div>
-      ))
   ));
 
   // --- Main country button click handler ---
@@ -864,8 +846,22 @@ function CountryEligibilityStep({ country, budget, backlogs, onSelectCountry, on
       <div style={{ background: '#fff', borderRadius: 14, boxShadow: '0 4px 24px #0002', padding: 32, minWidth: 340, textAlign: 'center', position: 'relative' }}>
         {/* Close button */}
         <button onClick={() => setShowDisqualDialog(false)} style={{ position: 'absolute', top: 12, right: 16, background: 'none', border: 'none', fontSize: 22, color: '#64748b', cursor: 'pointer', fontWeight: 700, zIndex: 2 }} aria-label="Close">×</button>
-        <div style={{ fontWeight: 700, fontSize: 18, color: '#dc2626', marginBottom: 12 }}>Low admit chances for {disqualCountry.name}.</div>
-        <div style={{ color: '#b91c1c', fontSize: 15, marginBottom: 18 }}>{disqualReason}</div>
+        {backlogs > disqualCountry.minBacklogs ? (
+          <>
+            <div style={{ fontWeight: 900, fontSize: 20, color: '#b91c1c', marginBottom: 14 }}>
+              {getBacklogWarningMessage(disqualCountry)}
+            </div>
+          </>
+        ) : (
+          <>
+            <div style={{ fontWeight: 900, fontSize: 20, color: '#b91c1c', marginBottom: 14 }}>
+              You chose <b>{disqualCountry.name} {disqualCountry.flag}</b> with <b>{disqualReason}</b>.
+            </div>
+            <div style={{ color: '#b91c1c', fontSize: 16, marginBottom: 22, fontWeight: 700 }}>
+              There are very few university admit chances. Try exploring other countries we have recommended below.
+            </div>
+          </>
+        )}
         <div style={{ display: 'flex', gap: 16, marginTop: 8 }}>
           <button style={{
             background: '#6366f1',
@@ -937,8 +933,8 @@ function CountryEligibilityStep({ country, budget, backlogs, onSelectCountry, on
         <div style={{ fontWeight: 800, fontSize: 19, color: '#b45309', marginBottom: 10 }}>Next Steps for {cannot15Country.name}</div>
         <div style={{ color: '#a16207', fontSize: 15, marginBottom: 18 }}>
           {cannot15Country.value === 'usa'
-            ? 'You can either select USA with a 35 lakhs budget or talk to a counsellor for financial planning.'
-            : `You can either select this country with a 15 lakhs budget or talk to a counsellor for financial planning.`}
+            ? 'You can either select USAitself or explore other countries.'
+            : `You can either select this country itself or explore other countries.`}
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginTop: 8 }}>
           {cannot15Country.value === 'usa' ? (
@@ -989,7 +985,7 @@ function CountryEligibilityStep({ country, budget, backlogs, onSelectCountry, on
                 onContinue();
               }}
             >
-              Select {cannot15Country.name} with 15 lakhs budget
+              Continue with {cannot15Country.name}  
             </button>
           )}
           <button style={{
@@ -1007,10 +1003,10 @@ function CountryEligibilityStep({ country, budget, backlogs, onSelectCountry, on
           }}
             onClick={() => {
               setShowCannot15Dialog(false);
-              onContinue && onContinue('counsellor');
+         
             }}
           >
-            Talk to a counsellor for financial decision
+              Explore other countries
           </button>
         </div>
       </div>
@@ -1930,5 +1926,18 @@ function MultiSelectDropdown({ options, selected, setSelected, max = 5, placehol
       )}
       <div style={{ color: '#64748b', fontSize: 13, marginTop: 4 }}>Selected: {selected.length}/{max}</div>
     </div>
+  );
+}
+
+// Helper to generate backlog warning message
+function getBacklogWarningMessage(countryObj) {
+  if (!countryObj) return null;
+  return (
+    <>
+      You selected <b>{countryObj.name} <span style={{fontSize:22}}>{countryObj.flag}</span></b>, but it doesn't support profiles with <b>{countryObj.minBacklogs}+</b> backlogs.<br />
+      <span style={{ fontWeight: 800, color: '#b91c1c', fontSize: 17 }}>
+        Try choosing our recommended countries below.
+      </span>
+    </>
   );
 }
