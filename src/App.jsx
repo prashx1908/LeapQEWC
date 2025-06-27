@@ -1022,9 +1022,9 @@ function CountryEligibilityStep({ country, budget, backlogs, onSelectCountry, on
       <div style={{ background: '#fff', borderRadius: 14, boxShadow: '0 4px 24px #0002', padding: 32, minWidth: 340, textAlign: 'center', position: 'relative' }}>
         {/* Close button */}
         <button onClick={() => { setShowCountryConfirm(false); setPendingCountryConfirm(null); }} style={{ position: 'absolute', top: 12, right: 16, background: 'none', border: 'none', fontSize: 22, color: '#64748b', cursor: 'pointer', fontWeight: 700, zIndex: 2 }} aria-label="Close">×</button>
-        <div style={{ fontWeight: 700, fontSize: 18, color: '#b45309', marginBottom: 12 }}>Switch Country?</div>
+        <div style={{ fontWeight: 700, fontSize: 18, color: '#b45309', marginBottom: 12 }}>Select Country</div>
         <div style={{ color: '#1e293b', fontSize: 15, marginBottom: 18 }}>
-          Do you want to switch to <b>{pendingCountryConfirm && pendingCountryConfirm.toUpperCase()}</b>?
+          Do you want to select <b>{pendingCountryConfirm && pendingCountryConfirm.toUpperCase()}</b>?
         </div>
         <div style={{ display: 'flex', gap: 16, marginTop: 8, justifyContent: 'center' }}>
           <button style={{ background: '#6366f1', color: '#fff', border: 'none', borderRadius: 8, fontWeight: 700, fontSize: 15, padding: '10px 18px', cursor: 'pointer' }}
@@ -1034,14 +1034,14 @@ function CountryEligibilityStep({ country, budget, backlogs, onSelectCountry, on
               setPendingCountryConfirm(null);
               onContinue();
             }}>
-            Yes, switch to {pendingCountryConfirm && pendingCountryConfirm.toUpperCase()}
+            Yes, select {pendingCountryConfirm && pendingCountryConfirm.toUpperCase()}
           </button>
           <button style={{ background: '#f3f4f6', color: '#374151', border: '1.5px solid #e5e7eb', borderRadius: 8, fontWeight: 700, fontSize: 15, padding: '10px 18px', cursor: 'pointer' }}
             onClick={() => {
               setShowCountryConfirm(false);
               setPendingCountryConfirm(null);
             }}>
-            No, stay with current country
+            Explore other countries 
           </button>
         </div>
       </div>
@@ -1797,7 +1797,7 @@ function App() {
           <div style={{ background: '#fff', borderRadius: 14, boxShadow: '0 4px 24px #0002', padding: 32, minWidth: 340, textAlign: 'center', position: 'relative' }}>
             {/* Close button */}
             <button onClick={() => { setShowCountrySwitchConfirm(false); setPendingCountrySwitch(null); }} style={{ position: 'absolute', top: 12, right: 16, background: 'none', border: 'none', fontSize: 22, color: '#64748b', cursor: 'pointer', fontWeight: 700, zIndex: 2 }} aria-label="Close">×</button>
-            <div style={{ fontWeight: 700, fontSize: 18, color: '#b45309', marginBottom: 12 }}>Switch Country?</div>
+            <div style={{ fontWeight: 700, fontSize: 18, color: '#b45309', marginBottom: 12 }}>Select Country</div>
             <div style={{ color: '#1e293b', fontSize: 15, marginBottom: 18 }}>
               You previously selected USA but cannot invest a minimum of 15 lakhs. Do you want to switch to <b>{pendingCountrySwitch && pendingCountrySwitch.toUpperCase()}</b> or stay with USA?
             </div>
@@ -1810,7 +1810,7 @@ function App() {
                   // Optionally, advance the flow
                   setStep(10); // or whatever is appropriate
                 }}>
-                Yes, switch to {pendingCountrySwitch && pendingCountrySwitch.toUpperCase()}
+                Yes, select {pendingCountrySwitch && pendingCountrySwitch.toUpperCase()}
               </button>
               <button style={{ background: '#f3f4f6', color: '#374151', border: '1.5px solid #e5e7eb', borderRadius: 8, fontWeight: 700, fontSize: 15, padding: '10px 18px', cursor: 'pointer' }}
                 onClick={() => {
