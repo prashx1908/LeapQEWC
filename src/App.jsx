@@ -381,6 +381,14 @@ function CountryEligibilityStep({ country, budget, backlogs, onSelectCountry, on
   const isCountryEligible = (c) => {
     if (backlogs > c.minBacklogs) return false;
     if (budget !== undefined && budget !== null) {
+      if (
+        budget === 'cannot15' ||
+        budget === 'cannot invest min 15 lakhs' ||
+        budget === 'cannot-invest-15' ||
+        budget === 'cannot invest a minimum of 15 lakhs'
+      ) {
+        return false;
+      }
       const userBudget = typeof budget === 'string' ? parseInt(budget) : budget;
       if (userBudget < c.minBudget) return false;
     }
