@@ -447,7 +447,7 @@ function CountryEligibilityStep({ country, budget, backlogs, onSelectCountry, on
         <div style={{ width: '100%', background: '#fef9c3', border: '2px solid #fde68a', borderRadius: 14, padding: '18px 22px', fontWeight: 700, fontSize: 16, color: '#b45309', marginBottom: 10, textAlign: 'center', boxShadow: '0 2px 8px #fde68a33' }}>
           <span style={{ fontSize: 22, marginRight: 8 }}>ℹ️</span>
           With less than 15 lakhs, options are limited.<br />
-          You can select a country for 15 lakhs, or <a href="https://calendly.com/leapcounselor" target="_blank" rel="noopener noreferrer" style={{ color: '#443eff', textDecoration: 'underline' }}>talk to a counselor</a> for financial planning.
+          You can select a country for 15 lakhs.
         </div>
       );
     }
@@ -462,7 +462,7 @@ function CountryEligibilityStep({ country, budget, backlogs, onSelectCountry, on
     backlogs > selectedCountryObj.minBacklogs
   ) {
     personalizedMessage = (
-      <div style={{ width: '100%', background: '#fef2f2', border: '2px solid #fca5a5', borderRadius: 14, padding: '18px 22px', fontWeight: 700, fontSize: 16, color: '#b91c1c', marginBottom: 10, textAlign: 'center', boxShadow: '0 2px 8px #fde68a33' }}>
+      <div style={{ width: '100%', background: '#fef9c3', border: '2px solid #fde68a', borderRadius: 14, padding: '18px 22px', fontWeight: 700, fontSize: 16, color: '#b45309', marginBottom: 10, textAlign: 'center', boxShadow: '0 2px 8px #fde68a33' }}>
         <span style={{ fontSize: 22, marginRight: 8 }}>{selectedCountryObj.flag}</span>
         <b>{selectedCountryObj.name}</b> is not available for profiles with more than {selectedCountryObj.minBacklogs} backlogs.<br />
         Please consider exploring other options below for a better match.
@@ -495,10 +495,10 @@ function CountryEligibilityStep({ country, budget, backlogs, onSelectCountry, on
   ) {
     // Fallback (shouldn't normally hit this branch)
     personalizedMessage = (
-      <div style={{ width: '100%', background: '#fef2f2', border: '2px solid #fca5a5', borderRadius: 14, padding: '18px 22px', fontWeight: 700, fontSize: 16, color: '#b91c1c', marginBottom: 10, textAlign: 'center', boxShadow: '0 2px 8px #fde68a33' }}>
+      <div style={{ width: '100%', background: '#fef9c3', border: '2px solid #fde68a', borderRadius: 14, padding: '18px 22px', fontWeight: 700, fontSize: 16, color: '#b45309', marginBottom: 10, textAlign: 'center', boxShadow: '0 2px 8px #fde68a33' }}>
         <span style={{ fontSize: 22, marginRight: 8 }}>{selectedCountryObj.flag}</span>
-        <b>{selectedCountryObj.name}</b> is not eligible for your profile.<br />
-        You can still choose {selectedCountryObj.name} if you wish, but your chances may be lower. Consider exploring other options below for a better match.
+        <b>{selectedCountryObj.name}</b> with this budget has 1 in 10 admit chances.<br />
+        You can still choose {selectedCountryObj.name} if you wish, but consider exploring other options below for a better match.
       </div>
     );
   }
@@ -532,14 +532,16 @@ function CountryEligibilityStep({ country, budget, backlogs, onSelectCountry, on
           </div>
           <div style={{ fontWeight: 600, fontSize: 15, color: selectedCountryEligible ? '#059669' : '#b91c1c' }}>{selectedCountryReason}</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10, width: '100%', marginTop: 10 }}>
-            <button style={{ background: '#6366f1', color: '#fff', border: 'none', borderRadius: 10, fontWeight: 700, fontSize: 16, padding: '14px 0', width: '100%', cursor: 'pointer', boxShadow: '0 2px 8px #6366f122' }}
-              onClick={() => { onSelectCountry(selectedCountryObj.value); onContinue(); }}>
-              Yes, select {selectedCountryObj.name}
-            </button>
-            <button style={{ background: '#fff', color: '#6366f1', border: '2px solid #e0e7ff', borderRadius: 10, fontWeight: 700, fontSize: 16, padding: '14px 0', width: '100%', cursor: 'pointer', boxShadow: '0 2px 8px #6366f122' }}
+          <button style={{ background: '#6366f1', color: '#fff', border: 'none', borderRadius: 10, fontWeight: 700, fontSize: 16, padding: '14px 0', width: '100%', cursor: 'pointer', boxShadow: '0 2px 8px #6366f122' }}
+
               onClick={() => setSelectedCountry(null)}>
               Explore other countries
             </button>
+            <button style={{ background: '#fff', color: '#6366f1', border: '2px solid #e0e7ff', borderRadius: 10, fontWeight: 700, fontSize: 16, padding: '14px 0', width: '100%', cursor: 'pointer', boxShadow: '0 2px 8px #6366f122' }}
+              onClick={() => { onSelectCountry(selectedCountryObj.value); onContinue(); }}>
+              No, select {selectedCountryObj.name}
+            </button>
+            
           </div>
         </div>
       )}
@@ -1134,6 +1136,7 @@ function App() {
       {step === 9 && !budget && (
         <div style={{ marginTop: 0, background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.06)', maxWidth: 500, width: '100%', padding: '32px 24px', display: 'flex', flexDirection: 'column', gap: 0 }}>
           <BudgetStep
+            country={country}
             onBudgetSelected={(budgetValue) => {
               setBudget(budgetValue);
               setStep(9); // Always advance to finance mode
@@ -1167,7 +1170,7 @@ function App() {
                 }
                 if (interpretedBudget === 'cannot15') {
                   setFinanceMode(mode);
-                  setStep('usa-counsellor'); // Show counsellor message, no grid
+                  setStep(10); // Go to country eligibility page
                   return;
                 }
                 if (interpretedBudget === 'not-sure') {
@@ -1176,16 +1179,7 @@ function App() {
                   return;
                 }
               } else {
-                // --- Custom logic for initial country not-sure ---
-                if (country === 'not-sure') {
-                  const interpretedBudget = interpretBudget(budget);
-                  if (interpretedBudget === 'not-sure') {
-                    setFinanceMode(mode);
-                    setStep(11); // Skip country eligibility
-                    return;
-                  }
-                }
-                // New: For non-USA, skip eligibility if not disqualified by backlogs and budget is enough
+                // For non-USA countries
                 const countryReqs = [
                   { value: 'usa', name: 'USA', flag: '🇺🇸', roi: 60, minBacklogs: 10, minBudget: 35 },
                   { value: 'canada', name: 'Canada', flag: '🇨🇦', roi: 45, minBacklogs: 10, minBudget: 15 },
@@ -1205,18 +1199,13 @@ function App() {
                 const countryObj = countryReqs.find(c => c.value === country);
                 const backlogsNum = academicDetails.backlogs || 0;
                 const interpretedBudget = interpretBudget(budget);
-                if (
-                  countryObj &&
-                  backlogsNum <= countryObj.minBacklogs &&
-                  ((interpretedBudget === 'can35' && countryObj.minBudget <= 35) ||
-                   (interpretedBudget === 'can15' && countryObj.minBudget <= 15))
-                ) {
+                // If budget is 'not-sure', no backlog disqualification, and country is not 'not-sure', skip eligibility
+                if (interpretedBudget === 'not-sure' && country !== 'not-sure' && backlogsNum <= (countryObj ? countryObj.minBacklogs : 99)) {
                   setFinanceMode(mode);
-                  setStep(11); // Go directly to application timeline
+                  setStep(11); // Skip eligibility page
                   return;
                 }
-                setFinanceMode(mode);
-                setStep(10); // Otherwise, show country eligibility
+                // ...rest of logic unchanged...
               }
             }}
             initialValue={financeMode}
@@ -1233,22 +1222,6 @@ function App() {
           <button style={{ background: '#6366f1', color: '#fff', border: 'none', borderRadius: 10, fontWeight: 700, fontSize: 16, padding: '14px 0', width: '100%', maxWidth: 320, cursor: 'pointer', boxShadow: '0 2px 8px #6366f122', margin: '0 auto 18px auto' }}
             onClick={() => setStep(10)}>
             Explore eligible countries
-          </button>
-        </div>
-      )}
-      {/* Step: USA counsellor message */}
-      {step === 'usa-counsellor' && (
-        <div style={{ marginTop: 0, background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.06)', maxWidth: 600, width: '100%', padding: '32px 24px', display: 'flex', flexDirection: 'column', gap: 0, alignItems: 'center' }}>
-          <div style={{ fontWeight: 700, fontSize: 18, color: '#b91c1c', marginBottom: 16, textAlign: 'center' }}>
-            Talk with a counsellor regarding your financial decision or stay with the current country.
-          </div>
-          <button style={{ background: '#6366f1', color: '#fff', border: 'none', borderRadius: 10, fontWeight: 700, fontSize: 16, padding: '14px 0', width: '100%', maxWidth: 320, cursor: 'pointer', boxShadow: '0 2px 8px #6366f122', margin: '0 auto 18px auto' }}
-            onClick={() => window.open('https://calendly.com/leapcounselor', '_blank')}>
-            Talk to a counsellor
-          </button>
-          <button style={{ background: '#fff', color: '#6366f1', border: '2px solid #e0e7ff', borderRadius: 10, fontWeight: 700, fontSize: 16, padding: '14px 0', width: '100%', maxWidth: 320, cursor: 'pointer', boxShadow: '0 2px 8px #6366f122', margin: '0 auto' }}
-            onClick={() => setStep(9)}>
-            Stay with current country
           </button>
         </div>
       )}

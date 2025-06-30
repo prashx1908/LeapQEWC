@@ -14,21 +14,23 @@ const budgetOptions = [
     description: 'Access top universities in countries like UK, Canada, Australia',
   },
   {
-    value: 'cannot15',
-    icon: 'ℹ️',
-    label: "Can't invest a min of 15 lakhs",
-    description: '',
-  },
-  {
     value: 'not-sure',
     icon: '💬',
     label: 'Not sure about the finance',
     description: 'Need a counsellor to talk to to make a decision',
   },
+  {
+    value: 'cannot15',
+    icon: 'ℹ️',
+    label: "Can't invest a min of 15 lakhs",
+    description: 'We recommend considering financial decision help from our counsellor.',
+    badge: 'Not recommended',
+  },
 ];
 
-const BudgetStep = ({ onBudgetSelected }) => {
+const BudgetStep = ({ onBudgetSelected, country }) => {
   const [selected, setSelected] = useState(null);
+  const [showCannot15Popup, setShowCannot15Popup] = useState(false);
 
   return (
     <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -41,40 +43,48 @@ const BudgetStep = ({ onBudgetSelected }) => {
           {budgetOptions.map(opt => (
             <div
               key={opt.value}
-              style={{
-                background: selected === opt.value ? '#6366f1' : '#f3f4f6',
-                color: selected === opt.value ? '#fff' : '#1e293b',
-                borderRadius: 16,
-                padding: '22px 24px',
-                boxShadow: selected === opt.value ? '0 2px 8px #6366f133' : '0 2px 8px #64748b11',
-                border: selected === opt.value ? '2.5px solid #6366f1' : '2px solid #e5e7eb',
-                cursor: 'pointer',
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                gap: 18,
-                fontWeight: 700,
-                fontSize: 18,
-                marginBottom: 0,
-                transition: 'all 0.2s',
-                position: 'relative',
-              }}
+              className={`option-card${selected === opt.value ? ' selected' : ''}${opt.value === 'cannot15' ? ' not-recommended' : ''}`}
               onClick={() => {
-                setSelected(opt.value);
-                if (onBudgetSelected) onBudgetSelected(opt.value);
+                if (opt.value === 'cannot15') {
+                  setShowCannot15Popup(true);
+                } else {
+                  setSelected(opt.value);
+                  if (onBudgetSelected) onBudgetSelected(opt.value);
+                }
               }}
-              tabIndex={0}
-              onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && (() => { setSelected(opt.value); if (onBudgetSelected) onBudgetSelected(opt.value); })()}
+              style={{ position: 'relative' }}
             >
-              <span style={{ fontSize: 32, marginRight: 12 }}>{opt.icon}</span>
-              <div style={{ textAlign: 'left' }}>
-                <div style={{ fontWeight: 800, fontSize: 18 }}>{opt.label}</div>
-                {opt.description && <div style={{ fontWeight: 500, fontSize: 15, color: selected === opt.value ? '#e0e7ff' : '#475569', marginTop: 4 }}>{opt.description}</div>}
-              </div>
+              <span className="option-icon">{opt.icon}</span>
+              <span className="option-text">{opt.label}</span>
+              {opt.badge && (
+                <span style={{ position: 'absolute', top: 8, right: 8, background: '#fde68a', color: '#b45309', fontWeight: 700, fontSize: 11, borderRadius: 8, padding: '2px 8px' }}>{opt.badge}</span>
+              )}
+              <span className="option-desc">{opt.description}</span>
             </div>
           ))}
         </div>
       </div>
+      {showCannot15Popup && (
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.25)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px #0002', padding: 32, minWidth: 320, textAlign: 'center' }}>
+            <div style={{ fontWeight: 700, fontSize: 18, color: '#b45309', marginBottom: 16 }}>Consider your decision carefully</div>
+            <div style={{ color: '#a16207', fontSize: 15, marginBottom: 18 }}>
+              With a budget of {country === 'usa' ? '35 lakhs' : '15 lakhs'} or less, there are very low chances of getting an admit anywhere in the globe.<br />
+              Please consider your decision carefully.
+            </div>
+            <div style={{ display: 'flex', gap: 16, marginTop: 8, justifyContent: 'center' }}>
+              <button style={{ background: '#6366f1', color: '#fff', border: 'none', borderRadius: 8, fontWeight: 700, fontSize: 15, padding: '10px 18px', cursor: 'pointer' }}
+                onClick={() => { setShowCannot15Popup(false); setSelected(country === 'usa' ? '35L' : '15L'); if (onBudgetSelected) onBudgetSelected(country === 'usa' ? '35L' : '15L'); }}>
+                Extend budget to {country === 'usa' ? '35 lakhs' : '15 lakhs'}
+              </button>
+              <button style={{ background: '#6366f1', color: '#fff', border: 'none', borderRadius: 8, fontWeight: 700, fontSize: 15, padding: '10px 18px', cursor: 'pointer' }}
+                onClick={() => { setShowCannot15Popup(false); setSelected('not-sure'); if (onBudgetSelected) onBudgetSelected('not-sure'); }}>
+                Not sure, get financial help
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

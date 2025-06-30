@@ -272,6 +272,21 @@ function handleCountryClick(c, isEligible) {
 return (
   <div style={{ background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.06)', maxWidth: 800, width: '100%', padding: '24px 16px', margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative' }}>
     <h2 style={{ fontSize: 22, fontWeight: 700, color: '#1e293b', marginBottom: 8 }}>Country Eligibility</h2>
+    {country === 'usa' && backlogs <= 10 && (budget === '15L' || budget === 'can15' || budget === 15 || budget === '15' || budget === 'can invest min 15 lakhs' || budget === 'can-invest-15' || budget === 'can invest a minimum of 15 lakhs' || budget === 'minimum 15 lakhs') && (
+      <div style={{ width: '100%', background: '#fef9c3', border: '2px solid #fde68a', borderRadius: 14, padding: '18px 22px', fontWeight: 700, fontSize: 16, color: '#b45309', marginBottom: 18, textAlign: 'center', boxShadow: '0 2px 8px #fde68a33', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14 }}>
+        <span style={{ fontSize: 22, marginRight: 8 }}>🇺🇸</span>
+        <b>USA</b> has very limited opportunities with a 15 lakhs budget.<br />
+        <span style={{ fontWeight: 600 }}>Consider your next step:</span>
+        <div style={{ display: 'flex', gap: 14, marginTop: 10, flexWrap: 'wrap', justifyContent: 'center' }}>
+          <button style={{ background: '#6366f1', color: '#fff', border: 'none', borderRadius: 8, fontWeight: 700, fontSize: 15, padding: '10px 18px', cursor: 'pointer' }}
+            onClick={() => onSelectCountry && onSelectCountry('usa-extend-budget')}>Extend budget to 35 lakhs</button>
+          <button style={{ background: '#6366f1', color: '#fff', border: 'none', borderRadius: 8, fontWeight: 700, fontSize: 15, padding: '10px 18px', cursor: 'pointer' }}
+            onClick={() => onSelectCountry && onSelectCountry('usa-fin-help')}>Not sure? Get financial help</button>
+          <button style={{ background: '#6366f1', color: '#fff', border: 'none', borderRadius: 8, fontWeight: 700, fontSize: 15, padding: '10px 18px', cursor: 'pointer' }}
+            onClick={() => onSelectCountry && onSelectCountry(null)}>Explore other countries</button>
+        </div>
+      </div>
+    )}
     {showUSABacklogWarning && (
       <div style={{
         background: '#fef3c7',
