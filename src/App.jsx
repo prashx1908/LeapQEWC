@@ -447,45 +447,52 @@ function CountryEligibilityStep({ country, budget, backlogs, onSelectCountry, on
 
   // Personalized Message (existing logic)
   let personalizedMessage = null;
+  // Show backlog warning if disqualified by backlogs (priority)
   if (
+    selectedCountryObj &&
+    !selectedCountryEligible &&
+    backlogs > selectedCountryObj.minBacklogs
+  ) {
+    personalizedMessage = (
+      <div style={{ width: '100%', background: '#fef2f2', border: '2px solid #fca5a5', borderRadius: 14, padding: '18px 22px', fontWeight: 700, fontSize: 16, color: '#b91c1c', marginBottom: 10, textAlign: 'center', boxShadow: '0 2px 8px #fde68a33' }}>
+        <span style={{ fontSize: 22, marginRight: 8 }}>{selectedCountryObj.flag}</span>
+        <b>{selectedCountryObj.name}</b> is not available for profiles with more than {selectedCountryObj.minBacklogs} backlogs.<br />
+        Please consider exploring other options below for a better match.
+      </div>
+    );
+  } else if (
+    selectedCountryObj &&
+    !selectedCountryEligible &&
+    backlogs <= selectedCountryObj.minBacklogs &&
+    (
+      budget === 'cannot15' ||
+      budget === 'cannot invest min 15 lakhs' ||
+      budget === 'cannot-invest-15' ||
+      budget === 'cannot invest a minimum of 15 lakhs'
+    ) &&
+    selectedCountryObj.minBudget >= 15
+  ) {
+    // Budget disqualification (and not backlog) for any country
+    personalizedMessage = (
+      <div style={{ width: '100%', background: '#fef9c3', border: '2px solid #fde68a', borderRadius: 14, padding: '18px 22px', fontWeight: 700, fontSize: 16, color: '#b45309', marginBottom: 10, textAlign: 'center', boxShadow: '0 2px 8px #fde68a33' }}>
+        <span style={{ fontSize: 22, marginRight: 8 }}>{selectedCountryObj.flag}</span>
+        <b>{selectedCountryObj.name}</b> requires a minimum budget of <b>{selectedCountryObj.minBudget} lakhs</b>.<br />
+        Please increase your budget to be eligible for {selectedCountryObj.name}, or explore other options below.
+      </div>
+    );
+  } else if (
     selectedCountryObj &&
     !selectedCountryEligible &&
     selectedCountry === initialCountry
   ) {
-    // Backlog disqualification takes priority
-    if (backlogs > selectedCountryObj.minBacklogs) {
-      personalizedMessage = (
-        <div style={{ width: '100%', background: '#fef2f2', border: '2px solid #fca5a5', borderRadius: 14, padding: '18px 22px', fontWeight: 700, fontSize: 16, color: '#b91c1c', marginBottom: 10, textAlign: 'center', boxShadow: '0 2px 8px #fde68a33' }}>
-          <span style={{ fontSize: 22, marginRight: 8 }}>{selectedCountryObj.flag}</span>
-          <b>{selectedCountryObj.name}</b> is not available for profiles with more than {selectedCountryObj.minBacklogs} backlogs.<br />
-          Please consider exploring other options below for a better match.
-        </div>
-      );
-    } else if (
-      budget !== undefined &&
-      budget !== null &&
-      (typeof budget === 'string'
-        ? parseInt(budget) < selectedCountryObj.minBudget || budget === 'cannot15' || budget === 'cannot invest min 15 lakhs' || budget === 'cannot-invest-15' || budget === 'cannot invest a minimum of 15 lakhs'
-        : budget < selectedCountryObj.minBudget)
-    ) {
-      // Budget disqualification (and not backlog) for any country
-      personalizedMessage = (
-        <div style={{ width: '100%', background: '#fef9c3', border: '2px solid #fde68a', borderRadius: 14, padding: '18px 22px', fontWeight: 700, fontSize: 16, color: '#b45309', marginBottom: 10, textAlign: 'center', boxShadow: '0 2px 8px #fde68a33' }}>
-          <span style={{ fontSize: 22, marginRight: 8 }}>{selectedCountryObj.flag}</span>
-          <b>{selectedCountryObj.name}</b> requires a minimum budget of <b>{selectedCountryObj.minBudget} lakhs</b>.<br />
-          Please increase your budget to be eligible for {selectedCountryObj.name}, or explore other options below.
-        </div>
-      );
-    } else {
-      // Fallback (shouldn't normally hit this branch)
-      personalizedMessage = (
-        <div style={{ width: '100%', background: '#fef2f2', border: '2px solid #fca5a5', borderRadius: 14, padding: '18px 22px', fontWeight: 700, fontSize: 16, color: '#b91c1c', marginBottom: 10, textAlign: 'center', boxShadow: '0 2px 8px #fde68a33' }}>
-          <span style={{ fontSize: 22, marginRight: 8 }}>{selectedCountryObj.flag}</span>
-          <b>{selectedCountryObj.name}</b> is not eligible for your profile.<br />
-          You can still choose {selectedCountryObj.name} if you wish, but your chances may be lower. Consider exploring other options below for a better match.
-        </div>
-      );
-    }
+    // Fallback (shouldn't normally hit this branch)
+    personalizedMessage = (
+      <div style={{ width: '100%', background: '#fef2f2', border: '2px solid #fca5a5', borderRadius: 14, padding: '18px 22px', fontWeight: 700, fontSize: 16, color: '#b91c1c', marginBottom: 10, textAlign: 'center', boxShadow: '0 2px 8px #fde68a33' }}>
+        <span style={{ fontSize: 22, marginRight: 8 }}>{selectedCountryObj.flag}</span>
+        <b>{selectedCountryObj.name}</b> is not eligible for your profile.<br />
+        You can still choose {selectedCountryObj.name} if you wish, but your chances may be lower. Consider exploring other options below for a better match.
+      </div>
+    );
   }
 
   // Remove selected country from the rest of the grid
@@ -1170,8 +1177,38 @@ function App() {
                     return;
                   }
                 }
+                // New: For non-USA, skip eligibility if not disqualified by backlogs and budget is enough
+                const countryReqs = [
+                  { value: 'usa', name: 'USA', flag: '🇺🇸', roi: 60, minBacklogs: 10, minBudget: 35 },
+                  { value: 'canada', name: 'Canada', flag: '🇨🇦', roi: 45, minBacklogs: 10, minBudget: 15 },
+                  { value: 'new-zealand', name: 'New Zealand', flag: '🇳🇿', roi: 35, minBacklogs: 8, minBudget: 15 },
+                  { value: 'uk', name: 'UK', flag: '🇬🇧', roi: 45, minBacklogs: 15, minBudget: 15 },
+                  { value: 'ireland', name: 'Ireland', flag: '🇮🇪', roi: 35, minBacklogs: 7, minBudget: 15 },
+                  { value: 'australia', name: 'Australia', flag: '🇦🇺', roi: 35, minBacklogs: 15, minBudget: 15 },
+                  { value: 'france', name: 'France', flag: '🇫🇷', roi: 30, minBacklogs: 15, minBudget: 15 },
+                  { value: 'germany', name: 'Germany', flag: '🇩🇪', roi: 28, minBacklogs: 15, minBudget: 15 },
+                  { value: 'netherlands', name: 'Netherlands', flag: '🇳🇱', roi: 32, minBacklogs: 15, minBudget: 15 },
+                  { value: 'singapore', name: 'Singapore', flag: '🇸🇬', roi: 50, minBacklogs: 12, minBudget: 15 },
+                  { value: 'sweden', name: 'Sweden', flag: '🇸🇪', roi: 30, minBacklogs: 12, minBudget: 15 },
+                  { value: 'denmark', name: 'Denmark', flag: '🇩🇰', roi: 30, minBacklogs: 12, minBudget: 15 },
+                  { value: 'italy', name: 'Italy', flag: '🇮🇹', roi: 25, minBacklogs: 15, minBudget: 15 },
+                  { value: 'spain', name: 'Spain', flag: '🇪🇸', roi: 25, minBacklogs: 15, minBudget: 15 },
+                ];
+                const countryObj = countryReqs.find(c => c.value === country);
+                const backlogsNum = academicDetails.backlogs || 0;
+                const interpretedBudget = interpretBudget(budget);
+                if (
+                  countryObj &&
+                  backlogsNum <= countryObj.minBacklogs &&
+                  ((interpretedBudget === 'can35' && countryObj.minBudget <= 35) ||
+                   (interpretedBudget === 'can15' && countryObj.minBudget <= 15))
+                ) {
+                  setFinanceMode(mode);
+                  setStep(11); // Go directly to application timeline
+                  return;
+                }
                 setFinanceMode(mode);
-                setStep(10); // Default for other countries
+                setStep(10); // Otherwise, show country eligibility
               }
             }}
             initialValue={financeMode}
