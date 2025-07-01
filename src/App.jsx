@@ -479,27 +479,9 @@ function CountryEligibilityStep({ country, budget, backlogs, onSelectCountry, on
     // Special case: if user can only invest 15L, and USA is not eligible due to budget, show USA-specific advisory
     const interpretedBudget = typeof budget === 'string' ? budget.trim().toLowerCase() : budget;
     if (
-      selectedCountryObj.value !== 'usa' &&
+      selectedCountryObj.value == 'usa' &&
       (interpretedBudget === '15l' || interpretedBudget === 'can15' || interpretedBudget === 15 || interpretedBudget === '15' || interpretedBudget === 'can invest min 15 lakhs' || interpretedBudget === 'can-invest-15' || interpretedBudget === 'can invest a minimum of 15 lakhs' || interpretedBudget === 'minimum 15 lakhs' || interpretedBudget === 'cannot15' || interpretedBudget === 'cannot invest min 15 lakhs' || interpretedBudget === 'cannot-invest-15' || interpretedBudget === 'cannot invest a minimum of 15 lakhs')
     ) {
-      personalizedMessage = (
-        <div style={{ width: '100%', background: '#fef9c3', border: '2px solid #fde68a', borderRadius: 14, padding: '18px 22px', fontWeight: 700, fontSize: 16, color: '#b45309', marginBottom: 10, textAlign: 'center', boxShadow: '0 2px 8px #fde68a33', lineHeight: 1.6 }}>
-          <span style={{ fontSize: 22, marginRight: 8 }}>🇺🇸</span>
-          <b>USA</b> is not available with a 15 lakhs budget.<br />
-          <span style={{ fontWeight: 600, color: '#b45309', fontSize: 15, display: 'block', marginTop: 8 }}>
-            What would you like to do next?
-          </span>
-          <div style={{ display: 'flex', gap: 14, marginTop: 10, flexWrap: 'wrap', justifyContent: 'center' }}>
-            <button style={{ background: '#6366f1', color: '#fff', border: 'none', borderRadius: 8, fontWeight: 700, fontSize: 15, padding: '10px 18px', cursor: 'pointer' }}
-              onClick={() => onSelectCountry && onSelectCountry('usa-extend-budget')}>Extend budget to 35 lakhs</button>
-            <button style={{ background: '#6366f1', color: '#fff', border: 'none', borderRadius: 8, fontWeight: 700, fontSize: 15, padding: '10px 18px', cursor: 'pointer' }}
-              onClick={() => onSelectCountry && onSelectCountry('usa-fin-help')}>Talk with a counsellor for financial help</button>
-            <button style={{ background: '#6366f1', color: '#fff', border: 'none', borderRadius: 8, fontWeight: 700, fontSize: 15, padding: '10px 18px', cursor: 'pointer' }}
-              onClick={() => onSelectCountry && onSelectCountry(null)}>Explore other countries</button>
-          </div>
-        </div>
-      );
-    } else {
       personalizedMessage = (
         <div style={{ width: '100%', background: '#fef9c3', border: '2px solid #fde68a', borderRadius: 14, padding: '18px 22px', fontWeight: 700, fontSize: 16, color: '#b45309', marginBottom: 10, textAlign: 'center', boxShadow: '0 2px 8px #fde68a33', lineHeight: 1.6 }}>
           <span style={{ fontSize: 22, marginRight: 8 }}>{selectedCountryObj.flag}</span>
@@ -561,9 +543,16 @@ function CountryEligibilityStep({ country, budget, backlogs, onSelectCountry, on
       {/* Selected Country Confirmation Section (always for selected country) */}
       {selectedCountryObj && (
         <div style={{ width: '100%', background: selectedCountryEligible ? '#e0e7ff' : '#f3f4f6', border: selectedCountryEligible ? '2px solid #051d96' : '2px solid #051d96', borderRadius: 14, padding: '18px 22px', fontWeight: 700, fontSize: 16, color: selectedCountryEligible ? '#051d96' : '#6b7280', marginBottom: 10, textAlign: 'center', boxShadow: '0 2px 8px #fde68a33', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, position: 'relative' }}>
+               {/* USA budget message at the top if not eligible due to budget (not backlogs) */}
+          {selectedCountryObj.value === 'usa' && !selectedCountryEligible && backlogs <= selectedCountryObj.minBacklogs && (
+            <div style={{ width: '100%', background: '#fef9c3', border: '2px solid #fde68a', borderRadius: 10, padding: '10px 0', color: '#b45309', fontWeight: 700, fontSize: 15, marginBottom: 10 }}>
+              USA requires a minimum budget of 35 lakhs.
+            </div>
+          )}
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 22, fontWeight: 800 }}>
             <span>{selectedCountryObj.flag}</span>
             <span>{selectedCountryObj.name}</span>
+       
             {initialCountry !== 'not-sure' && selectedCountry === initialCountry && !selectedCountryEligible && (
               <span style={{ background: '#fde68a', color: '#b45309', fontWeight: 700, fontSize: 12, borderRadius: 8, padding: '2px 8px', marginLeft: 10 }}>Consider your option</span>
             )}
@@ -571,22 +560,40 @@ function CountryEligibilityStep({ country, budget, backlogs, onSelectCountry, on
           <span style={{ color: '#64748b', fontSize: 12, fontWeight: 500 }}>ROI: ₹{selectedCountryObj.roi}L</span>
           <div style={{ fontWeight: 600, fontSize: 15, color: selectedCountryEligible ? '#051d96' : '#051d96' }}>{selectedCountryReason}</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10, width: '100%', marginTop: 10 }}>
-            <button style={{ background: '#051d96', color: '#fff', border: 'none', borderRadius: 10, fontWeight: 700, fontSize: 16, padding: '14px 0', width: '100%', cursor: 'pointer', boxShadow: '0 2px 8px #6366f122' }}
-              onClick={() => { onSelectCountry(selectedCountryObj.value); onContinue(); }}>
-              Yes, select {selectedCountryObj.name}
-            </button>
-             {/* Add this button only for USA, not eligible due to budget, not backlogs */}
-            {selectedCountryObj.value === 'usa' && !selectedCountryEligible && backlogs <= selectedCountryObj.minBacklogs && (
-              <button style={{ background: '#e0e7ff', color: '#3730a3', border: 'none', borderRadius: 10, fontWeight: 700, fontSize: 16, padding: '14px 0', width: '100%', cursor: 'pointer', boxShadow: '0 2px 8px #6366f122' }}
-                onClick={() => onSelectCountry && onSelectCountry('usa-fin-help')}>
-                Talk with a counsellor for financial help
-              </button>
+            {/* For USA, not eligible due to budget, not backlogs: custom button order */}
+            {selectedCountryObj.value === 'usa' && !selectedCountryEligible && backlogs <= selectedCountryObj.minBacklogs ? (
+              <>
+                <button style={{ background: '#051d96', color: '#fff', border: 'none', borderRadius: 10, fontWeight: 700, fontSize: 16, padding: '14px 0', width: '100%', cursor: 'pointer', boxShadow: '0 2px 8px #6366f122' }}
+                  onClick={() => { onSelectCountry(selectedCountryObj.value); onContinue(); }}>
+                  Yes, select USA for 35 lakhs
+                </button>
+                <button style={{ background: '#e0e7ff', color: '#3730a3', border: 'none', borderRadius: 10, fontWeight: 700, fontSize: 16, padding: '14px 0', width: '100%', cursor: 'pointer', boxShadow: '0 2px 8px #6366f122' }}
+                  onClick={() => onSelectCountry && onSelectCountry('usa-fin-help')}>
+                  Talk to financial counsellor
+                </button>
+                <button style={{ background: '#fff', color: '#051d96', border: '2px solid #051d96', borderRadius: 10, fontWeight: 700, fontSize: 16, padding: '14px 0', width: '100%', cursor: 'pointer', boxShadow: '0 2px 8px #6366f122' }}
+                  onClick={() => setSelectedCountry(null)}>
+                  Explore other countries
+                </button>
+              </>
+            ) : (
+              <>
+                <button style={{ background: '#051d96', color: '#fff', border: 'none', borderRadius: 10, fontWeight: 700, fontSize: 16, padding: '14px 0', width: '100%', cursor: 'pointer', boxShadow: '0 2px 8px #6366f122' }}
+                  onClick={() => { onSelectCountry(selectedCountryObj.value); onContinue(); }}>
+                  Yes, select {selectedCountryObj.name}
+                </button>
+                {selectedCountryObj.value === 'usa' && !selectedCountryEligible && backlogs <= selectedCountryObj.minBacklogs && (
+                  <button style={{ background: '#e0e7ff', color: '#3730a3', border: 'none', borderRadius: 10, fontWeight: 700, fontSize: 16, padding: '14px 0', width: '100%', cursor: 'pointer', boxShadow: '0 2px 8px #6366f122' }}
+                    onClick={() => onSelectCountry && onSelectCountry('usa-fin-help')}>
+                    Talk with a counsellor for financial help
+                  </button>
+                )}
+                <button style={{ background: '#fff', color: '#051d96', border: '2px solid #051d96', borderRadius: 10, fontWeight: 700, fontSize: 16, padding: '14px 0', width: '100%', cursor: 'pointer', boxShadow: '0 2px 8px #6366f122' }}
+                  onClick={() => setSelectedCountry(null)}>
+                  Explore other countries
+                </button>
+              </>
             )}
-            <button style={{ background: '#fff', color: '#051d96', border: '2px solid #051d96', borderRadius: 10, fontWeight: 700, fontSize: 16, padding: '14px 0', width: '100%', cursor: 'pointer', boxShadow: '0 2px 8px #6366f122' }}
-              onClick={() => setSelectedCountry(null)}>
-              Explore other countries
-            </button>
-           
           </div>
         </div>
       )}
@@ -919,8 +926,6 @@ function App() {
   const [usaBudgetFlow, setUsaBudgetFlow] = useState(false);
   // Add a flag to track if user has previously selected USA and cannot invest 15L
   const [usaCannot15Attempted, setUsaCannot15Attempted] = useState(false);
-  // Add state for showing the USA budget modal
-  const [showUSABudgetModal, setShowUSABudgetModal] = React.useState(false);
 
   // Scroll to program fold when education is selected
   useEffect(() => {
@@ -1373,49 +1378,53 @@ function App() {
                   setStep(11); // Skip eligibility page
                   return;
                 }
-              } else {
-                // --- Custom logic for initial country not-sure ---
-                if (country === 'not-sure') {
-                  const interpretedBudget = interpretBudget(budget);
-                  if (interpretedBudget === 'not-sure') {
-                    setFinanceMode(mode);
-                    setStep(11); // Skip country eligibility
-                    return;
-                  }
-                }
-                // New: For non-USA, skip eligibility if not disqualified by backlogs and budget is enough
-                const countryReqs = [
-                  { value: 'usa', name: 'USA', flag: '🇺🇸', roi: 60, minBacklogs: 10, minBudget: 35 },
-                  { value: 'canada', name: 'Canada', flag: '🇨🇦', roi: 45, minBacklogs: 10, minBudget: 15 },
-                  { value: 'new-zealand', name: 'New Zealand', flag: '🇳🇿', roi: 35, minBacklogs: 8, minBudget: 15 },
-                  { value: 'uk', name: 'UK', flag: '🇬🇧', roi: 45, minBacklogs: 15, minBudget: 15 },
-                  { value: 'ireland', name: 'Ireland', flag: '🇮🇪', roi: 35, minBacklogs: 7, minBudget: 15 },
-                  { value: 'australia', name: 'Australia', flag: '🇦🇺', roi: 35, minBacklogs: 15, minBudget: 15 },
-                  { value: 'france', name: 'France', flag: '🇫🇷', roi: 30, minBacklogs: 15, minBudget: 15 },
-                  { value: 'germany', name: 'Germany', flag: '🇩🇪', roi: 28, minBacklogs: 15, minBudget: 15 },
-                  { value: 'netherlands', name: 'Netherlands', flag: '🇳🇱', roi: 32, minBacklogs: 15, minBudget: 15 },
-                  { value: 'singapore', name: 'Singapore', flag: '🇸🇬', roi: 50, minBacklogs: 12, minBudget: 15 },
-                  { value: 'sweden', name: 'Sweden', flag: '🇸🇪', roi: 30, minBacklogs: 12, minBudget: 15 },
-                  { value: 'denmark', name: 'Denmark', flag: '🇩🇰', roi: 30, minBacklogs: 12, minBudget: 15 },
-                  { value: 'italy', name: 'Italy', flag: '🇮🇹', roi: 25, minBacklogs: 15, minBudget: 15 },
-                  { value: 'spain', name: 'Spain', flag: '🇪🇸', roi: 25, minBacklogs: 15, minBudget: 15 },
-                ];
-                const countryObj = countryReqs.find(c => c.value === country);
-                const backlogsNum = academicDetails.backlogs || 0;
+              }
+              // --- Custom logic for initial country not-sure ---
+              if (country === 'not-sure') {
                 const interpretedBudget = interpretBudget(budget);
-                if (
-                  countryObj &&
-                  backlogsNum <= countryObj.minBacklogs &&
-                  ((interpretedBudget === 'can35' && countryObj.minBudget <= 35) ||
-                   (interpretedBudget === 'can15' && countryObj.minBudget <= 15))
-                ) {
+                if (interpretedBudget === 'not-sure') {
                   setFinanceMode(mode);
-                  setStep(11); // Go directly to application timeline
+                  setStep(11); // Skip country eligibility
                   return;
                 }
-                setFinanceMode(mode);
-                setStep(10); // Otherwise, show country eligibility
               }
+              // New: For non-USA, skip eligibility if not disqualified by backlogs and budget is enough
+              const countryReqs = [
+                { value: 'usa', name: 'USA', flag: '🇺🇸', roi: 60, minBacklogs: 10, minBudget: 35 },
+                { value: 'canada', name: 'Canada', flag: '🇨🇦', roi: 45, minBacklogs: 10, minBudget: 15 },
+                { value: 'new-zealand', name: 'New Zealand', flag: '🇳🇿', roi: 35, minBacklogs: 8, minBudget: 15 },
+                { value: 'uk', name: 'UK', flag: '🇬🇧', roi: 45, minBacklogs: 15, minBudget: 15 },
+                { value: 'ireland', name: 'Ireland', flag: '🇮🇪', roi: 35, minBacklogs: 7, minBudget: 15 },
+                { value: 'australia', name: 'Australia', flag: '🇦🇺', roi: 35, minBacklogs: 15, minBudget: 15 },
+                { value: 'france', name: 'France', flag: '🇫🇷', roi: 30, minBacklogs: 15, minBudget: 15 },
+                { value: 'germany', name: 'Germany', flag: '🇩🇪', roi: 28, minBacklogs: 15, minBudget: 15 },
+                { value: 'netherlands', name: 'Netherlands', flag: '🇳🇱', roi: 32, minBacklogs: 15, minBudget: 15 },
+                { value: 'singapore', name: 'Singapore', flag: '🇸🇬', roi: 50, minBacklogs: 12, minBudget: 15 },
+                { value: 'sweden', name: 'Sweden', flag: '🇸🇪', roi: 30, minBacklogs: 12, minBudget: 15 },
+                { value: 'denmark', name: 'Denmark', flag: '🇩🇰', roi: 30, minBacklogs: 12, minBudget: 15 },
+                { value: 'italy', name: 'Italy', flag: '🇮🇹', roi: 25, minBacklogs: 15, minBudget: 15 },
+                { value: 'spain', name: 'Spain', flag: '🇪🇸', roi: 25, minBacklogs: 15, minBudget: 15 },
+              ];
+              const countryObj = countryReqs.find(c => c.value === country);
+              const backlogsNum = academicDetails.backlogs || 0;
+              const interpretedBudget = interpretBudget(budget);
+              if (budget === 'not-sure') {
+                setFinanceMode(mode);
+                setStep(11); // Go directly to application timeline
+                return;
+              }
+              if (
+                countryObj &&
+                backlogsNum <= countryObj.minBacklogs &&
+                ((interpretedBudget === 'can35' && countryObj.minBudget <= 35) ||
+                 (interpretedBudget === 'can15' && countryObj.minBudget <= 15))
+              ) {
+                setFinanceMode(mode);
+                setStep(11); // Go directly to application timeline
+                return;
+              }
+              setFinanceMode(mode);
+              setStep(10); // Otherwise, show country eligibility
             }}
             initialValue={financeMode}
           />
@@ -1462,7 +1471,7 @@ function App() {
               // Do not update country here; let the confirmation dialog handle it
               return;
             }
-            setCountry(newCountry);
+            setCountry(newCountry && typeof newCountry === 'string' ? newCountry.toLowerCase() : newCountry);
           }}
           onContinue={() => setStep(11)}
           />
@@ -1620,10 +1629,9 @@ function App() {
             <div style={{ display: 'flex', gap: 16, marginTop: 8, justifyContent: 'center' }}>
               <button style={{ background: '#6366f1', color: '#fff', border: 'none', borderRadius: 8, fontWeight: 700, fontSize: 15, padding: '10px 18px', cursor: 'pointer' }}
                 onClick={() => {
-                  setCountry(pendingCountrySwitch);
+                  setCountry(pendingCountrySwitch && typeof pendingCountrySwitch === 'string' ? pendingCountrySwitch.toLowerCase() : pendingCountrySwitch);
                   setShowCountrySwitchConfirm(false);
                   setPendingCountrySwitch(null);
-                  // Optionally, advance the flow
                   setStep(10); // or whatever is appropriate
                 }}>
                 Yes, select {pendingCountrySwitch && pendingCountrySwitch.toUpperCase()}
@@ -1635,45 +1643,6 @@ function App() {
                 }}>
                 No, stay with USA
               </button>
-            </div>
-          </div>
-        </div>
-      )}
-      {showUSABudgetModal && (
-        <div style={{
-          position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.25)', zIndex: 1000,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-        }}>
-          <div style={{ background: '#fff', borderRadius: 18, boxShadow: '0 8px 32px #0003', padding: 36, minWidth: 340, textAlign: 'center', maxWidth: 400, border: '2.5px solid #6366f1', position: 'relative' }}>
-            <button onClick={() => setShowUSABudgetModal(false)} style={{ position: 'absolute', top: 12, right: 16, background: 'none', border: 'none', fontSize: 22, color: '#64748b', cursor: 'pointer', fontWeight: 700, zIndex: 2 }} aria-label="Close">×</button>
-            <div style={{ fontWeight: 800, fontSize: 22, color: '#1e293b', marginBottom: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-              <span style={{ fontSize: 28 }}>{selectedCountryObj && selectedCountryObj.flag}</span> {selectedCountryObj && selectedCountryObj.value === 'usa' ? 'USA requires a minimum budget of 35 lakhs.' : `${selectedCountryObj ? selectedCountryObj.name : ''} requires a minimum budget of 15 lakhs.`}
-            </div>
-            <div style={{ color: '#6366f1', fontSize: 16, fontWeight: 600, marginBottom: 18 }}>What would you like to do next?</div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginTop: 10, alignItems: 'center' }}>
-              {selectedCountryObj && selectedCountryObj.value === 'usa' ? (
-                <>
-                  <button style={{ background: '#6366f1', color: '#fff', border: 'none', borderRadius: 10, fontWeight: 700, fontSize: 16, padding: '12px 0', width: '100%', maxWidth: 260, cursor: 'pointer', boxShadow: '0 2px 8px #6366f122' }}
-                    onClick={() => { setShowUSABudgetModal(false); onSelectCountry && onSelectCountry('usa-extend-budget'); }}>
-                    Extend budget to 35 lakhs
-                  </button>
-                  <button style={{ background: '#e0e7ff', color: '#3730a3', border: 'none', borderRadius: 10, fontWeight: 700, fontSize: 16, padding: '12px 0', width: '100%', maxWidth: 260, cursor: 'pointer', boxShadow: '0 2px 8px #6366f122' }}
-                    onClick={() => { setShowUSABudgetModal(false); onSelectCountry && onSelectCountry('usa-fin-help'); }}>
-                    Not sure, get financial help
-                  </button>
-                </>
-              ) : (
-                <>
-                  <button style={{ background: '#6366f1', color: '#fff', border: 'none', borderRadius: 10, fontWeight: 700, fontSize: 16, padding: '12px 0', width: '100%', maxWidth: 260, cursor: 'pointer', boxShadow: '0 2px 8px #6366f122' }}
-                    onClick={() => { setShowUSABudgetModal(false); onSelectCountry && onSelectCountry('extend-budget'); }}>
-                    Extend budget to 15 lakhs
-                  </button>
-                  <button style={{ background: '#e0e7ff', color: '#3730a3', border: 'none', borderRadius: 10, fontWeight: 700, fontSize: 16, padding: '12px 0', width: '100%', maxWidth: 260, cursor: 'pointer', boxShadow: '0 2px 8px #6366f122' }}
-                    onClick={() => { setShowUSABudgetModal(false); onSelectCountry && onSelectCountry('fin-help'); }}>
-                    Not sure, get financial help
-                  </button>
-                </>
-              )}
             </div>
           </div>
         </div>
