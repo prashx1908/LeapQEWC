@@ -31,6 +31,7 @@ const budgetOptions = [
 const BudgetStep = ({ onBudgetSelected, country }) => {
   const [selected, setSelected] = useState(null);
   const [showCannot15Popup, setShowCannot15Popup] = useState(false);
+  const normalizedCountry = country ? country.trim().toLowerCase() : '';
 
   return (
     <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -67,17 +68,19 @@ const BudgetStep = ({ onBudgetSelected, country }) => {
       {showCannot15Popup && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.25)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <div style={{ background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px #0002', padding: 32, minWidth: 320, textAlign: 'center' }}>
-            <div style={{ fontWeight: 700, fontSize: 18, color: '#b45309', marginBottom: 16 }}>Consider your decision carefully</div>
-            <div style={{ color: '#a16207', fontSize: 15, marginBottom: 18 }}>
-              With a budget of {country === 'usa' ? '35 lakhs' : '15 lakhs'} or less, there are very low chances of getting an admit anywhere in the globe.<br />
-              Please consider your decision carefully.
+            <div style={{ fontWeight: 800, fontSize: 20, color: '#1e293b', marginBottom: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+              <span style={{ fontSize: 24 }}>{normalizedCountry === 'usa' ? '🇺🇸' : ''}</span>
+              {normalizedCountry === 'usa'
+                ? 'USA requires a minimum budget of 35 lakhs.'
+                : `${country ? country.charAt(0).toUpperCase() + country.slice(1) : 'This country'} requires a minimum budget of 15 lakhs.`}
             </div>
+            <div style={{ color: '#6366f1', fontSize: 16, fontWeight: 600, marginBottom: 18 }}>What would you like to do next?</div>
             <div style={{ display: 'flex', gap: 16, marginTop: 8, justifyContent: 'center' }}>
               <button style={{ background: '#6366f1', color: '#fff', border: 'none', borderRadius: 8, fontWeight: 700, fontSize: 15, padding: '10px 18px', cursor: 'pointer' }}
-                onClick={() => { setShowCannot15Popup(false); setSelected(country === 'usa' ? '35L' : '15L'); if (onBudgetSelected) onBudgetSelected(country === 'usa' ? '35L' : '15L'); }}>
-                Extend budget to {country === 'usa' ? '35 lakhs' : '15 lakhs'}
+                onClick={() => { setShowCannot15Popup(false); setSelected(normalizedCountry === 'usa' ? '35L' : '15L'); if (onBudgetSelected) onBudgetSelected(normalizedCountry === 'usa' ? '35L' : '15L'); }}>
+                Extend budget to {normalizedCountry === 'usa' ? '35 lakhs' : '15 lakhs'}
               </button>
-              <button style={{ background: '#6366f1', color: '#fff', border: 'none', borderRadius: 8, fontWeight: 700, fontSize: 15, padding: '10px 18px', cursor: 'pointer' }}
+              <button style={{ background: '#e0e7ff', color: '#3730a3', border: 'none', borderRadius: 8, fontWeight: 700, fontSize: 15, padding: '10px 18px', cursor: 'pointer' }}
                 onClick={() => { setShowCannot15Popup(false); setSelected('not-sure'); if (onBudgetSelected) onBudgetSelected('not-sure'); }}>
                 Not sure, get financial help
               </button>
