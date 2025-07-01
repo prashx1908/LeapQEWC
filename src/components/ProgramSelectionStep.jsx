@@ -24,74 +24,68 @@ const ProgramSelectionStep = forwardRef(({ visible, onSelect, initialValue, opti
 
   // Enhanced tag styles based on type
   const getTagStyles = (tagInfo, disabled) => {
+    // Uniform badge style for all tags
+    let base = {
+      position: 'absolute',
+      top: -12,
+      right: -12,
+      fontSize: 11,
+      fontWeight: 700,
+      borderRadius: 8,
+      padding: '2px 8px',
+      zIndex: 2,
+      letterSpacing: 0.2,
+      boxShadow: '0 2px 8px #2563eb22',
+      border: '1.5px solid',
+      display: 'flex',
+      alignItems: 'center',
+      gap: 4,
+    };
     if (disabled) {
       return {
-        position: 'absolute',
-        top: -8,
-        right: -8,
-        background: 'linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%)',
-        color: '#dc2626',
-        fontSize: 10,
-        fontWeight: 700,
-        padding: '6px 12px',
-        borderRadius: '20px',
-        border: '2px solid #fecaca',
-        boxShadow: '0 2px 8px rgba(220, 38, 38, 0.15)',
-        transform: 'scale(0.9)',
-        letterSpacing: '0.5px',
-        textTransform: 'uppercase',
-        zIndex: 20,
+        ...base,
+        background: '#fef2f2',
+        color: '#b91c1c',
+        borderColor: '#fca5a5',
       };
     }
-
-    const baseStyle = {
-      position: 'absolute',
-      top: -8,
-      right: -8,
-      fontSize: 10,
-      fontWeight: 700,
-      padding: '6px 12px',
-      borderRadius: '20px',
-      boxShadow: '0 3px 12px rgba(0, 0, 0, 0.15)',
-      transform: 'scale(0.95)',
-      letterSpacing: '0.3px',
-      zIndex: 20,
-      border: '2px solid rgba(255, 255, 255, 0.3)',
-      backdropFilter: 'blur(10px)',
-    };
-
     if (tagInfo.tag === 'Recommended') {
       return {
-        ...baseStyle,
-        background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-        color: '#ffffff',
-        textShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
-        animation: 'pulse-green 2s infinite',
-      };
-    } else {
-      return {
-        ...baseStyle,
-        background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
-        color: '#ffffff',
-        textShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
+        ...base,
+        background: '#fff',
+        color: '#2563eb',
+        borderColor: '#2563eb',
       };
     }
+    if (tagInfo.tag === 'Low Admit Chances') {
+      return {
+        ...base,
+        background: '#fff7ed',
+        color: '#d97706',
+        borderColor: '#f59e0b',
+      };
+    }
+    if (tagInfo.tag === 'Low ROI') {
+      return {
+        ...base,
+        background: '#fef9c3',
+        color: '#b45309',
+        borderColor: '#fde68a',
+      };
+    }
+    return base;
   };
 
-  // Enhanced card styles
+  // Enhanced card styles for uniformity
   const getCardStyles = (opt, selected, tagInfo) => {
     const baseStyle = {
       cursor: opt.disabled ? 'not-allowed' : 'pointer',
       opacity: opt.disabled ? 0.6 : 1,
       position: 'relative',
-      width: asPanel ? 200 : 180,
+      width: 180,
       height: 120,
-      background: opt.disabled 
-        ? 'linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%)'
-        : selected === opt.value 
-          ? 'linear-gradient(135deg, #fef7ff 0%, #faf5ff 100%)'
-          : 'linear-gradient(135deg, #ffffff 0%, #fefefe 100%)',
-      border: `2px solid ${selected === opt.value ? '#8b5cf6' : opt.disabled ? '#d1d5db' : '#e5e7eb'}`,
+      background: '#fff',
+      border: `2px solid ${selected === opt.value ? '#6366f1' : opt.disabled ? '#d1d5db' : '#e5e7eb'}`,
       borderRadius: 16,
       display: 'flex',
       flexDirection: 'column',
@@ -105,23 +99,8 @@ const ProgramSelectionStep = forwardRef(({ visible, onSelect, initialValue, opti
       margin: 0,
       padding: '16px 12px',
       overflow: 'visible',
+      boxShadow: selected === opt.value ? '0 8px 32px rgba(99,102,241,0.10)' : '0 1px 4px #6366f111',
     };
-
-    if (!opt.disabled) {
-      if (selected === opt.value) {
-        baseStyle.boxShadow = '0 8px 32px rgba(139, 92, 246, 0.15), 0 0 0 1px rgba(139, 92, 246, 0.1)';
-        baseStyle.transform = 'translateY(-2px) scale(1.02)';
-      } else {
-        baseStyle.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.06)';
-      }
-      
-      // Add hover effect
-      baseStyle[':hover'] = {
-        transform: 'translateY(-1px)',
-        boxShadow: '0 6px 24px rgba(0, 0, 0, 0.1)',
-      };
-    }
-
     return baseStyle;
   };
 
@@ -181,100 +160,96 @@ const ProgramSelectionStep = forwardRef(({ visible, onSelect, initialValue, opti
     bachelors: [
       'Best fit for your background',
       'Smooth transition from school',
-      'Popular choice after 12th',
-      'High admit rate for your profile',
-      'Strong match for your academics',
-      'Opens global career paths',
+      'Popular after 12th',
+      'High admit rate',
+      'Strong academic match',
+      'Opens global careers',
       'In-demand for your field',
       'Great ROI for undergrads',
-      'Industry-relevant curriculum',
+      'Industry-relevant',
       'Leads to leadership roles',
     ],
     masters: [
       'Best fit for your background',
-      "Popular choice after Bachelor's",
-      'High admit rate: 80%+',
-      'Strong match for your experience',
-      'Smooth transition from your degree',
-      'Preferred by top employers',
-      'Opens global career paths',
+      'Popular after Bachelors',
+      'High admit rate',
+      'Strong experience match',
+      'Smooth degree transition',
+      'Preferred by employers',
+      'Opens global careers',
       'In-demand for your field',
-      'Aligned with your academic goals',
-      'Great ROI for postgraduates',
-      'Industry-relevant curriculum',
+      'Aligned with your goals',
+      'Great ROI for postgrads',
+      'Industry-relevant',
       'Leads to leadership roles',
     ],
     mba: [
-      'Preferred by top employers',
-      'Great for career switchers',
-      'High admit rate for professionals',
-      'Opens management opportunities',
+      'Preferred by employers',
+      'Great for career switch',
+      'High admit rate',
+      'Opens management roles',
       'Popular after work experience',
       'Strong alumni network',
       'Leads to leadership roles',
     ],
     phd: [
-      'Pathway to research careers',
+      'Pathway to research',
       'Ideal for academic growth',
-      'Best fit for researchers',
-      'Strong match for scholars',
+      'Best for researchers',
+      'Strong scholar match',
       'Leads to expert roles',
     ],
     default: [
       'Best fit for your profile',
-      'Popular choice for your degree',
+      'Popular for your degree',
       'High admit rate',
-      'Strong match for your background',
+      'Strong background match',
     ]
   };
   const lowAdmitReasons = {
     bachelors: [
-      'Highly competitive program',
+      'Highly competitive',
       'Limited seats, high cutoff',
       'Admit rate: below 20%',
-      'Very competitive for undergrads',
       'Few admits from your background',
-      'High bar for international students',
       'Low intake, high demand',
     ],
     masters: [
-      'Highly competitive program',
+      'Highly competitive',
       'Limited seats, high cutoff',
       'Admit rate: below 20%',
-      'Research experience preferred',
-      'Requires strong academic record',
+      'Research preferred',
+      'Strong academics needed',
       'Few admits from your background',
-      'Advanced research profile needed',
       'Low intake, high demand',
-      'Selective admissions process',
+      'Selective admissions',
     ],
     mba: [
-      'Very competitive for MBA',
-      'Preference for top universities',
+      'Very competitive',
+      'Top university preference',
       'Admit rate: below 20%',
-      'Requires strong work experience',
-      'Selective admissions process',
+      'Strong work experience needed',
+      'Selective admissions',
     ],
     phd: [
-      'Research experience required',
-      'Priority to published researchers',
+      'Research required',
+      'Priority to published work',
       'Admit rate: below 10%',
-      'Selective for research profiles',
-      'Preference for top universities',
+      'Selective for research',
+      'Top university preference',
     ],
     default: [
-      'Highly competitive program',
+      'Highly competitive',
       'Limited seats, high cutoff',
       'Admit rate: below 20%',
-      'Very competitive program',
       'Few admits from your background',
     ]
   };
   const lowRoiReasons = [
     'Rarely pursued after graduation',
-    'Consider higher studies for better prospects',
-    'Not recommended after a bachelor\'s',
-    'Better options: Master\'s or MBA',
+    'Consider higher studies',
+    'Not recommended after bachelors',
+    'Better: Master\'s or MBA',
   ];
   function getRandom(arr) {
     return arr[Math.floor(Math.random() * arr.length)];
@@ -359,16 +334,16 @@ const ProgramSelectionStep = forwardRef(({ visible, onSelect, initialValue, opti
                 {/* Enhanced tag rendering */}
                 {(tagInfo.tag || opt.disabled) && (
                   <span style={getTagStyles(tagInfo, opt.disabled)}>
-                    {opt.disabled ? '✕ Not Eligible' : tagInfo.tag === 'Recommended' ? '★ Recommended' : tagInfo.tag}
+                    {opt.disabled ? <><span style={{ fontWeight: 900, fontSize: 13, marginRight: 3 }}>✗</span> NOT ELIGIBLE</> : tagInfo.tag === 'Recommended' ? 'Recommended' : tagInfo.tag}
                   </span>
                 )}
-                {/* Reason below badge */}
+                {/* Reason below badge, uniform muted color */}
                 {(tagInfo.tag === 'Recommended' || tagInfo.tag === 'Low Admit Chances' || tagInfo.tag === 'Low ROI') && reason && (
                   <div style={{
                     marginTop: 8,
                     fontSize: 12,
-                    color: tagInfo.tag === 'Recommended' ? '#0891b2' : tagInfo.tag === 'Low ROI' ? '#f59e0b' : '#dc2626',
-                    fontWeight: 500,
+                    color: tagInfo.tag === 'Recommended' ? '#2563eb' : tagInfo.tag === 'Low ROI' ? '#b45309' : '#d97706',
+                    fontWeight: 600,
                     textAlign: 'center',
                   }}>{reason}</div>
                 )}
@@ -475,16 +450,16 @@ const ProgramSelectionStep = forwardRef(({ visible, onSelect, initialValue, opti
                 {/* Enhanced tag rendering */}
                 {(tagInfo.tag || opt.disabled) && (
                   <span style={getTagStyles(tagInfo, opt.disabled)}>
-                    {opt.disabled ? '✕ Not Eligible' : tagInfo.tag === 'Recommended' ? '★ Recommended' : tagInfo.tag}
+                    {opt.disabled ? <><span style={{ fontWeight: 900, fontSize: 13, marginRight: 3 }}>✗</span> NOT ELIGIBLE</> : tagInfo.tag === 'Recommended' ? 'Recommended' : tagInfo.tag}
                   </span>
                 )}
-                {/* Reason below badge */}
+                {/* Reason below badge, uniform muted color */}
                 {(tagInfo.tag === 'Recommended' || tagInfo.tag === 'Low Admit Chances' || tagInfo.tag === 'Low ROI') && reason && (
                   <div style={{
                     marginTop: 8,
                     fontSize: 12,
-                    color: tagInfo.tag === 'Recommended' ? '#0891b2' : tagInfo.tag === 'Low ROI' ? '#f59e0b' : '#dc2626',
-                    fontWeight: 500,
+                    color: tagInfo.tag === 'Recommended' ? '#2563eb' : tagInfo.tag === 'Low ROI' ? '#b45309' : '#d97706',
+                    fontWeight: 600,
                     textAlign: 'center',
                   }}>{reason}</div>
                 )}
@@ -522,5 +497,4 @@ const getProgramTags = (highestEducation, option) => {
   }
   return null;
 };
-
 export default ProgramSelectionStep;

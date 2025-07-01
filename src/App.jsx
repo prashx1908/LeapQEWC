@@ -17,6 +17,7 @@ import EnglishTestDetailsStep from './components/EnglishTestDetailsStep';
 import ContactDetailsStep from './components/ContactDetailsStep';
 import { AdvisoryMBBSPage, AdvisoryPhDPathPage, AdvisoryBachelorsPathPage } from './components/WarmDisqualificationPage';
 import UniformDialog from './components/UniformDialog';
+import QuickEvaluationPage from './components/QuickEvaluationPage';
 
 import './App.css';
 
@@ -449,10 +450,10 @@ function CountryEligibilityStep({ country, budget, backlogs, onSelectCountry, on
     // 1. Budget is 35L and user selects USA
     if (budget && (budget === '35L' || budget === 'can35' || budget === 35 || budget === '35') && selectedCountry === 'usa') {
       customMessage = (
-        <div style={{ width: '100%', background: '#e0f2fe', border: '2px solid #38bdf8', borderRadius: 14, padding: '18px 22px', fontWeight: 700, fontSize: 16, color: '#0369a1', marginBottom: 10, textAlign: 'center', boxShadow: '0 2px 8px #38bdf833' }}>
-          <span style={{ fontSize: 22, marginRight: 8 }}>🇺🇸</span>
-          <b>USA</b> has a higher admit rate at <b>35 lakhs</b> budget.<br />
-          We recommend going with 35 lakhs for the best chance, or you can explore other options below.
+        <div style={{ width: '100%', background: '#fef9c3', border: '2px solid #fde68a', borderRadius: 14, padding: '18px 22px', fontWeight: 700, fontSize: 16, color: '#b45309', marginBottom: 10, textAlign: 'center', boxShadow: '0 2px 8px #fde68a33' }}>
+          <span style={{ fontSize: 22, marginRight: 8 }}>ℹ️</span>
+          With less than 15 lakhs, options are limited.<br />
+          You can select a country for 15 lakhs, or <a href="https://calendly.com/leapcounselor" target="_blank" rel="noopener noreferrer" style={{ color: '#443eff', textDecoration: 'underline' }}>talk to a counselor</a> for financial planning.
         </div>
       );
     }
@@ -542,13 +543,45 @@ function CountryEligibilityStep({ country, budget, backlogs, onSelectCountry, on
       {personalizedMessage}
       {/* Selected Country Confirmation Section (always for selected country) */}
       {selectedCountryObj && (
-        <div style={{ width: '100%', background: selectedCountryEligible ? '#e0e7ff' : '#f3f4f6', border: selectedCountryEligible ? '2px solid #051d96' : '2px solid #051d96', borderRadius: 14, padding: '18px 22px', fontWeight: 700, fontSize: 16, color: selectedCountryEligible ? '#051d96' : '#6b7280', marginBottom: 10, textAlign: 'center', boxShadow: '0 2px 8px #fde68a33', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, position: 'relative' }}>
-               {/* USA budget message at the top if not eligible due to budget (not backlogs) */}
-          {selectedCountryObj.value === 'usa' && !selectedCountryEligible && backlogs <= selectedCountryObj.minBacklogs && (
-            <div style={{ width: '100%', background: '#fef9c3', border: '2px solid #fde68a', borderRadius: 10, padding: '10px 0', color: '#b45309', fontWeight: 700, fontSize: 15, marginBottom: 10 }}>
-              USA requires a minimum budget of 35 lakhs.
+    <div style={{
+          width: '100%',
+          background: selectedCountryEligible ? '#e0e7ff' : '#fef2f2',
+          border: selectedCountryEligible ? '2px solid #051d96' : '2px solid #fca5a5',
+          borderRadius: 14,
+          padding: '18px 22px',
+          fontWeight: 700,
+          fontSize: 16,
+          color: selectedCountryEligible ? '#051d96' : '#b91c1c',
+          marginBottom: 10,
+          textAlign: 'center',
+          boxShadow: selectedCountryEligible ? '0 2px 8px #6366f122' : '0 2px 8px #fca5a522',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: 10,
+          position: 'relative',
+        }}>
+          {/* Backlog warning badge if disqualified by backlogs */}
+          {!selectedCountryEligible && backlogs > selectedCountryObj.minBacklogs && (
+            <div style={{
+              width: '100%',
+              background: '#fef9c3',
+              border: '2px solid #fde68a',
+      borderRadius: 10,
+              padding: '10px 0',
+              color: '#b45309',
+              fontWeight: 700,
+      fontSize: 15,
+              marginBottom: 10,
+            }}>
+              {selectedCountryObj.name} allows a maximum of {selectedCountryObj.minBacklogs} backlogs only.<br />
+              <span style={{ fontSize: 12, color: '#b45309', fontWeight: 500 }}>
+                Since it doesn't match your profile, consider other options below.
+              </span>
             </div>
           )}
+          
+          {/* ...rest of confirmation card code... */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 22, fontWeight: 800 }}>
             <span>{selectedCountryObj.flag}</span>
             <span>{selectedCountryObj.name}</span>
@@ -556,45 +589,115 @@ function CountryEligibilityStep({ country, budget, backlogs, onSelectCountry, on
             {initialCountry !== 'not-sure' && selectedCountry === initialCountry && !selectedCountryEligible && (
               <span style={{ background: '#fde68a', color: '#b45309', fontWeight: 700, fontSize: 12, borderRadius: 8, padding: '2px 8px', marginLeft: 10 }}>Consider your option</span>
             )}
+            
+
+
+
           </div>
-          <span style={{ color: '#64748b', fontSize: 12, fontWeight: 500 }}>ROI: ₹{selectedCountryObj.roi}L</span>
           <div style={{ fontWeight: 600, fontSize: 15, color: selectedCountryEligible ? '#051d96' : '#051d96' }}>{selectedCountryReason}</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10, width: '100%', marginTop: 10 }}>
             {/* For USA, not eligible due to budget, not backlogs: custom button order */}
             {selectedCountryObj.value === 'usa' && !selectedCountryEligible && backlogs <= selectedCountryObj.minBacklogs ? (
               <>
-                <button style={{ background: '#051d96', color: '#fff', border: 'none', borderRadius: 10, fontWeight: 700, fontSize: 16, padding: '14px 0', width: '100%', cursor: 'pointer', boxShadow: '0 2px 8px #6366f122' }}
+                <button style={{
+                  background: selectedCountryEligible ? '#051d96' : '#b91c1c',
+                  color: '#fff',
+                  border: selectedCountryEligible ? 'none' : '2px solid #b91c1c',
+                  borderRadius: 10,
+                  fontWeight: 700,
+                  fontSize: 16,
+                  padding: '14px 0',
+                  width: '100%',
+                  cursor: 'pointer',
+                  boxShadow: '0 2px 8px #6366f122',
+                }}
                   onClick={() => { onSelectCountry(selectedCountryObj.value); onContinue(); }}>
                   Yes, select USA for 35 lakhs
                 </button>
-                <button style={{ background: '#e0e7ff', color: '#3730a3', border: 'none', borderRadius: 10, fontWeight: 700, fontSize: 16, padding: '14px 0', width: '100%', cursor: 'pointer', boxShadow: '0 2px 8px #6366f122' }}
+                <button style={{
+                  background: '#fff',
+                  color: selectedCountryEligible ? '#051d96' : '#b91c1c',
+                  border: selectedCountryEligible ? '2px solid #051d96' : '2px solid #b91c1c',
+                  borderRadius: 10,
+                  fontWeight: 700,
+                  fontSize: 16,
+                  padding: '14px 0',
+                  width: '100%',
+                  cursor: 'pointer',
+                  boxShadow: '0 2px 8px #6366f122',
+                }}
                   onClick={() => onSelectCountry && onSelectCountry('usa-fin-help')}>
                   Talk to financial counsellor
                 </button>
-                <button style={{ background: '#fff', color: '#051d96', border: '2px solid #051d96', borderRadius: 10, fontWeight: 700, fontSize: 16, padding: '14px 0', width: '100%', cursor: 'pointer', boxShadow: '0 2px 8px #6366f122' }}
+                <button style={{
+                  background: '#fff',
+                  color: selectedCountryEligible ? '#051d96' : '#b91c1c',
+                  border: selectedCountryEligible ? '2px solid #051d96' : '2px solid #b91c1c',
+                  borderRadius: 10,
+                  fontWeight: 700,
+                  fontSize: 16,
+                  padding: '14px 0',
+                  width: '100%',
+                  cursor: 'pointer',
+                  boxShadow: '0 2px 8px #6366f122',
+                }}
                   onClick={() => setSelectedCountry(null)}>
                   Explore other countries
                 </button>
               </>
             ) : (
               <>
-                <button style={{ background: '#051d96', color: '#fff', border: 'none', borderRadius: 10, fontWeight: 700, fontSize: 16, padding: '14px 0', width: '100%', cursor: 'pointer', boxShadow: '0 2px 8px #6366f122' }}
+                <button style={{
+                  background: selectedCountryEligible ? '#051d96' : '#b91c1c',
+                  color: '#fff',
+                  border: selectedCountryEligible ? 'none' : '2px solid #b91c1c',
+                  borderRadius: 10,
+                  fontWeight: 700,
+                  fontSize: 16,
+                  padding: '14px 0',
+                  width: '100%',
+                  cursor: 'pointer',
+                  boxShadow: '0 2px 8px #6366f122',
+                }}
                   onClick={() => { onSelectCountry(selectedCountryObj.value); onContinue(); }}>
                   Yes, select {selectedCountryObj.name}
                 </button>
                 {selectedCountryObj.value === 'usa' && !selectedCountryEligible && backlogs <= selectedCountryObj.minBacklogs && (
-                  <button style={{ background: '#e0e7ff', color: '#3730a3', border: 'none', borderRadius: 10, fontWeight: 700, fontSize: 16, padding: '14px 0', width: '100%', cursor: 'pointer', boxShadow: '0 2px 8px #6366f122' }}
+                  <button style={{
+                    background: '#fff',
+                    color: selectedCountryEligible ? '#051d96' : '#b91c1c',
+                    border: selectedCountryEligible ? '2px solid #051d96' : '2px solid #b91c1c',
+                    borderRadius: 10,
+                    fontWeight: 700,
+                    fontSize: 16,
+                    padding: '14px 0',
+                    width: '100%',
+                    cursor: 'pointer',
+                    boxShadow: '0 2px 8px #6366f122',
+                  }}
                     onClick={() => onSelectCountry && onSelectCountry('usa-fin-help')}>
                     Talk with a counsellor for financial help
                   </button>
                 )}
-                <button style={{ background: '#fff', color: '#051d96', border: '2px solid #051d96', borderRadius: 10, fontWeight: 700, fontSize: 16, padding: '14px 0', width: '100%', cursor: 'pointer', boxShadow: '0 2px 8px #6366f122' }}
+                <button style={{
+                  background: '#fff',
+                  color: selectedCountryEligible ? '#051d96' : '#b91c1c',
+                  border: selectedCountryEligible ? '2px solid #051d96' : '2px solid #b91c1c',
+                  borderRadius: 10,
+                  fontWeight: 700,
+                  fontSize: 16,
+                  padding: '14px 0',
+                  width: '100%',
+                  cursor: 'pointer',
+                  boxShadow: '0 2px 8px #6366f122',
+                }}
                   onClick={() => setSelectedCountry(null)}>
                   Explore other countries
                 </button>
               </>
             )}
           </div>
+          
         </div>
       )}
       {/* Country Options Grid */}
@@ -603,14 +706,14 @@ function CountryEligibilityStep({ country, budget, backlogs, onSelectCountry, on
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 18, width: '100%', justifyContent: 'center' }}>
           {/* Selected country always first */}
           {selectedCountryObj && (
-            <button
+    <button
               key={selectedCountryObj.value}
-              style={{
+      style={{
                 background: selectedCountryEligible ? '#e0f9e6' : '#f3f4f6',
                 border: selectedCountryEligible ? '2px solid #4ade80' : '2px solid #d1d5db',
                 borderRadius: 12,
                 padding: '18px 18px',
-                minWidth: 120,
+        minWidth: 120,
                 maxWidth: 180,
                 fontWeight: 700,
                 fontSize: 15,
@@ -619,7 +722,7 @@ function CountryEligibilityStep({ country, budget, backlogs, onSelectCountry, on
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                position: 'relative',
+        position: 'relative',
                 cursor: 'pointer',
                 marginBottom: 0,
                 transition: 'box-shadow 0.2s, border-color 0.2s',
@@ -638,15 +741,15 @@ function CountryEligibilityStep({ country, budget, backlogs, onSelectCountry, on
               )}
               {selectedCountryEligible && (
                 <span style={{ color: '#059669', fontSize: 11, marginTop: 6, fontWeight: 600, textAlign: 'center' }}>Eligible</span>
-              )}
-            </button>
+      )}
+    </button>
           )}
 
           {/* Eligible priority country (not selected) at the top with badge */}
           {eligiblePriority.map((c, idx) => (
-  <button
+      <button
     key={c.value}
-    style={{
+        style={{
       background: '#fff',
       border: '2px solid #6366f1',
       borderRadius: 12,
@@ -660,7 +763,7 @@ function CountryEligibilityStep({ country, budget, backlogs, onSelectCountry, on
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
-      position: 'relative',
+          position: 'relative',
       cursor: 'pointer',
       marginBottom: 0,
       transition: 'box-shadow 0.2s, border-color 0.2s',
@@ -670,30 +773,33 @@ function CountryEligibilityStep({ country, budget, backlogs, onSelectCountry, on
   >
     {/* Recommended badge in top-right */}
     {recommendedSet.has(c.value) && (
-      <span style={{
-        position: 'absolute',
+          <span style={{
+            position: 'absolute',
         top: -12,
         right: -12,
         background: '#fff',
         color: '#2563eb',
         border: '1.5px solid #2563eb',
-        fontWeight: 700,
+            fontWeight: 700,
         fontSize: 11,
         borderRadius: 8,
         padding: '2px 8px',
         zIndex: 2,
         boxShadow: '0 2px 8px #2563eb22',
         letterSpacing: 0.2,
-      }}>Recommended</span>
-    )}
+          }}>Recommended</span>
+        )}
     <span style={{ fontSize: 22, marginBottom: 2 }}>{c.flag}</span>
     <span>{c.name}</span>
     <span style={{ color: '#64748b', fontSize: 12, fontWeight: 500 }}>ROI: ₹{c.roi}L</span>
+    <span style={{ color: '#9ca3af', fontSize: 11, fontWeight: 500, marginTop: 2 }}>
+      {countryShortDescriptions[c.value] || 'Study Abroad'}
+    </span>
     {/* Admit message below ROI for recommended countries */}
     {recommendedSet.has(c.value) && (
       <span style={{ color: '#2563eb', fontSize: 12, fontWeight: 600, marginTop: 6, textAlign: 'center', display: 'block' }}>{getEligibleBadge(idx)}</span>
-    )}
-  </button>
+        )}
+      </button>
 ))}
 
           {/* Priority countries (excluding selected and eligiblePriority) */}
@@ -701,10 +807,10 @@ function CountryEligibilityStep({ country, budget, backlogs, onSelectCountry, on
             const eligible = isCountryEligible(c);
             const reason = getCountryReason(c);
             const isBacklogDisqualified = backlogs > c.minBacklogs;
-            return (
+      return (
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 120, maxWidth: 180 }} key={c.value}>
-                <button
-                  style={{
+        <button
+          style={{
                     background: eligible ? '#fff' : '#f3f4f6',
                     border: eligible ? '2px solid #6366f1' : '2px solid #d1d5db',
                     borderRadius: 12,
@@ -718,7 +824,7 @@ function CountryEligibilityStep({ country, budget, backlogs, onSelectCountry, on
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
-                    position: 'relative',
+            position: 'relative',
                     cursor: 'pointer',
                     marginBottom: 0,
                     transition: 'box-shadow 0.2s, border-color 0.2s',
@@ -728,14 +834,14 @@ function CountryEligibilityStep({ country, budget, backlogs, onSelectCountry, on
                 >
                   {/* Not eligible badge, half inside/outside */}
                   {!eligible && (
-                    <span style={{
-                      position: 'absolute',
+            <span style={{
+              position: 'absolute',
                       top: -12,
                       right: -12,
                       background: '#fef2f2',
                       color: '#b91c1c',
                       border: '1.5px solid #fca5a5',
-                      fontWeight: 700,
+              fontWeight: 700,
                       fontSize: 11,
                       borderRadius: 8,
                       padding: '2px 8px',
@@ -751,7 +857,7 @@ function CountryEligibilityStep({ country, budget, backlogs, onSelectCountry, on
                   )}
                   {/* Recommended badge in top-right for eligible recommended countries */}
                   {eligible && recommendedSet.has(c.value) && (
-                    <span style={{
+            <span style={{
                       position: 'absolute',
                       top: -12,
                       right: -12,
@@ -759,7 +865,7 @@ function CountryEligibilityStep({ country, budget, backlogs, onSelectCountry, on
                       color: '#2563eb',
                       border: '1.5px solid #2563eb',
                       fontWeight: 700,
-                      fontSize: 11,
+              fontSize: 11,
                       borderRadius: 8,
                       padding: '2px 8px',
                       zIndex: 2,
@@ -770,6 +876,9 @@ function CountryEligibilityStep({ country, budget, backlogs, onSelectCountry, on
                   <span style={{ fontSize: 22, marginBottom: 2 }}>{c.flag}</span>
                   <span>{c.name}</span>
                   <span style={{ color: '#64748b', fontSize: 12, fontWeight: 500 }}>ROI: ₹{c.roi}L</span>
+                  <span style={{ color: '#9ca3af', fontSize: 11, fontWeight: 500, marginTop: 2 }}>
+                    {countryShortDescriptions[c.value] || 'Study Abroad'}
+                  </span>
                   {/* Reason for ineligibility inside the card */}
                   {!eligible && isBacklogDisqualified && (
                     <span style={{ color: '#b91c1c', background: '#fef2f2', border: '1.5px solid #fca5a5', borderRadius: 7, fontSize: 11, fontWeight: 500, marginTop: 8, padding: '3px 8px', textAlign: 'center', width: '100%' }}>
@@ -780,9 +889,9 @@ function CountryEligibilityStep({ country, budget, backlogs, onSelectCountry, on
                   {eligible && recommendedSet.has(c.value) && (
                     <span style={{ color: '#2563eb', fontSize: 12, fontWeight: 600, marginTop: 6, textAlign: 'center', display: 'block' }}>{getEligibleBadge(idx)}</span>
                   )}
-                </button>
-              </div>
-            );
+          </button>
+    </div>
+  );
           })}
           {/* Expandable other countries */}
           {showMore && filteredOther.map((c, idx) => {
@@ -803,11 +912,11 @@ function CountryEligibilityStep({ country, budget, backlogs, onSelectCountry, on
                     fontSize: 15,
                     color: eligible ? '#1e293b' : '#6b7280',
                     boxShadow: '0 1px 4px #6366f111',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
                     position: 'relative',
-                    cursor: 'pointer',
+    cursor: 'pointer',
                     marginBottom: 0,
                     transition: 'box-shadow 0.2s, border-color 0.2s',
                     gap: 4,
@@ -823,14 +932,14 @@ function CountryEligibilityStep({ country, budget, backlogs, onSelectCountry, on
                       background: '#fef2f2',
                       color: '#b91c1c',
                       border: '1.5px solid #fca5a5',
-                      fontWeight: 700,
+              fontWeight: 700,
                       fontSize: 11,
                       borderRadius: 8,
                       padding: '2px 8px',
                       display: 'flex',
                       alignItems: 'center',
                       gap: 4,
-                      letterSpacing: 0.2,
+              letterSpacing: 0.2,
                       boxShadow: '0 2px 8px #fca5a533',
                       zIndex: 2,
                     }}>
@@ -846,18 +955,21 @@ function CountryEligibilityStep({ country, budget, backlogs, onSelectCountry, on
                       background: '#fff',
                       color: '#2563eb',
                       border: '1.5px solid #2563eb',
-                      fontWeight: 700,
+            fontWeight: 700,
                       fontSize: 11,
                       borderRadius: 8,
                       padding: '2px 8px',
                       zIndex: 2,
                       boxShadow: '0 2px 8px #2563eb22',
-                      letterSpacing: 0.2,
+            letterSpacing: 0.2,
                     }}>Recommended</span>
                   )}
-                  <span style={{ fontSize: 22, marginBottom: 2 }}>{c.flag}</span>
-                  <span>{c.name}</span>
+                <span style={{ fontSize: 22, marginBottom: 2 }}>{c.flag}</span>
+                <span>{c.name}</span>
                   <span style={{ color: '#64748b', fontSize: 12, fontWeight: 500 }}>ROI: ₹{c.roi}L</span>
+                  <span style={{ color: '#9ca3af', fontSize: 11, fontWeight: 500, marginTop: 2 }}>
+                    {countryShortDescriptions[c.value] || 'Study Abroad'}
+                  </span>
                   {/* Reason for ineligibility inside the card */}
                   {!eligible && isBacklogDisqualified && (
                     <span style={{ color: '#b91c1c', background: '#fef2f2', border: '1.5px solid #fca5a5', borderRadius: 7, fontSize: 11, fontWeight: 500, marginTop: 8, padding: '3px 8px', textAlign: 'center', width: '100%' }}>
@@ -868,18 +980,18 @@ function CountryEligibilityStep({ country, budget, backlogs, onSelectCountry, on
                   {eligible && recommendedSet.has(c.value) && (
                     <span style={{ color: '#2563eb', fontSize: 12, fontWeight: 600, marginTop: 6, textAlign: 'center', display: 'block' }}>{getEligibleBadge(idx)}</span>
                   )}
-                </button>
-              </div>
+              </button>
+          </div>
             );
           })}
         </div>
         {otherCountries.length > 0 && (
-          <button
+        <button
             style={{ marginTop: 18, background: '#e0e7ff', color: '#6366f1', border: 'none', borderRadius: 8, padding: '10px 22px', fontWeight: 700, fontSize: 15, cursor: 'pointer', minWidth: 180 }}
             onClick={() => setShowMore(m => !m)}
-          >
+        >
             {showMore ? 'Hide other countries' : 'Expand to see more countries'}
-          </button>
+        </button>
         )}
       </div>
     </div>
@@ -1028,6 +1140,15 @@ function App() {
   // Preferred cities for offline counseling
   const preferredCities = ['bangalore', 'chennai', 'pune', 'gurgaon', 'ludhiana'];
 
+  // Before the return statement in App:
+  const backlogsNum = Number(academicDetails.backlogs);
+  const gradeNum = Number(academicDetails.gradeValue);
+  const hasLowBacklogs = !isNaN(backlogsNum) && backlogsNum < 6;
+  const hasLowGrade = academicDetails.gradeType === 'percentage' && !isNaN(gradeNum) && gradeNum < 55;
+  const hasInvalidGapDoc = academicDetails.gap === '36' && !academicDetails.gapDoc;
+  const showQuickEval = hasLowBacklogs || hasLowGrade || hasInvalidGapDoc;
+  console.log('backlogs:', academicDetails.backlogs, 'grade:', academicDetails.gradeValue, 'showQuickEval:', showQuickEval);
+
   // Main render
   return (
     <div
@@ -1056,7 +1177,11 @@ function App() {
         margin: 0,
       }}>
         <div style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', background: 'transparent', margin: '28px 0 0 0', padding: 0 }}>
-          <img src={logoUrl} alt="Leap Scholar" style={{ height: 68, maxWidth: 260, background: 'transparent', marginBottom: 24 }} />
+          <img src={logoUrl} alt="Leap Scholar" style={{ height: 68, maxWidth: 260, background: 'transparent', marginBottom: 8 }} />
+        </div>
+        {/* Add this below the logo and above the progress bar: */}
+        <div style={{ textAlign: 'center', fontWeight: 900, fontSize: 18, color: '#443eff', letterSpacing: 2, margin: '0 0 0 0', textTransform: 'uppercase' }}>
+          LEAP SCHOLAR
         </div>
         {step !== 5 && step !== 'advisory-phd' && <ProgressBar step={step} />}
       </div>
@@ -1255,6 +1380,9 @@ function App() {
       {/* Step 5: Completion */}
       {step === 5 && (
         <div style={{ marginTop: 0, background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.06)', maxWidth: 500, width: '100%', padding: '32px 24px', display: 'flex', flexDirection: 'column', gap: 0 }}>
+          {showQuickEval ? (
+            <QuickEvaluationPage onContinue={() => setStep(7)} />
+          ) : (
           <CompletionStep
             education={education}
             program={program}
@@ -1280,6 +1408,7 @@ function App() {
             saving={saving}
             onContinue={() => setStep(7)}
           />
+          )}
         </div>
       )}
       {/* Step 7: Academic Details */}
@@ -1354,7 +1483,7 @@ function App() {
                 const interpretedBudget = interpretBudget(budget);
                 const backlogsNum = academicDetails.backlogs || 0;
                 if (backlogsNum > 10) {
-                  setFinanceMode(mode);
+              setFinanceMode(mode);
                   setStep(10); // Always show eligibility page with backlog message
                   return;
                 }
@@ -1787,4 +1916,42 @@ const eligibleBadges = [
 ];
 function getEligibleBadge(index) {
   return eligibleBadges[index % eligibleBadges.length];
+}
+
+// Add a mapping for short descriptions for each country:
+const countryShortDescriptions = {
+  france: 'Affordable Europe',
+  netherlands: 'Tech Gateway',
+  singapore: 'STEM Hub',
+  sweden: 'Innovation Leader',
+  denmark: 'Green Careers',
+  italy: 'Design & Arts',
+  spain: 'Business Focus',
+  germany: 'Engineering Power',
+  newzealand: 'Nature & Study',
+  // ...add more as needed...
+};
+
+// Add a common warning/info box component:
+function Min15LakhWarningBox() {
+  return (
+    <div style={{
+      width: '100%',
+      background: '#fef9c3',
+      border: '2px solid #fde68a',
+      borderRadius: 10,
+      padding: '12px 0',
+      color: '#b45309',
+      fontWeight: 700,
+      fontSize: 15,
+      margin: '10px 0',
+      textAlign: 'center',
+    }}>
+      Can't invest a min of 15 lakhs<br />
+      <span style={{ fontWeight: 600, color: '#b91c1c', fontSize: 14, display: 'block', marginTop: 4 }}>
+        Not recommended<br />
+        We recommend considering financial decision help from our counsellor.
+      </span>
+    </div>
+  );
 }

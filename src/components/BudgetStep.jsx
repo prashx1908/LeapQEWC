@@ -70,15 +70,13 @@ const BudgetStep = ({ onBudgetSelected, country }) => {
           <div style={{ background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px #0002', padding: 32, minWidth: 320, textAlign: 'center' }}>
             <div style={{ fontWeight: 800, fontSize: 20, color: '#1e293b', marginBottom: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
               <span style={{ fontSize: 24 }}>{normalizedCountry === 'usa' ? '🇺🇸' : ''}</span>
-              {normalizedCountry === 'usa'
-                ? 'USA requires a minimum budget of 35 lakhs.'
-                : `${country ? country.charAt(0).toUpperCase() + country.slice(1) : 'This country'} requires a minimum budget of 15 lakhs.`}
+              {country ? `${country.charAt(0).toUpperCase() + country.slice(1)} requires a minimum budget of 15 lakhs.` : 'This country requires a minimum budget of 15 lakhs.'}
             </div>
             <div style={{ color: '#6366f1', fontSize: 16, fontWeight: 600, marginBottom: 18 }}>What would you like to do next?</div>
             <div style={{ display: 'flex', gap: 16, marginTop: 8, justifyContent: 'center' }}>
               <button style={{ background: '#6366f1', color: '#fff', border: 'none', borderRadius: 8, fontWeight: 700, fontSize: 15, padding: '10px 18px', cursor: 'pointer' }}
-                onClick={() => { setShowCannot15Popup(false); setSelected(normalizedCountry === 'usa' ? '35L' : '15L'); if (onBudgetSelected) onBudgetSelected(normalizedCountry === 'usa' ? '35L' : '15L'); }}>
-                Extend budget to {normalizedCountry === 'usa' ? '35 lakhs' : '15 lakhs'}
+                onClick={() => { setShowCannot15Popup(false); setSelected('15L'); if (onBudgetSelected) onBudgetSelected('15L'); }}>
+                Extend budget to 15 lakhs
               </button>
               <button style={{ background: '#e0e7ff', color: '#3730a3', border: 'none', borderRadius: 8, fontWeight: 700, fontSize: 15, padding: '10px 18px', cursor: 'pointer' }}
                 onClick={() => { setShowCannot15Popup(false); setSelected('not-sure'); if (onBudgetSelected) onBudgetSelected('not-sure'); }}>

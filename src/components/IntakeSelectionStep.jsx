@@ -45,33 +45,36 @@ function getRecommendedIntake(graduationYear, graduationMonth) {
   // Fall 2026: Grad between Jan-Aug 2026
   if (year === 2026 && month <= 8) return 'fall-2026';
   // 2027 or later
-  if (year > 2026) return '2027-later';
+  if (year == '2027 or later') return '2027-later';
   // Fallback (shouldn't happen)
   return null;
 }
 
 function IntakeSelectionStep({ visible, onSelect, country, graduationYear, graduationMonth }) {
+  console.log('graduationYear:', graduationYear, 'typeof:', typeof graduationYear);
   const [selected, setSelected] = useState(null);
   if (!visible) return null;
 
-  // Determine eligibility for each intake
-  const year = Number(graduationYear);
-  let month = Number(graduationMonth);
-  const currentYear = new Date().getFullYear();
-  const is2027Later = graduationYear === '2027-later';
+  // Normalize graduationYear for robust comparison
+  let gradYearNum = Number(graduationYear);
+  const is2027String = graduationYear === '2027-later';
+  const is2027OrLater = is2027String || (!isNaN(gradYearNum) && gradYearNum >= 2027);
 
-  // Mark disabled options
+  // Mark disabled options robustly
   const optionsWithEligibility = intakeOptions.map(opt => {
-    if (is2027Later) {
+    if (is2027OrLater) {
       if (opt.value === '2027-later') {
         return { ...opt, recommended: true, disabled: false };
       }
       return { ...opt, disabled: true, disabledReason: 'Not eligible due to graduation timeline' };
     }
-    if (opt.value === 'fall-2025' && !(year < 2025 || (year === 2025 && (!month || month < 9)))) {
+    if (opt.value === 'fall-2025' && !(gradYearNum < 2025 || (gradYearNum === 2025 && (!graduationMonth || Number(graduationMonth) < 9)))) {
       return { ...opt, disabled: true, disabledReason: 'Not eligible due to graduation timeline' };
     }
-    if (opt.value === 'spring-2026' && !((year < 2025) || (year === 2025 && month < 12))) {
+    if (opt.value === 'spring-2026' && !((gradYearNum < 2025) || (gradYearNum === 2025 && Number(graduationMonth) < 12))) {
+      return { ...opt, disabled: true, disabledReason: 'Not eligible due to graduation timeline' };
+    }
+    if (opt.value === 'fall-2026' && !(gradYearNum === 2026 && Number(graduationMonth) <= 8)) {
       return { ...opt, disabled: true, disabledReason: 'Not eligible due to graduation timeline' };
     }
     return { ...opt, disabled: false };
@@ -85,8 +88,9 @@ function IntakeSelectionStep({ visible, onSelect, country, graduationYear, gradu
   ];
 
   // Determine recommended value for badge logic
-  let recommendedValue = getRecommendedIntake(graduationYear, graduationMonth);
-  if (is2027Later) recommendedValue = '2027-later';
+  let recommendedValue = null;
+  if (is2027OrLater) recommendedValue = '2027-later';
+  else recommendedValue = getRecommendedIntake(graduationYear, graduationMonth);
 
   return (
     <div style={{ maxWidth: 500, width: '100%', margin: '0 auto', background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.06)', padding: '32px 0', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
