@@ -18,6 +18,7 @@ import ContactDetailsStep from './components/ContactDetailsStep';
 import { AdvisoryMBBSPage, AdvisoryPhDPathPage, AdvisoryBachelorsPathPage } from './components/WarmDisqualificationPage';
 import UniformDialog from './components/UniformDialog';
 import QuickEvaluationPage from './components/QuickEvaluationPage';
+import ProfileNotEligiblePage from './components/ProfileNotEligiblePage';
 
 import './App.css';
 
@@ -596,9 +597,27 @@ function CountryEligibilityStep({ country, budget, backlogs, onSelectCountry, on
           </div>
           <div style={{ fontWeight: 600, fontSize: 15, color: selectedCountryEligible ? '#051d96' : '#051d96' }}>{selectedCountryReason}</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10, width: '100%', marginTop: 10 }}>
-            {/* For USA, not eligible due to budget, not backlogs: custom button order */}
-            {selectedCountryObj.value === 'usa' && !selectedCountryEligible && backlogs <= selectedCountryObj.minBacklogs ? (
+            {/* For USA, not eligible due to budget, not backlogs: show warning and custom button order */}
+            {selectedCountryObj.value === 'usa' && !selectedCountryEligible && backlogs <= selectedCountryObj.minBacklogs && (
               <>
+                {/* USA budget warning */}
+                {(
+                  (typeof budget === 'string' && (
+                    budget === '15L' ||
+                    budget === 'can15' ||
+                    budget === '15' ||
+                    budget === 'can invest min 15 lakhs' ||
+                    budget === 'can-invest-15' ||
+                    budget === 'can invest a minimum of 15 lakhs' ||
+                    budget === 'minimum 15 lakhs'
+                  )) ||
+                  (typeof budget === 'number' && budget < 35)
+                ) && (
+                  <div style={{ width: '100%', background: '#fef9c3', border: '2px solid #fde68a', borderRadius: 14, padding: '14px 18px', fontWeight: 700, fontSize: 15, color: '#b45309', marginBottom: 8, textAlign: 'center', boxShadow: '0 2px 8px #fde68a33', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
+                    <b>USA requires a minimum budget of 35 lakhs</b>
+                    Please increase your budget to be eligible for USA, or explore other options below.
+                  </div>
+                )}
                 <button style={{
                   background: selectedCountryEligible ? '#051d96' : '#b91c1c',
                   color: '#fff',
@@ -645,7 +664,8 @@ function CountryEligibilityStep({ country, budget, backlogs, onSelectCountry, on
                   Explore other countries
                 </button>
               </>
-            ) : (
+            )}
+            {selectedCountryObj.value !== 'usa' && (
               <>
                 <button style={{
                   background: selectedCountryEligible ? '#051d96' : '#b91c1c',
@@ -999,6 +1019,22 @@ function CountryEligibilityStep({ country, budget, backlogs, onSelectCountry, on
 }
 // --- END NEW CountryEligibilityStep ---
 
+// Add at the top of App component
+const LOCAL_STORAGE_KEY = 'studyAbroadAppProgress';
+
+function saveProgressToStorage(progress) {
+  try {
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(progress));
+  } catch (e) {}
+}
+
+function loadProgressFromStorage() {
+  try {
+    const data = localStorage.getItem(LOCAL_STORAGE_KEY);
+    return data ? JSON.parse(data) : null;
+  } catch (e) { return null; }
+}
+
 function App() {
   const [education, setEducation] = useState(null);
   const [program, setProgram] = useState(null);
@@ -1038,6 +1074,79 @@ function App() {
   const [usaBudgetFlow, setUsaBudgetFlow] = useState(false);
   // Add a flag to track if user has previously selected USA and cannot invest 15L
   const [usaCannot15Attempted, setUsaCannot15Attempted] = useState(false);
+
+  // On mount, load progress if available
+  useEffect(() => {
+    const saved = loadProgressFromStorage();
+    if (saved) {
+      setEducation(saved.education ?? null);
+      setProgram(saved.program ?? null);
+      setCountry(saved.country ?? null);
+      setStep(saved.step ?? 0);
+      setIntake(saved.intake ?? null);
+      setEnglish(saved.english ?? null);
+      setPassport(saved.passport ?? null);
+      setCity(saved.city ?? null);
+      setPhone(saved.phone ?? '');
+      setOtp(saved.otp ?? '');
+      setShowOtpPopup(saved.showOtpPopup ?? false);
+      setApplicationSaved(saved.applicationSaved ?? false);
+      setSaving(saved.saving ?? false);
+      setButtonLoading(saved.buttonLoading ?? { download: false, view: false });
+      setAcademicDetails(saved.academicDetails ?? {});
+      setBudget(saved.budget ?? null);
+      setFinanceMode(saved.financeMode ?? null);
+      setSelectedUniversities(saved.selectedUniversities ?? []);
+      setTimeline(saved.timeline ?? null);
+      setEnglishTestDetails(saved.englishTestDetails ?? null);
+      setGraduationYear(saved.graduationYear ?? null);
+      setGraduationMonth(saved.graduationMonth ?? null);
+      setDisqualifiedReason(saved.disqualifiedReason ?? null);
+      setContactDetails(saved.contactDetails ?? null);
+      setAdvisoryType(saved.advisoryType ?? null);
+      setShowPhDAdvisory(saved.showPhDAdvisory ?? false);
+      setShowMBBSAdvisory(saved.showMBBSAdvisory ?? false);
+      setShowBachelorsAdvisory(saved.showBachelorsAdvisory ?? false);
+      setPreferredUniAnswer(saved.preferredUniAnswer ?? 'not-sure');
+      setSelectedPreferredUnis(saved.selectedPreferredUnis ?? []);
+    }
+  }, []);
+
+  // On any relevant state change, save progress
+  useEffect(() => {
+    saveProgressToStorage({
+      education,
+      program,
+      country,
+      step,
+      intake,
+      english,
+      passport,
+      city,
+      phone,
+      otp,
+      showOtpPopup,
+      applicationSaved,
+      saving,
+      buttonLoading,
+      academicDetails,
+      budget,
+      financeMode,
+      selectedUniversities,
+      timeline,
+      englishTestDetails,
+      graduationYear,
+      graduationMonth,
+      disqualifiedReason,
+      contactDetails,
+      advisoryType,
+      showPhDAdvisory,
+      showMBBSAdvisory,
+      showBachelorsAdvisory,
+      preferredUniAnswer,
+      selectedPreferredUnis,
+    });
+  }, [education, program, country, step, intake, english, passport, city, phone, otp, showOtpPopup, applicationSaved, saving, buttonLoading, academicDetails, budget, financeMode, selectedUniversities, timeline, englishTestDetails, graduationYear, graduationMonth, disqualifiedReason, contactDetails, advisoryType, showPhDAdvisory, showMBBSAdvisory, showBachelorsAdvisory, preferredUniAnswer, selectedPreferredUnis]);
 
   // Scroll to program fold when education is selected
   useEffect(() => {
@@ -1163,29 +1272,57 @@ function App() {
         background: 'none',
         padding: 0,
         margin: 0,
+        position: 'relative',
       }}
     >
+      {/* Back Button (show if not on first step and step is a number) */}
+      {step > 0 && typeof step === 'number' && (
+        <button
+          onClick={() => setStep(step - 1)}
+          aria-label="Go back"
+          style={{
+            position: 'absolute',
+            top: 24,
+            left: 18,
+            background: 'none',
+            border: 'none',
+            padding: 0,
+            margin: 0,
+            cursor: 'pointer',
+            zIndex: 10,
+            width: 36,
+            height: 36,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            opacity: 0.7,
+            transition: 'opacity 0.2s',
+          }}
+          onMouseOver={e => (e.currentTarget.style.opacity = 1)}
+          onMouseOut={e => (e.currentTarget.style.opacity = 0.7)}
+        >
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#443eff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+      )}
       {/* Add sticky header with logo and progress bar */}
       <div style={{
         width: '100vw',
-        background: 'transparent',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        boxShadow: 'none',
-        padding: 0,
+        background: 'transparent',
         margin: 0,
+        padding: '32px 0 0 0',
+        position: 'relative',
       }}>
-        <div style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', background: 'transparent', margin: '28px 0 0 0', padding: 0 }}>
-          <img src={logoUrl} alt="Leap Scholar" style={{ height: 68, maxWidth: 260, background: 'transparent', marginBottom: 8 }} />
+        <div className="logo-3d-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
+          <div className="logo-3d" style={{ width: 64, height: 64, marginBottom: 4 }}>
+            <img src="https://leapassets.s3.ap-south-1.amazonaws.com/ielts-recording/1619511191304-logo@2x_(1)_(1).png" alt="Leap Scholar Logo" style={{ width: '100%', height: '100%', filter: 'drop-shadow(0 2px 12px #6366f1aa)' }} />
+          </div>
+          <div style={{ fontWeight: 900, fontSize: 22, color: '#443eff' }}>LEAP SCHOLAR</div>
         </div>
-        {/* Add this below the logo and above the progress bar: */}
-        <div style={{ textAlign: 'center', fontWeight: 900, fontSize: 18, color: '#443eff', letterSpacing: 2, margin: '0 0 0 0', textTransform: 'uppercase' }}>
-          LEAP SCHOLAR
-        </div>
-        {step !== 5 && step !== 'advisory-phd' && <ProgressBar step={step} />}
       </div>
-
+      {step !== 5 && step !== 'advisory-phd' && <ProgressBar step={step} />}
       {/* Step 0: Country Selection */}
       {step === 0 && (
         <div style={{ marginTop: 0, background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.06)', maxWidth: 500, width: '100%', padding: '32px 24px', display: 'flex', flexDirection: 'column', gap: 0 }}>
@@ -1730,7 +1867,13 @@ function App() {
       {/* Step 16: Final Congratulations */}
       {step === 16 && (
         <div style={{ marginTop: 0, background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.06)', maxWidth: 500, width: '100%', padding: '32px 24px', display: 'flex', flexDirection: 'column', gap: 0 }}>
-          <FinalCongratulationsPage universityCount={42} passportStatus={passport} />
+          {((academicDetails.gradeType === 'percentage' && Number(academicDetails.gradeValue) < 55) ||
+            (academicDetails.gradeType === 'cgpa' && Number(academicDetails.gradeValue) < 6) ||
+            (academicDetails.gap === '36' && !academicDetails.gapDoc)) ? (
+            <ProfileNotEligiblePage />
+          ) : (
+            <FinalCongratulationsPage universityCount={42} passportStatus={passport} />
+          )}
         </div>
       )}
       {/* Render the disqualification page if needed */}

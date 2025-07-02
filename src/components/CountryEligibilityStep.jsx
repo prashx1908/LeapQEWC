@@ -272,6 +272,14 @@ function handleCountryClick(c, isEligible) {
 return (
   <div style={{ background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.06)', maxWidth: 800, width: '100%', padding: '24px 16px', margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative' }}>
     <h2 style={{ fontSize: 22, fontWeight: 700, color: '#1e293b', marginBottom: 8 }}>Country Eligibility</h2>
+    {/* USA budget warning if USA is in the grid and budget < 35L */}
+    {countryReqs.some(c => c.value === 'usa') && (Number(budget) < 35) && (
+      <div style={{ width: '100%', background: '#fef9c3', border: '2px solid #fde68a', borderRadius: 14, padding: '18px 22px', fontWeight: 700, fontSize: 16, color: '#b45309', marginBottom: 18, textAlign: 'center', boxShadow: '0 2px 8px #fde68a33', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14 }}>
+        <span style={{ fontSize: 22, marginRight: 8 }}>🇺🇸</span>
+        <b>USA</b> requires a minimum budget of <b>35 lakhs</b>.<br />
+        Please increase your budget to be eligible for USA, or explore other options below.
+      </div>
+    )}
     {country === 'usa' && backlogs <= 10 && (budget === '15L' || budget === 'can15' || budget === 15 || budget === '15' || budget === 'can invest min 15 lakhs' || budget === 'can-invest-15' || budget === 'can invest a minimum of 15 lakhs' || budget === 'minimum 15 lakhs') && (
       <div style={{ width: '100%', background: '#fef9c3', border: '2px solid #fde68a', borderRadius: 14, padding: '18px 22px', fontWeight: 700, fontSize: 16, color: '#b45309', marginBottom: 18, textAlign: 'center', boxShadow: '0 2px 8px #fde68a33', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14 }}>
         <span style={{ fontSize: 22, marginRight: 8 }}>🇺🇸</span>
