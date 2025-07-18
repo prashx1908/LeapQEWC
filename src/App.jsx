@@ -19,7 +19,7 @@ import { AdvisoryMBBSPage, AdvisoryPhDPathPage, AdvisoryBachelorsPathPage } from
 import UniformDialog from './components/UniformDialog';
 import QuickEvaluationPage from './components/QuickEvaluationPage';
 import ProfileNotEligiblePage from './components/ProfileNotEligiblePage';
-
+import FinalReport from './components/FinalReport';
 import './App.css';
 
 // Mapping of education to recommended programs (from your script.js)
@@ -1074,6 +1074,7 @@ function App() {
   const [usaBudgetFlow, setUsaBudgetFlow] = useState(false);
   // Add a flag to track if user has previously selected USA and cannot invest 15L
   const [usaCannot15Attempted, setUsaCannot15Attempted] = useState(false);
+  const [showFinalReport, setShowFinalReport] = useState(false);
 
   // On mount, load progress if available
   useEffect(() => {
@@ -1258,668 +1259,713 @@ function App() {
   const showQuickEval = hasLowBacklogs || hasLowGrade || hasInvalidGapDoc;
   console.log('backlogs:', academicDetails.backlogs, 'grade:', academicDetails.gradeValue, 'showQuickEval:', showQuickEval);
 
-  // Main render
-  return (
-    <div
-      className="container"
-      style={{
-        minHeight: '100vh',
-        width: '100vw',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'flex-start',
-        background: 'none',
-        padding: 0,
-        margin: 0,
-        position: 'relative',
-      }}
-    >
-      {/* Back Button (show if not on first step and step is a number) */}
-      {step > 0 && typeof step === 'number' && (
-        <button
-          onClick={() => setStep(step - 1)}
-          aria-label="Go back"
-          style={{
-            position: 'absolute',
-            top: 24,
-            left: 18,
-            background: 'none',
-            border: 'none',
-            padding: 0,
-            margin: 0,
-            cursor: 'pointer',
-            zIndex: 10,
-            width: 36,
-            height: 36,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            opacity: 0.7,
-            transition: 'opacity 0.2s',
-          }}
-          onMouseOver={e => (e.currentTarget.style.opacity = 1)}
-          onMouseOut={e => (e.currentTarget.style.opacity = 0.7)}
-        >
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#443eff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
-        </button>
-      )}
-      {/* Add sticky header with logo and progress bar */}
-      <div style={{
-        width: '100vw',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        background: 'transparent',
-        margin: 0,
-        padding: '32px 0 0 0',
-        position: 'relative',
-      }}>
-        <div className="logo-3d-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
-          <div className="logo-3d" style={{ width: 64, height: 64, marginBottom: 4 }}>
-            <img src="https://leapassets.s3.ap-south-1.amazonaws.com/ielts-recording/1619511191304-logo@2x_(1)_(1).png" alt="Leap Scholar Logo" style={{ width: '100%', height: '100%', filter: 'drop-shadow(0 2px 12px #6366f1aa)' }} />
-          </div>
-          <div style={{ fontWeight: 900, fontSize: 22, color: '#443eff' }}>LEAP SCHOLAR</div>
-        </div>
+  // Construct userData for FinalReport
+  const userData = {
+    name: contactDetails?.name || 'Your Name',
+    email: contactDetails?.email || 'your@email.com',
+    graduationYear: graduationYear || 2026,
+    graduationMonth: graduationMonth || 'February',
+    specialization: academicDetails?.specialization || program || 'Computer Science',
+    gradeType: academicDetails?.gradeType || 'CGPA',
+    cgpa: academicDetails?.cgpa || 8.5,
+    backlogs: academicDetails?.backlogs || 0,
+    country: country || 'UK',
+    preferredCourse: program || 'Computer Science',
+    workExpYears: academicDetails?.workExpYears || 0,
+    gapYear: academicDetails?.gapYear || 'No gap',
+  };
+
+  if (showFinalReport) {
+    return (
+      <div>
+        <button onClick={() => setShowFinalReport(false)} style={{margin: 16, padding: 8, background: '#eee', borderRadius: 8, zIndex: 9999, position: 'relative'}}>Back to App</button>
+        <FinalReport userData={userData} />
       </div>
-      {step !== 5 && step !== 'advisory-phd' && <ProgressBar step={step} />}
-      {/* Step 0: Country Selection */}
-      {step === 0 && (
-        <div style={{ marginTop: 0, background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.06)', maxWidth: 500, width: '100%', padding: '32px 24px', display: 'flex', flexDirection: 'column', gap: 0 }}>
-          <div style={{ textAlign: 'center', fontSize: 24, fontWeight: 800, color: '#443eff', marginBottom: 2 }}>
-            Your Study Abroad Dream Starts Here
-          </div>
-          <CountrySelectionStep
-            visible={true}
-            onSelect={(value) => {
-              setCountry(value);
-              setStep(1);
+    );
+  }
+
+  return (
+    <>
+
+      <div
+        className="container"
+        style={{
+          minHeight: '100vh',
+          width: '100vw',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'flex-start',
+          background: 'none',
+          padding: 0,
+        }}
+      >
+        {/* Back Button (show if not on first step and step is a number) */}
+        {step > 0 && typeof step === 'number' && (
+          <button
+            onClick={() => setStep(step - 1)}
+            aria-label="Go back"
+            style={{
+              position: 'absolute',
+              top: 24,
+              left: 18,
+              background: 'none',
+              border: 'none',
+              padding: 0,
+              margin: 0,
+              cursor: 'pointer',
+              zIndex: 10,
+              width: 36,
+              height: 36,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              opacity: 0.7,
+              transition: 'opacity 0.2s',
             }}
-            initialValue={country}
-          />
+            onMouseOver={e => (e.currentTarget.style.opacity = 1)}
+            onMouseOut={e => (e.currentTarget.style.opacity = 0.7)}
+          >
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#443eff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+        )}
+        {/* Add sticky header with logo and progress bar */}
+        <div style={{
+          width: '100vw',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          background: 'transparent',
+          margin: 0,
+          padding: '32px 0 0 0',
+          position: 'relative',
+        }}>
+          <div className="logo-3d-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
+            <div className="logo-3d" style={{ width: 64, height: 64, marginBottom: 4 }}>
+              <img src="https://leapassets.s3.ap-south-1.amazonaws.com/ielts-recording/1619511191304-logo@2x_(1)_(1).png" alt="Leap Scholar Logo" style={{ width: '100%', height: '100%', filter: 'drop-shadow(0 2px 12px #6366f1aa)' }} />
+            </div>
+            <div style={{ fontWeight: 900, fontSize: 22, color: '#443eff' }}>LEAP SCHOLAR</div>
+          </div>
         </div>
-      )}
-      {/* Step 1: Education */}
-      {step === 1 && (
-        <div style={{ background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.06)', maxWidth: 500, width: '100%', padding: '32px 24px', margin: '5px 0', display: 'flex', flexDirection: 'column', gap: 0 }}>
-          <div style={{ textAlign: 'center', fontSize: 24, fontWeight: 800, color: '#443eff', marginBottom: 2 }}>
-            Your study abroad dream starts here
-          </div>
-          <div style={{ textAlign: 'center', fontSize: 18, color: '#443eff', fontWeight: 600, marginBottom: 0 }}>
-            Tell us about your educational background
-          </div>
-          <div style={{ marginTop: 4 }}>
-            <EducationLevelStep
+        {step !== 5 && step !== 'advisory-phd' && <ProgressBar step={step} />}
+        {/* Step 0: Country Selection */}
+        {step === 0 && (
+          <div style={{ marginTop: 0, background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.06)', maxWidth: 500, width: '100%', padding: '32px 24px', display: 'flex', flexDirection: 'column', gap: 0 }}>
+            <div style={{ textAlign: 'center', fontSize: 24, fontWeight: 800, color: '#443eff', marginBottom: 2 }}>
+              Your Study Abroad Dream Starts Here
+            </div>
+            <CountrySelectionStep
+              visible={true}
               onSelect={(value) => {
-                setEducation(value);
-                setProgram(null);
+                setCountry(value);
+                setStep(1);
               }}
-              selected={education}
+              initialValue={country}
             />
           </div>
-          {education && (
-            <div ref={programFoldRef} style={{ marginTop: 8, width: '100%' }}>
-              <div className="fold active" style={{ width: '100%', background: 'transparent', boxShadow: 'none', border: 'none', padding: 0 }}>
-                <h3 className="fold-title" style={{ fontSize: 18, fontWeight: 600, margin: '10px 0 12px 0', color: '#1e293b', textAlign: 'center' }}>{programQuestion}</h3>
-                <ProgramSelectionStep
-                  visible={true}
-                  onSelect={(value) => {
-                    setProgram(value);
-                    setStep(3);
-                  }}
-                  initialValue={program}
-                  options={programOptions}
-                  question={programQuestion}
-                  asPanel
-                  highestEducation={education}
-                />
-              </div>
+        )}
+        {/* Step 1: Education */}
+        {step === 1 && (
+          <div style={{ background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.06)', maxWidth: 500, width: '100%', padding: '32px 24px', margin: '5px 0', display: 'flex', flexDirection: 'column', gap: 0 }}>
+            <div style={{ textAlign: 'center', fontSize: 24, fontWeight: 800, color: '#443eff', marginBottom: 2 }}>
+              Your study abroad dream starts here
             </div>
-          )}
-        </div>
-      )}
-      {/* Step 3: Passport & City */}
-      {step === 3 && (
-        <EnglishPassportStep
-          passport={passport}
-          city={city}
-          onPassportSelect={value => setPassport(value)}
-          onCitySelect={value => setCity(value)}
-          onContinue={() => setStep(4)}
-        />
-      )}
-      {/* Step 4: Phone & OTP */}
-      {step === 4 && (
-        <div style={{ marginTop: 0, background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.06)', maxWidth: 500, width: '100%', padding: '32px 24px', display: 'flex', flexDirection: 'column', gap: 0 }}>
-          <PhoneOtpStep
-            visible={true}
-            phone={phone}
-            otp={otp}
-            showOtpPopup={showOtpPopup}
-            onPhoneSubmit={(value) => {
-              setPhone(value);
-              setShowOtpPopup(true);
+            <div style={{ textAlign: 'center', fontSize: 18, color: '#443eff', fontWeight: 600, marginBottom: 0 }}>
+              Tell us about your educational background
+            </div>
+            <div style={{ marginTop: 4 }}>
+              <EducationLevelStep
+                onSelect={(value) => {
+                  setEducation(value);
+                  setProgram(null);
+                }}
+                selected={education}
+              />
+            </div>
+            {education && (
+              <div ref={programFoldRef} style={{ marginTop: 8, width: '100%' }}>
+                <div className="fold active" style={{ width: '100%', background: 'transparent', boxShadow: 'none', border: 'none', padding: 0 }}>
+                  <h3 className="fold-title" style={{ fontSize: 18, fontWeight: 600, margin: '10px 0 12px 0', color: '#1e293b', textAlign: 'center' }}>{programQuestion}</h3>
+                  <ProgramSelectionStep
+                    visible={true}
+                    onSelect={(value) => {
+                      setProgram(value);
+                      setStep(3);
+                    }}
+                    initialValue={program}
+                    options={programOptions}
+                    question={programQuestion}
+                    asPanel
+                    highestEducation={education}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+        {/* Step 3: Passport & City */}
+        {step === 3 && (
+          <EnglishPassportStep
+            passport={passport}
+            city={city}
+            onPassportSelect={value => setPassport(value)}
+            onCitySelect={value => setCity(value)}
+            onContinue={() => setStep(4)}
+          />
+        )}
+        {/* Step 4: Phone & OTP */}
+        {step === 4 && (
+          <div style={{ marginTop: 0, background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.06)', maxWidth: 500, width: '100%', padding: '32px 24px', display: 'flex', flexDirection: 'column', gap: 0 }}>
+            <PhoneOtpStep
+              visible={true}
+              phone={phone}
+              otp={otp}
+              showOtpPopup={showOtpPopup}
+              onPhoneSubmit={(value) => {
+                setPhone(value);
+                setShowOtpPopup(true);
+              }}
+              onOtpSubmit={(value) => {
+                setOtp(value);
+                setShowOtpPopup(false);
+                // Debug log for advisory logic
+                console.log({ education, program, step, advisoryType, showPhDAdvisory });
+                // --- Custom advisory/disqualification logic ---
+                // 1. MBBS or medical program
+                if (
+                  education === 'mbbs' ||
+                  isMedicalProgram(program)
+                ) {
+                  setAdvisoryType('mbbs');
+                  setShowMBBSAdvisory(true);
+                  setStep('advisory-mbbs');
+                  return;
+                }
+                // 2. Bachelors + PhD
+                if (education && program === 'phd' && (
+                  education === 'bachelors' || education === 'completed-bachelors' || education === 'final-bachelors' || education === 'non-final-bachelors'
+                )) {
+                  setAdvisoryType('phd-bachelors');
+                  setShowPhDAdvisory(true);
+                  setStep('advisory-phd');
+                  return;
+                }
+                // 3. Masters + PhD
+                if (education === 'masters' && program === 'phd') {
+                  setAdvisoryType('phd-masters');
+                  setShowPhDAdvisory(true);
+                  setStep('advisory-phd');
+                  return;
+                }
+                // 4. Bachelors + Bachelors (new logic)
+                if (
+                  (education === 'bachelors' || education === 'completed-bachelors' || education === 'final-bachelors' || education === 'non-final-bachelors') &&
+                  (program === 'bachelors' || program === 'another-bachelors')
+                ) {
+                  setShowBachelorsAdvisory(true);
+                  setStep('advisory-bachelors');
+                  return;
+                }
+                // 5. 10th/12th + Bachelors (new logic)
+                if ((education === '10th' || education === '12th') && program === 'bachelors') {
+                  setAdvisoryType('bachelors');
+                  setShowMBBSAdvisory(true);
+                  setStep('advisory-mbbs');
+                  return;
+                }
+                // 6. Passport 'yet-to-apply' (allow to proceed)
+                if (passport === 'yet-to-apply') {
+                  setStep(5);
+                  return;
+                }
+                // 7. Disqualification for 10th/12th (as before)
+                if (education === '10th' || education === '12th') {
+                  setDisqualifiedReason(
+                    education === '10th'
+                      ? 'Currently, our partner universities require a minimum of 12th grade or equivalent for study abroad programs. Complete your 12th and come back—we will be here to help you take the next step!'
+                      : 'You are just one step away! Please complete your 12th grade and return to explore global opportunities with us.'
+                  );
+                  setStep('disqualified');
+                } else {
+                  setStep(5);
+                }
+              }}
+              onCloseOtpPopup={() => setShowOtpPopup(false)}
+            />
+          </div>
+        )}
+        {/* Advisory MBBS/Medical page */}
+        {step === 'advisory-mbbs' && (
+          <AdvisoryMBBSPage
+            type={advisoryType === 'mbbs' ? 'mbbs' : 'bachelors'}
+            onContinue={() => {
+              setStep(0); // Back to home
+              setShowMBBSAdvisory(false);
             }}
-            onOtpSubmit={(value) => {
-              setOtp(value);
-              setShowOtpPopup(false);
-              // Debug log for advisory logic
-              console.log({ education, program, step, advisoryType, showPhDAdvisory });
-              // --- Custom advisory/disqualification logic ---
-              // 1. MBBS or medical program
-              if (
-                education === 'mbbs' ||
-                isMedicalProgram(program)
-              ) {
+          />
+        )}
+        {/* Advisory PhD path page */}
+        {step === 'advisory-phd' && (
+          <AdvisoryPhDPathPage
+            after={advisoryType === 'phd-bachelors' ? 'bachelors' : 'masters'}
+            onSelect={(choice) => {
+              if (choice === 'masters' || choice === 'mba') {
+                setProgram(choice);
+                setShowPhDAdvisory(false);
+                setStep(5); // Unlock milestone, go to next page
+              } else if (choice === 'phd') {
+                setShowPhDAdvisory(false);
                 setAdvisoryType('mbbs');
                 setShowMBBSAdvisory(true);
                 setStep('advisory-mbbs');
-                return;
               }
-              // 2. Bachelors + PhD
-              if (education && program === 'phd' && (
-                education === 'bachelors' || education === 'completed-bachelors' || education === 'final-bachelors' || education === 'non-final-bachelors'
-              )) {
-                setAdvisoryType('phd-bachelors');
-                setShowPhDAdvisory(true);
-                setStep('advisory-phd');
-                return;
-              }
-              // 3. Masters + PhD
-              if (education === 'masters' && program === 'phd') {
-                setAdvisoryType('phd-masters');
-                setShowPhDAdvisory(true);
-                setStep('advisory-phd');
-                return;
-              }
-              // 4. Bachelors + Bachelors (new logic)
-              if (
-                (education === 'bachelors' || education === 'completed-bachelors' || education === 'final-bachelors' || education === 'non-final-bachelors') &&
-                (program === 'bachelors' || program === 'another-bachelors')
-              ) {
-                setShowBachelorsAdvisory(true);
-                setStep('advisory-bachelors');
-                return;
-              }
-              // 5. 10th/12th + Bachelors (new logic)
-              if ((education === '10th' || education === '12th') && program === 'bachelors') {
+            }}
+          />
+        )}
+        {/* Advisory Bachelors after Bachelors page */}
+        {step === 'advisory-bachelors' && (
+          <AdvisoryBachelorsPathPage
+            onSelect={(choice) => {
+              if (choice === 'masters' || choice === 'mba') {
+                setProgram(choice);
+                setShowBachelorsAdvisory(false);
+                setStep(5); // Unlock milestone, go to next page
+              } else if (choice === 'bachelors') {
+                setShowBachelorsAdvisory(false);
                 setAdvisoryType('bachelors');
                 setShowMBBSAdvisory(true);
                 setStep('advisory-mbbs');
-                return;
-              }
-              // 6. Passport 'yet-to-apply' (allow to proceed)
-              if (passport === 'yet-to-apply') {
-                setStep(5);
-                return;
-              }
-              // 7. Disqualification for 10th/12th (as before)
-              if (education === '10th' || education === '12th') {
-                setDisqualifiedReason(
-                  education === '10th'
-                    ? 'Currently, our partner universities require a minimum of 12th grade or equivalent for study abroad programs. Complete your 12th and come back—we will be here to help you take the next step!'
-                    : 'You are just one step away! Please complete your 12th grade and return to explore global opportunities with us.'
-                );
-                setStep('disqualified');
-              } else {
-                setStep(5);
               }
             }}
-            onCloseOtpPopup={() => setShowOtpPopup(false)}
           />
-        </div>
-      )}
-      {/* Advisory MBBS/Medical page */}
-      {step === 'advisory-mbbs' && (
-        <AdvisoryMBBSPage
-          type={advisoryType === 'mbbs' ? 'mbbs' : 'bachelors'}
-          onContinue={() => {
-            setStep(0); // Back to home
-            setShowMBBSAdvisory(false);
-          }}
-        />
-      )}
-      {/* Advisory PhD path page */}
-      {step === 'advisory-phd' && (
-        <AdvisoryPhDPathPage
-          after={advisoryType === 'phd-bachelors' ? 'bachelors' : 'masters'}
-          onSelect={(choice) => {
-            if (choice === 'masters' || choice === 'mba') {
-              setProgram(choice);
-              setShowPhDAdvisory(false);
-              setStep(5); // Unlock milestone, go to next page
-            } else if (choice === 'phd') {
-              setShowPhDAdvisory(false);
-              setAdvisoryType('mbbs');
-              setShowMBBSAdvisory(true);
-              setStep('advisory-mbbs');
-            }
-          }}
-        />
-      )}
-      {/* Advisory Bachelors after Bachelors page */}
-      {step === 'advisory-bachelors' && (
-        <AdvisoryBachelorsPathPage
-          onSelect={(choice) => {
-            if (choice === 'masters' || choice === 'mba') {
-              setProgram(choice);
-              setShowBachelorsAdvisory(false);
-              setStep(5); // Unlock milestone, go to next page
-            } else if (choice === 'bachelors') {
-              setShowBachelorsAdvisory(false);
-              setAdvisoryType('bachelors');
-              setShowMBBSAdvisory(true);
-              setStep('advisory-mbbs');
-            }
-          }}
-        />
-      )}
-      {/* Step 5: Completion */}
-      {step === 5 && (
-        <div style={{ marginTop: 0, background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.06)', maxWidth: 500, width: '100%', padding: '32px 24px', display: 'flex', flexDirection: 'column', gap: 0 }}>
-          {showQuickEval ? (
-            <QuickEvaluationPage onContinue={() => setStep(7)} />
-          ) : (
-          <CompletionStep
-            education={education}
-            program={program}
-            country={country}
-            intake={intake}
-            city={city}
-            phone={phone}
-            english={english}
-            passport={passport}
-            onDownloadReport={async () => {
-              setButtonLoading((b) => ({ ...b, download: true }));
-              await logClick('download');
-              setTimeout(() => setButtonLoading((b) => ({ ...b, download: false })), 800);
-              alert('Download coming soon!');
-            }}
-            onViewReport={async () => {
-              setButtonLoading((b) => ({ ...b, view: true }));
-              await logClick('view');
-              setTimeout(() => setButtonLoading((b) => ({ ...b, view: false })), 800);
-              alert('View report coming soon!');
-            }}
-            buttonLoading={buttonLoading}
-            saving={saving}
-            onContinue={() => setStep(7)}
-          />
-          )}
-        </div>
-      )}
-      {/* Step 7: Academic Details */}
-      {step === 7 && (
-        <div style={{ marginTop: 0, background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.06)', maxWidth: 500, width: '100%', padding: '32px 24px', display: 'flex', flexDirection: 'column', gap: 0 }}>
-          <AcademicDetailsStep
-            highestEducation={education}
-            initialDetails={academicDetails}
-            onSubmit={details => {
-              setAcademicDetails(details);
-              setGraduationYear(details.graduationYear);
-              setGraduationMonth(details.graduationMonth);
-              setStep(8);
-            }}
-          />
-        </div>
-      )}
-      {/* Step 8: Academic Journey Complete */}
-      {step === 8 && (
-        <div style={{ marginTop: 0, background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.06)', maxWidth: 500, width: '100%', padding: '32px 24px', display: 'flex', flexDirection: 'column', gap: 0 }}>
-          <AcademicJourneyComplete onContinue={() => setStep(9)} />
-        </div>
-      )}
-      {/* Step 9: Budget */}
-      {step === 9 && !budget && (
-        <div style={{ marginTop: 0, background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.06)', maxWidth: 500, width: '100%', padding: '32px 24px', display: 'flex', flexDirection: 'column', gap: 0 }}>
-          <BudgetStep
-            onBudgetSelected={(budgetValue) => {
-              // If user selects 'not-sure' and is not DQ by backlogs, skip country eligibility
-              if (budgetValue === 'not-sure') {
-                // Find the selected country (normalize to lowercase)
-                const normalizedCountry = country ? country.trim().toLowerCase() : '';
-                // Country requirements table
-                const countryReqs = [
-                  { value: 'usa', minBacklogs: 10 },
-                  { value: 'canada', minBacklogs: 10 },
-                  { value: 'new-zealand', minBacklogs: 8 },
-                  { value: 'uk', minBacklogs: 15 },
-                  { value: 'ireland', minBacklogs: 7 },
-                  { value: 'australia', minBacklogs: 15 },
-                  { value: 'france', minBacklogs: 15 },
-                  { value: 'germany', minBacklogs: 15 },
-                  { value: 'netherlands', minBacklogs: 15 },
-                  { value: 'singapore', minBacklogs: 12 },
-                  { value: 'sweden', minBacklogs: 12 },
-                  { value: 'denmark', minBacklogs: 12 },
-                  { value: 'italy', minBacklogs: 15 },
-                  { value: 'spain', minBacklogs: 15 },
-                ];
-                const countryObj = countryReqs.find(c => c.value === normalizedCountry);
-                const backlogsNum = academicDetails.backlogs || 0;
-                if (countryObj && backlogsNum <= countryObj.minBacklogs) {
-                  setBudget(budgetValue);
-                  setStep(9); // Go to finance mode step, not directly to application timeline
-                  return;
-                }
-              }
-              setBudget(budgetValue);
-              setStep(9); // Always advance to finance mode
-            }}
-            country={country ? country.trim().toLowerCase() : ''}
-          />
-        </div>
-      )}
-      {/* Step 9: Finance Mode */}
-      {step === 9 && budget && !financeMode && (
-        <div style={{ marginTop: 0, background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.06)', maxWidth: 500, width: '100%', padding: '32px 24px', display: 'flex', flexDirection: 'column', gap: 0 }}>
-          <FinanceStep
-            onSelect={(mode) => {
-              // USA special flow
-              if (country === 'usa') {
-                const interpretedBudget = interpretBudget(budget);
-                const backlogsNum = academicDetails.backlogs || 0;
-                if (backlogsNum > 10) {
-              setFinanceMode(mode);
-                  setStep(10); // Always show eligibility page with backlog message
-                  return;
-                }
-                if (interpretedBudget === 'can35') {
-                  setFinanceMode(mode);
-                  setStep(11); // Allow USA, skip eligibility page
-                  return;
-                }
-                if (interpretedBudget === 'can15') {
-                  setFinanceMode(mode);
-                  setStep(10); // Go directly to country eligibility grid
-                  return;
-                }
-                if (interpretedBudget === 'cannot15') {
-                  setFinanceMode(mode);
-                  setStep('usa-counsellor'); // Show counsellor message, no grid
-                  return;
-                }
-                if (interpretedBudget === 'not-sure') {
-                  setFinanceMode(mode);
-                  setStep(11); // Skip eligibility page
-                  return;
-                }
-              }
-              // --- Custom logic for initial country not-sure ---
-              if (country === 'not-sure') {
-                const interpretedBudget = interpretBudget(budget);
-                if (interpretedBudget === 'not-sure') {
-                  setFinanceMode(mode);
-                  setStep(11); // Skip country eligibility
-                  return;
-                }
-              }
-              // New: For non-USA, skip eligibility if not disqualified by backlogs and budget is enough
-              const countryReqs = [
-                { value: 'usa', name: 'USA', flag: '🇺🇸', roi: 60, minBacklogs: 10, minBudget: 35 },
-                { value: 'canada', name: 'Canada', flag: '🇨🇦', roi: 45, minBacklogs: 10, minBudget: 15 },
-                { value: 'new-zealand', name: 'New Zealand', flag: '🇳🇿', roi: 35, minBacklogs: 8, minBudget: 15 },
-                { value: 'uk', name: 'UK', flag: '🇬🇧', roi: 45, minBacklogs: 15, minBudget: 15 },
-                { value: 'ireland', name: 'Ireland', flag: '🇮🇪', roi: 35, minBacklogs: 7, minBudget: 15 },
-                { value: 'australia', name: 'Australia', flag: '🇦🇺', roi: 35, minBacklogs: 15, minBudget: 15 },
-                { value: 'france', name: 'France', flag: '🇫🇷', roi: 30, minBacklogs: 15, minBudget: 15 },
-                { value: 'germany', name: 'Germany', flag: '🇩🇪', roi: 28, minBacklogs: 15, minBudget: 15 },
-                { value: 'netherlands', name: 'Netherlands', flag: '🇳🇱', roi: 32, minBacklogs: 15, minBudget: 15 },
-                { value: 'singapore', name: 'Singapore', flag: '🇸🇬', roi: 50, minBacklogs: 12, minBudget: 15 },
-                { value: 'sweden', name: 'Sweden', flag: '🇸🇪', roi: 30, minBacklogs: 12, minBudget: 15 },
-                { value: 'denmark', name: 'Denmark', flag: '🇩🇰', roi: 30, minBacklogs: 12, minBudget: 15 },
-                { value: 'italy', name: 'Italy', flag: '🇮🇹', roi: 25, minBacklogs: 15, minBudget: 15 },
-                { value: 'spain', name: 'Spain', flag: '🇪🇸', roi: 25, minBacklogs: 15, minBudget: 15 },
-              ];
-              const countryObj = countryReqs.find(c => c.value === country);
-              const backlogsNum = academicDetails.backlogs || 0;
-              const interpretedBudget = interpretBudget(budget);
-              if (budget === 'not-sure') {
-                setFinanceMode(mode);
-                setStep(11); // Go directly to application timeline
-                return;
-              }
-              if (
-                countryObj &&
-                backlogsNum <= countryObj.minBacklogs &&
-                ((interpretedBudget === 'can35' && countryObj.minBudget <= 35) ||
-                 (interpretedBudget === 'can15' && countryObj.minBudget <= 15))
-              ) {
-                setFinanceMode(mode);
-                setStep(11); // Go directly to application timeline
-                return;
-              }
-              setFinanceMode(mode);
-              setStep(10); // Otherwise, show country eligibility
-            }}
-            initialValue={financeMode}
-          />
-        </div>
-      )}
-      {/* Step: USA 15L budget message */}
-      {step === 'usa-15-budget' && (
-        <div style={{ marginTop: 0, background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.06)', maxWidth: 600, width: '100%', padding: '32px 24px', display: 'flex', flexDirection: 'column', gap: 0, alignItems: 'center' }}>
-          <div style={{ fontWeight: 700, fontSize: 18, color: '#b45309', marginBottom: 16, textAlign: 'center' }}>
-            If you increase your budget a bit, you can get USA.<br />
-            With 15 lakhs, these other countries are eligible for your profile.
-          </div>
-          <button style={{ background: '#6366f1', color: '#fff', border: 'none', borderRadius: 10, fontWeight: 700, fontSize: 16, padding: '14px 0', width: '100%', maxWidth: 320, cursor: 'pointer', boxShadow: '0 2px 8px #6366f122', margin: '0 auto 18px auto' }}
-            onClick={() => setStep(10)}>
-            Explore eligible countries
-          </button>
-        </div>
-      )}
-      {/* Step: USA counsellor message */}
-      {step === 'usa-counsellor' && (
-        <div style={{ marginTop: 0, background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.06)', maxWidth: 600, width: '100%', padding: '32px 24px', display: 'flex', flexDirection: 'column', gap: 0, alignItems: 'center' }}>
-          <div style={{ fontWeight: 700, fontSize: 18, color: '#b91c1c', marginBottom: 16, textAlign: 'center' }}>
-            Talk with a counsellor regarding your financial decision or stay with the current country.
-          </div>
-          <button style={{ background: '#6366f1', color: '#fff', border: 'none', borderRadius: 10, fontWeight: 700, fontSize: 16, padding: '14px 0', width: '100%', maxWidth: 320, cursor: 'pointer', boxShadow: '0 2px 8px #6366f122', margin: '0 auto 18px auto' }}
-            onClick={() => window.open('https://calendly.com/leapcounselor', '_blank')}>
-            Talk to a counsellor
-          </button>
-          <button style={{ background: '#fff', color: '#6366f1', border: '2px solid #e0e7ff', borderRadius: 10, fontWeight: 700, fontSize: 16, padding: '14px 0', width: '100%', maxWidth: 320, cursor: 'pointer', boxShadow: '0 2px 8px #6366f122', margin: '0 auto' }}
-            onClick={() => setStep(9)}>
-            Stay with current country
-          </button>
-        </div>
-      )}
-      {/* Step 10: Country Eligibility Step (moved up in flow) */}
-      {step === 10 && (
-        <CountryEligibilityStep
-          country={country}
-          budget={budget}
-          backlogs={academicDetails.backlogs}
-          onSelectCountry={(newCountry) => {
-            // Only update country immediately if not switching from USA with cannot15
-            if (country === 'usa' && budget === 'cannot15' && newCountry !== 'usa') {
-              // Do not update country here; let the confirmation dialog handle it
-              return;
-            }
-            setCountry(newCountry && typeof newCountry === 'string' ? newCountry.toLowerCase() : newCountry);
-          }}
-          onContinue={() => setStep(11)}
-          />
-      )}
-      {/* Step 11: Application Timeline + Preferred University (combined) */}
-      {step === 11 && (
-        <div style={{ maxWidth: 520, width: '100%', background: '#fff', borderRadius: 24, boxShadow: '0 8px 32px rgba(99,102,241,0.10)', padding: '40px 32px 32px 32px', margin: '0 auto', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <h2 style={{ fontSize: 22, fontWeight: 700, color: '#1e293b', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span role="img" aria-label="hourglass">⏳</span> Application Timeline
-          </h2>
-          <div style={{ color: '#374151', fontSize: 16, marginBottom: 18 }}>When do you want to apply for your studies?</div>
-          <div style={{ display: 'flex', flexDirection: 'row', gap: 22, width: '100%', justifyContent: 'center', flexWrap: 'wrap', marginBottom: 18 }}>
-            {['immediately', '3-months', 'not-sure'].map(opt => {
-              const option = {
-                'immediately': { icon: '⚡', title: 'Immediately', subtitle: 'Start application process now' },
-                '3-months': { icon: '📅', title: 'Within 3 months', subtitle: 'Plan to apply soon' },
-                'not-sure': { icon: '🤔', title: 'Not Sure Yet', subtitle: 'Still deciding on timeline' },
-              }[opt];
-              return (
-                <div
-                  key={opt}
-                  onClick={() => setTimeline(opt)}
-                  style={{
-                    background: timeline === opt ? '#eef2ff' : '#fff',
-                    border: timeline === opt ? '2px solid #6366f1' : '1.5px solid #e5e7eb',
-                    borderRadius: 12,
-                    padding: '22px 18px',
-                    cursor: 'pointer',
-                    minWidth: 140,
-                    maxWidth: 180,
-                    minHeight: 120,
-                    flex: '1 1 140px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    boxShadow: timeline === opt ? '0 2px 8px #6366f122' : 'none',
-                    fontWeight: 500,
-                    fontSize: 15,
-                    marginBottom: 0,
-                    transition: 'all 0.2s',
-                  }}
-                >
-                  <span style={{ fontSize: 28, marginBottom: 8 }}>{option.icon}</span>
-                  <div style={{ fontWeight: 700, color: '#1e293b', fontSize: 16 }}>{option.title}</div>
-                  <div style={{ color: '#64748b', fontSize: 14 }}>{option.subtitle}</div>
-          </div>
-              );
-            })}
-            </div>
-          {/* Preferred University Yes/No */}
-          <div style={{ marginTop: 24, width: '100%' }}>
-            <h3 style={{ fontSize: 18, fontWeight: 700, color: '#443eff', marginBottom: 10, textAlign: 'center' }}>
-              Do you have a preferred university?
-            </h3>
-            <div style={{ display: 'flex', gap: 18, justifyContent: 'center', marginBottom: 18 }}>
-              <button
-                style={{ background: preferredUniAnswer === 'yes' ? '#e0e7ff' : '#fff', color: '#3730a3', border: '1.5px solid #e5e7eb', borderRadius: 8, padding: '10px 22px', fontWeight: 700, fontSize: 15, cursor: 'pointer', minWidth: 100 }}
-                onClick={() => setPreferredUniAnswer('yes')}
-              >
-                Yes
-              </button>
-              <button
-                style={{ background: preferredUniAnswer === 'no' ? '#e0e7ff' : '#fff', color: '#3730a3', border: '1.5px solid #e5e7eb', borderRadius: 8, padding: '10px 22px', fontWeight: 700, fontSize: 15, cursor: 'pointer', minWidth: 100 }}
-                onClick={() => setPreferredUniAnswer('no')}
-              >
-                No
-              </button>
-            </div>
-            {/* If Yes, show custom multi-select dropdown with checkboxes and chips */}
-            {preferredUniAnswer === 'yes' && (
-              <MultiSelectDropdown
-                options={universityData[country] || universityData.any}
-                selected={selectedPreferredUnis}
-                setSelected={setSelectedPreferredUnis}
-                max={5}
-                placeholder="Select up to 5 preferred universities"
-              />
+        )}
+        {/* Step 5: Completion */}
+        {step === 5 && (
+          <div style={{ marginTop: 0, background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.06)', maxWidth: 500, width: '100%', padding: '32px 24px', display: 'flex', flexDirection: 'column', gap: 0 }}>
+            {showQuickEval ? (
+              <QuickEvaluationPage onContinue={() => setStep(7)} />
+            ) : (
+            <CompletionStep
+              education={education}
+              program={program}
+              country={country}
+              intake={intake}
+              city={city}
+              phone={phone}
+              english={english}
+              passport={passport}
+              onDownloadReport={async () => {
+                setButtonLoading((b) => ({ ...b, download: true }));
+                await logClick('download');
+                setTimeout(() => setButtonLoading((b) => ({ ...b, download: false })), 800);
+                alert('Download coming soon!');
+              }}
+              onViewReport={async () => {
+                setButtonLoading((b) => ({ ...b, view: true }));
+                await logClick('view');
+                setTimeout(() => setButtonLoading((b) => ({ ...b, view: false })), 800);
+                alert('View report coming soon!');
+              }}
+              buttonLoading={buttonLoading}
+              saving={saving}
+              onContinue={() => setStep(7)}
+            />
             )}
           </div>
-          <button
-            style={{ marginTop: 18, background: '#443eff', color: '#fff', border: 'none', borderRadius: 8, padding: '12px 32px', fontWeight: 700, fontSize: 16, cursor: 'pointer', minWidth: 120 }}
-            disabled={!timeline || (preferredUniAnswer === 'yes' && selectedPreferredUnis.length === 0) || !preferredUniAnswer}
-            onClick={() => setStep(12)}
-          >
-            Continue
-          </button>
-        </div>
-      )}
-      {/* Step 12: Preferred Intake Step */}
-      {step === 12 && (
-        <IntakeSelectionStep
-          visible={true}
-          onSelect={(intakeValue) => {
-            setIntake(intakeValue);
-            setStep(13);
-          }}
-          country={country}
-          graduationYear={graduationYear}
-          graduationMonth={graduationMonth}
-        />
-      )}
-      {/* Step 13: English Proficiency Test Step */}
-      {step === 13 && (
-        <EnglishTestDetailsStep
-          englishTestStatus={null}
-          onSubmit={details => {
-            setEnglishTestDetails(details);
-            // Always go to name/email page (step 15) after English test/counseling selection
-            setStep(15);
-          }}
-          selectedCity={city}
-          intake={intake}
-          onEditIntake={() => setStep(11)}
-        />
-      )}
-      {/* Step 15: Final Name and Email Page */}
-      {step === 15 && (
-        <div style={{ marginTop: 0, background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.06)', maxWidth: 500, width: '100%', padding: '32px 24px', display: 'flex', flexDirection: 'column', gap: 0 }}>
-          <ContactDetailsStep
-            onSubmit={details => {
-              setContactDetails(details);
-              setStep(16);
-            }}
-          />
-        </div>
-      )}
-      {/* Step 16: Final Congratulations */}
-      {step === 16 && (
-        <div style={{ marginTop: 0, background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.06)', maxWidth: 500, width: '100%', padding: '32px 24px', display: 'flex', flexDirection: 'column', gap: 0 }}>
-          {((academicDetails.gradeType === 'percentage' && Number(academicDetails.gradeValue) < 55) ||
-            (academicDetails.gradeType === 'cgpa' && Number(academicDetails.gradeValue) < 6) ||
-            (academicDetails.gap === '36' && !academicDetails.gapDoc)) ? (
-            <ProfileNotEligiblePage />
-          ) : (
-            <FinalCongratulationsPage universityCount={42} passportStatus={passport} />
-          )}
-        </div>
-      )}
-      {/* Render the disqualification page if needed */}
-      {step === 'disqualified' && (
-        <WarmDisqualificationPage reasonType={
-          (passport === 'yet-to-apply' && (education === '10th' || education === '12th' || education === 'mbbs'))
-            ? 'both'
-            : passport === 'yet-to-apply'
-            ? 'passport'
-            : undefined
-        } />
-      )}
-      {showCountrySwitchConfirm && (
-        <div style={{
-          position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.25)', zIndex: 1000,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-        }}>
-          <div style={{ background: '#fff', borderRadius: 14, boxShadow: '0 4px 24px #0002', padding: 32, minWidth: 340, textAlign: 'center', position: 'relative' }}>
-            {/* Close button */}
-            <button onClick={() => { setShowCountrySwitchConfirm(false); setPendingCountrySwitch(null); }} style={{ position: 'absolute', top: 12, right: 16, background: 'none', border: 'none', fontSize: 22, color: '#64748b', cursor: 'pointer', fontWeight: 700, zIndex: 2 }} aria-label="Close">×</button>
-            <div style={{ fontWeight: 700, fontSize: 18, color: '#b45309', marginBottom: 12 }}>Select Country</div>
-            <div style={{ color: '#1e293b', fontSize: 15, marginBottom: 18 }}>
-              You previously selected USA but cannot invest a minimum of 15 lakhs. Do you want to switch to <b>{pendingCountrySwitch && pendingCountrySwitch.toUpperCase()}</b> or stay with USA?
+        )}
+        {/* Step 7: Academic Details */}
+        {step === 7 && (
+          <div style={{ marginTop: 0, background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.06)', maxWidth: 500, width: '100%', padding: '32px 24px', display: 'flex', flexDirection: 'column', gap: 0 }}>
+            <AcademicDetailsStep
+              highestEducation={education}
+              initialDetails={academicDetails}
+              onSubmit={details => {
+                setAcademicDetails(details);
+                setGraduationYear(details.graduationYear);
+                setGraduationMonth(details.graduationMonth);
+                setStep(8);
+              }}
+            />
+          </div>
+        )}
+        {/* Step 8: Academic Journey Complete */}
+        {step === 8 && (
+          <div style={{ marginTop: 0, background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.06)', maxWidth: 500, width: '100%', padding: '32px 24px', display: 'flex', flexDirection: 'column', gap: 0 }}>
+            <AcademicJourneyComplete onContinue={() => setStep(9)} />
+          </div>
+        )}
+        {/* Step 9: Budget */}
+        {step === 9 && !budget && (
+          <div style={{ marginTop: 0, background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.06)', maxWidth: 500, width: '100%', padding: '32px 24px', display: 'flex', flexDirection: 'column', gap: 0 }}>
+            <BudgetStep
+              onBudgetSelected={(budgetValue) => {
+                // If user selects 'not-sure' and is not DQ by backlogs, skip country eligibility
+                if (budgetValue === 'not-sure') {
+                  // Find the selected country (normalize to lowercase)
+                  const normalizedCountry = country ? country.trim().toLowerCase() : '';
+                  // Country requirements table
+                  const countryReqs = [
+                    { value: 'usa', minBacklogs: 10 },
+                    { value: 'canada', minBacklogs: 10 },
+                    { value: 'new-zealand', minBacklogs: 8 },
+                    { value: 'uk', minBacklogs: 15 },
+                    { value: 'ireland', minBacklogs: 7 },
+                    { value: 'australia', minBacklogs: 15 },
+                    { value: 'france', minBacklogs: 15 },
+                    { value: 'germany', minBacklogs: 15 },
+                    { value: 'netherlands', minBacklogs: 15 },
+                    { value: 'singapore', minBacklogs: 12 },
+                    { value: 'sweden', minBacklogs: 12 },
+                    { value: 'denmark', minBacklogs: 12 },
+                    { value: 'italy', minBacklogs: 15 },
+                    { value: 'spain', minBacklogs: 15 },
+                  ];
+                  const countryObj = countryReqs.find(c => c.value === normalizedCountry);
+                  const backlogsNum = academicDetails.backlogs || 0;
+                  if (countryObj && backlogsNum <= countryObj.minBacklogs) {
+                    setBudget(budgetValue);
+                    setStep(9); // Go to finance mode step, not directly to application timeline
+                    return;
+                  }
+                }
+                setBudget(budgetValue);
+                setStep(9); // Always advance to finance mode
+              }}
+              country={country ? country.trim().toLowerCase() : ''}
+            />
+          </div>
+        )}
+        {/* Step 9: Finance Mode */}
+        {step === 9 && budget && !financeMode && (
+          <div style={{ marginTop: 0, background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.06)', maxWidth: 500, width: '100%', padding: '32px 24px', display: 'flex', flexDirection: 'column', gap: 0 }}>
+            <FinanceStep
+              onSelect={(mode) => {
+                // USA special flow
+                if (country === 'usa') {
+                  const interpretedBudget = interpretBudget(budget);
+                  const backlogsNum = academicDetails.backlogs || 0;
+                  if (backlogsNum > 10) {
+                setFinanceMode(mode);
+                    setStep(10); // Always show eligibility page with backlog message
+                    return;
+                  }
+                  if (interpretedBudget === 'can35') {
+                    setFinanceMode(mode);
+                    setStep(11); // Allow USA, skip eligibility page
+                    return;
+                  }
+                  if (interpretedBudget === 'can15') {
+                    setFinanceMode(mode);
+                    setStep(10); // Go directly to country eligibility grid
+                    return;
+                  }
+                  if (interpretedBudget === 'cannot15') {
+                    setFinanceMode(mode);
+                    setStep('usa-counsellor'); // Show counsellor message, no grid
+                    return;
+                  }
+                  if (interpretedBudget === 'not-sure') {
+                    setFinanceMode(mode);
+                    setStep(11); // Skip eligibility page
+                    return;
+                  }
+                }
+                // --- Custom logic for initial country not-sure ---
+                if (country === 'not-sure') {
+                  const interpretedBudget = interpretBudget(budget);
+                  if (interpretedBudget === 'not-sure') {
+                    setFinanceMode(mode);
+                    setStep(11); // Skip country eligibility
+                    return;
+                  }
+                }
+                // New: For non-USA, skip eligibility if not disqualified by backlogs and budget is enough
+                const countryReqs = [
+                  { value: 'usa', name: 'USA', flag: '🇺🇸', roi: 60, minBacklogs: 10, minBudget: 35 },
+                  { value: 'canada', name: 'Canada', flag: '🇨🇦', roi: 45, minBacklogs: 10, minBudget: 15 },
+                  { value: 'new-zealand', name: 'New Zealand', flag: '🇳🇿', roi: 35, minBacklogs: 8, minBudget: 15 },
+                  { value: 'uk', name: 'UK', flag: '🇬🇧', roi: 45, minBacklogs: 15, minBudget: 15 },
+                  { value: 'ireland', name: 'Ireland', flag: '🇮🇪', roi: 35, minBacklogs: 7, minBudget: 15 },
+                  { value: 'australia', name: 'Australia', flag: '🇦🇺', roi: 35, minBacklogs: 15, minBudget: 15 },
+                  { value: 'france', name: 'France', flag: '🇫🇷', roi: 30, minBacklogs: 15, minBudget: 15 },
+                  { value: 'germany', name: 'Germany', flag: '🇩🇪', roi: 28, minBacklogs: 15, minBudget: 15 },
+                  { value: 'netherlands', name: 'Netherlands', flag: '🇳🇱', roi: 32, minBacklogs: 15, minBudget: 15 },
+                  { value: 'singapore', name: 'Singapore', flag: '🇸🇬', roi: 50, minBacklogs: 12, minBudget: 15 },
+                  { value: 'sweden', name: 'Sweden', flag: '🇸🇪', roi: 30, minBacklogs: 12, minBudget: 15 },
+                  { value: 'denmark', name: 'Denmark', flag: '🇩🇰', roi: 30, minBacklogs: 12, minBudget: 15 },
+                  { value: 'italy', name: 'Italy', flag: '🇮🇹', roi: 25, minBacklogs: 15, minBudget: 15 },
+                  { value: 'spain', name: 'Spain', flag: '🇪🇸', roi: 25, minBacklogs: 15, minBudget: 15 },
+                ];
+                const countryObj = countryReqs.find(c => c.value === country);
+                const backlogsNum = academicDetails.backlogs || 0;
+                const interpretedBudget = interpretBudget(budget);
+                if (budget === 'not-sure') {
+                  setFinanceMode(mode);
+                  setStep(11); // Go directly to application timeline
+                  return;
+                }
+                if (
+                  countryObj &&
+                  backlogsNum <= countryObj.minBacklogs &&
+                  ((interpretedBudget === 'can35' && countryObj.minBudget <= 35) ||
+                   (interpretedBudget === 'can15' && countryObj.minBudget <= 15))
+                ) {
+                  setFinanceMode(mode);
+                  setStep(11); // Go directly to application timeline
+                  return;
+                }
+                setFinanceMode(mode);
+                setStep(10); // Otherwise, show country eligibility
+              }}
+              initialValue={financeMode}
+            />
+          </div>
+        )}
+        {/* Step: USA 15L budget message */}
+        {step === 'usa-15-budget' && (
+          <div style={{ marginTop: 0, background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.06)', maxWidth: 600, width: '100%', padding: '32px 24px', display: 'flex', flexDirection: 'column', gap: 0, alignItems: 'center' }}>
+            <div style={{ fontWeight: 700, fontSize: 18, color: '#b45309', marginBottom: 16, textAlign: 'center' }}>
+              If you increase your budget a bit, you can get USA.<br />
+              With 15 lakhs, these other countries are eligible for your profile.
             </div>
-            <div style={{ display: 'flex', gap: 16, marginTop: 8, justifyContent: 'center' }}>
-              <button style={{ background: '#6366f1', color: '#fff', border: 'none', borderRadius: 8, fontWeight: 700, fontSize: 15, padding: '10px 18px', cursor: 'pointer' }}
-                onClick={() => {
-                  setCountry(pendingCountrySwitch && typeof pendingCountrySwitch === 'string' ? pendingCountrySwitch.toLowerCase() : pendingCountrySwitch);
-                  setShowCountrySwitchConfirm(false);
-                  setPendingCountrySwitch(null);
-                  setStep(10); // or whatever is appropriate
-                }}>
-                Yes, select {pendingCountrySwitch && pendingCountrySwitch.toUpperCase()}
-              </button>
-              <button style={{ background: '#f3f4f6', color: '#374151', border: '1.5px solid #e5e7eb', borderRadius: 8, fontWeight: 700, fontSize: 15, padding: '10px 18px', cursor: 'pointer' }}
-                onClick={() => {
-                  setShowCountrySwitchConfirm(false);
-                  setPendingCountrySwitch(null);
-                }}>
-                No, stay with USA
-              </button>
+            <button style={{ background: '#6366f1', color: '#fff', border: 'none', borderRadius: 10, fontWeight: 700, fontSize: 16, padding: '14px 0', width: '100%', maxWidth: 320, cursor: 'pointer', boxShadow: '0 2px 8px #6366f122', margin: '0 auto 18px auto' }}
+              onClick={() => setStep(10)}>
+              Explore eligible countries
+            </button>
+          </div>
+        )}
+        {/* Step: USA counsellor message */}
+        {step === 'usa-counsellor' && (
+          <div style={{ marginTop: 0, background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.06)', maxWidth: 600, width: '100%', padding: '32px 24px', display: 'flex', flexDirection: 'column', gap: 0, alignItems: 'center' }}>
+            <div style={{ fontWeight: 700, fontSize: 18, color: '#b91c1c', marginBottom: 16, textAlign: 'center' }}>
+              Talk with a counsellor regarding your financial decision or stay with the current country.
+            </div>
+            <button style={{ background: '#6366f1', color: '#fff', border: 'none', borderRadius: 10, fontWeight: 700, fontSize: 16, padding: '14px 0', width: '100%', maxWidth: 320, cursor: 'pointer', boxShadow: '0 2px 8px #6366f122', margin: '0 auto 18px auto' }}
+              onClick={() => window.open('https://calendly.com/leapcounselor', '_blank')}>
+              Talk to a counsellor
+            </button>
+            <button style={{ background: '#fff', color: '#6366f1', border: '2px solid #e0e7ff', borderRadius: 10, fontWeight: 700, fontSize: 16, padding: '14px 0', width: '100%', maxWidth: 320, cursor: 'pointer', boxShadow: '0 2px 8px #6366f122', margin: '0 auto' }}
+              onClick={() => setStep(9)}>
+              Stay with current country
+            </button>
+          </div>
+        )}
+        {/* Step 10: Country Eligibility Step (moved up in flow) */}
+        {step === 10 && (
+          <CountryEligibilityStep
+            country={country}
+            budget={budget}
+            backlogs={academicDetails.backlogs}
+            onSelectCountry={(newCountry) => {
+              // Only update country immediately if not switching from USA with cannot15
+              if (country === 'usa' && budget === 'cannot15' && newCountry !== 'usa') {
+                // Do not update country here; let the confirmation dialog handle it
+                return;
+              }
+              setCountry(newCountry && typeof newCountry === 'string' ? newCountry.toLowerCase() : newCountry);
+            }}
+            onContinue={() => setStep(11)}
+            />
+        )}
+        {/* Step 11: Application Timeline + Preferred University (combined) */}
+        {step === 11 && (
+          <div style={{ maxWidth: 520, width: '100%', background: '#fff', borderRadius: 24, boxShadow: '0 8px 32px rgba(99,102,241,0.10)', padding: '40px 32px 32px 32px', margin: '0 auto', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <h2 style={{ fontSize: 22, fontWeight: 700, color: '#1e293b', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span role="img" aria-label="hourglass">⏳</span> Application Timeline
+            </h2>
+            <div style={{ color: '#374151', fontSize: 16, marginBottom: 18 }}>When do you want to apply for your studies?</div>
+            <div style={{ display: 'flex', flexDirection: 'row', gap: 22, width: '100%', justifyContent: 'center', flexWrap: 'wrap', marginBottom: 18 }}>
+              {['immediately', '3-months', 'not-sure'].map(opt => {
+                const option = {
+                  'immediately': { icon: '⚡', title: 'Immediately', subtitle: 'Start application process now' },
+                  '3-months': { icon: '📅', title: 'Within 3 months', subtitle: 'Plan to apply soon' },
+                  'not-sure': { icon: '🤔', title: 'Not Sure Yet', subtitle: 'Still deciding on timeline' },
+                }[opt];
+                return (
+                  <div
+                    key={opt}
+                    onClick={() => setTimeline(opt)}
+                    style={{
+                      background: timeline === opt ? '#eef2ff' : '#fff',
+                      border: timeline === opt ? '2px solid #6366f1' : '1.5px solid #e5e7eb',
+                      borderRadius: 12,
+                      padding: '22px 18px',
+                      cursor: 'pointer',
+                      minWidth: 140,
+                      maxWidth: 180,
+                      minHeight: 120,
+                      flex: '1 1 140px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      boxShadow: timeline === opt ? '0 2px 8px #6366f122' : 'none',
+                      fontWeight: 500,
+                      fontSize: 15,
+                      marginBottom: 0,
+                      transition: 'all 0.2s',
+                    }}
+                  >
+                    <span style={{ fontSize: 28, marginBottom: 8 }}>{option.icon}</span>
+                    <div style={{ fontWeight: 700, color: '#1e293b', fontSize: 16 }}>{option.title}</div>
+                    <div style={{ color: '#64748b', fontSize: 14 }}>{option.subtitle}</div>
+            </div>
+                );
+              })}
+              </div>
+            {/* Preferred University Yes/No */}
+            <div style={{ marginTop: 24, width: '100%' }}>
+              <h3 style={{ fontSize: 18, fontWeight: 700, color: '#443eff', marginBottom: 10, textAlign: 'center' }}>
+                Do you have a preferred university?
+              </h3>
+              <div style={{ display: 'flex', gap: 18, justifyContent: 'center', marginBottom: 18 }}>
+                <button
+                  style={{ background: preferredUniAnswer === 'yes' ? '#e0e7ff' : '#fff', color: '#3730a3', border: '1.5px solid #e5e7eb', borderRadius: 8, padding: '10px 22px', fontWeight: 700, fontSize: 15, cursor: 'pointer', minWidth: 100 }}
+                  onClick={() => setPreferredUniAnswer('yes')}
+                >
+                  Yes
+                </button>
+                <button
+                  style={{ background: preferredUniAnswer === 'no' ? '#e0e7ff' : '#fff', color: '#3730a3', border: '1.5px solid #e5e7eb', borderRadius: 8, padding: '10px 22px', fontWeight: 700, fontSize: 15, cursor: 'pointer', minWidth: 100 }}
+                  onClick={() => setPreferredUniAnswer('no')}
+                >
+                  No
+                </button>
+              </div>
+              {/* If Yes, show custom multi-select dropdown with checkboxes and chips */}
+              {preferredUniAnswer === 'yes' && (
+                <MultiSelectDropdown
+                  options={universityData[country] || universityData.any}
+                  selected={selectedPreferredUnis}
+                  setSelected={setSelectedPreferredUnis}
+                  max={5}
+                  placeholder="Select up to 5 preferred universities"
+                />
+              )}
+            </div>
+            <button
+              style={{ marginTop: 18, background: '#443eff', color: '#fff', border: 'none', borderRadius: 8, padding: '12px 32px', fontWeight: 700, fontSize: 16, cursor: 'pointer', minWidth: 120 }}
+              disabled={!timeline || (preferredUniAnswer === 'yes' && selectedPreferredUnis.length === 0) || !preferredUniAnswer}
+              onClick={() => setStep(12)}
+            >
+              Continue
+            </button>
+          </div>
+        )}
+        {/* Step 12: Preferred Intake Step */}
+        {step === 12 && (
+          <IntakeSelectionStep
+            visible={true}
+            onSelect={(intakeValue) => {
+              setIntake(intakeValue);
+              setStep(13);
+            }}
+            country={country}
+            graduationYear={graduationYear}
+            graduationMonth={graduationMonth}
+          />
+        )}
+        {/* Step 13: English Proficiency Test Step */}
+        {step === 13 && (
+          <EnglishTestDetailsStep
+            englishTestStatus={null}
+            onSubmit={details => {
+              setEnglishTestDetails(details);
+              // Always go to name/email page (step 15) after English test/counseling selection
+              setStep(15);
+            }}
+            selectedCity={city}
+            intake={intake}
+            onEditIntake={() => setStep(11)}
+          />
+        )}
+        {/* Step 15: Final Name and Email Page */}
+        {step === 15 && (
+          <div style={{ marginTop: 0, background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.06)', maxWidth: 500, width: '100%', padding: '32px 24px', display: 'flex', flexDirection: 'column', gap: 0 }}>
+            <ContactDetailsStep
+              onSubmit={details => {
+                setContactDetails(details);
+                setStep(16);
+              }}
+            />
+          </div>
+        )}
+        {/* Step 16: Final Congratulations or Final Report */}
+        {step === 16 && (
+          <>
+            {((academicDetails.gradeType === 'percentage' && Number(academicDetails.gradeValue) < 55) ||
+              (academicDetails.gradeType === 'cgpa' && Number(academicDetails.gradeValue) < 6) ||
+              (academicDetails.gap === '36' && !academicDetails.gapDoc)) ? (
+              <div style={{ marginTop: 0, background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.06)', maxWidth: 500, width: '100%', padding: '32px 24px', display: 'flex', flexDirection: 'column', gap: 0 }}>
+                <ProfileNotEligiblePage />
+              </div>
+            ) : (intake === 'fall-2026' || intake === '2027-later') ? (
+              // Show Final Report for 2026 Fall or 2027+ intake as full page
+              <FinalReport 
+                userData={{
+                  name: contactDetails?.name || 'Your Name',
+                  email: contactDetails?.email || 'your@email.com',
+                  country: country,
+                  program: program,
+                  intake: intake,
+                  academicDetails: academicDetails,
+                  budget: budget,
+                  city: city,
+                  english: english,
+                  passport: passport
+                }}
+              />
+            ) : (
+              <div style={{ marginTop: 0, background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.06)', maxWidth: 500, width: '100%', padding: '32px 24px', display: 'flex', flexDirection: 'column', gap: 0 }}>
+                <FinalCongratulationsPage universityCount={42} passportStatus={passport} />
+              </div>
+            )}
+          </>
+        )}
+        {/* Render the disqualification page if needed */}
+        {step === 'disqualified' && (
+          <WarmDisqualificationPage reasonType={
+            (passport === 'yet-to-apply' && (education === '10th' || education === '12th' || education === 'mbbs'))
+              ? 'both'
+              : passport === 'yet-to-apply'
+              ? 'passport'
+              : undefined
+          } />
+        )}
+        {showCountrySwitchConfirm && (
+          <div style={{
+            position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.25)', zIndex: 1000,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+            <div style={{ background: '#fff', borderRadius: 14, boxShadow: '0 4px 24px #0002', padding: 32, minWidth: 340, textAlign: 'center', position: 'relative' }}>
+              {/* Close button */}
+              <button onClick={() => { setShowCountrySwitchConfirm(false); setPendingCountrySwitch(null); }} style={{ position: 'absolute', top: 12, right: 16, background: 'none', border: 'none', fontSize: 22, color: '#64748b', cursor: 'pointer', fontWeight: 700, zIndex: 2 }} aria-label="Close">×</button>
+              <div style={{ fontWeight: 700, fontSize: 18, color: '#b45309', marginBottom: 12 }}>Select Country</div>
+              <div style={{ color: '#1e293b', fontSize: 15, marginBottom: 18 }}>
+                You previously selected USA but cannot invest a minimum of 15 lakhs. Do you want to switch to <b>{pendingCountrySwitch && pendingCountrySwitch.toUpperCase()}</b> or stay with USA?
+              </div>
+              <div style={{ display: 'flex', gap: 16, marginTop: 8, justifyContent: 'center' }}>
+                <button style={{ background: '#6366f1', color: '#fff', border: 'none', borderRadius: 8, fontWeight: 700, fontSize: 15, padding: '10px 18px', cursor: 'pointer' }}
+                  onClick={() => {
+                    setCountry(pendingCountrySwitch && typeof pendingCountrySwitch === 'string' ? pendingCountrySwitch.toLowerCase() : pendingCountrySwitch);
+                    setShowCountrySwitchConfirm(false);
+                    setPendingCountrySwitch(null);
+                    setStep(10); // or whatever is appropriate
+                  }}>
+                  Yes, select {pendingCountrySwitch && pendingCountrySwitch.toUpperCase()}
+                </button>
+                <button style={{ background: '#f3f4f6', color: '#374151', border: '1.5px solid #e5e7eb', borderRadius: 8, fontWeight: 700, fontSize: 15, padding: '10px 18px', cursor: 'pointer' }}
+                  onClick={() => {
+                    setShowCountrySwitchConfirm(false);
+                    setPendingCountrySwitch(null);
+                  }}>
+                  No, stay with USA
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+    </>
   );
 }
 

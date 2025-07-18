@@ -139,7 +139,6 @@ export default function QuickEvaluationPage({ onContinue }) {
                 >
                   {loading ? (
                     <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-                      <span className="spinner" style={{ width: 18, height: 18, border: '3px solid #fff', borderTop: '3px solid #443eff', borderRadius: '50%', display: 'inline-block', animation: 'spin 1s linear infinite' }}></span>
                       Loading...
                     </span>
                   ) : (
